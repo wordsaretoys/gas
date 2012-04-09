@@ -22,9 +22,11 @@ uniform mat4 projector;
 uniform mat4 modelview;
 
 varying vec2 uv;
+varying vec4 object;
 
 void main(void) {
-	gl_Position = projector * modelview * vec4(position, 1.0);
+	object = vec4(position, 1.0);
+	gl_Position = projector * modelview * object;
 	uv = texturec;
 }
 
@@ -46,11 +48,15 @@ precision mediump float;
 uniform sampler2D noise;
 
 varying vec2 uv;
+varying vec4 object;
 
 void main(void) {
-//	float alpha = pow(clamp(0.1 + texture2D(noise, uv).a, 0.0, 1.0), 32.0);
-//	gl_FragColor = vec4(0.99, 0.99, 0.99, alpha);
-	gl_FragColor = texture2D(noise, uv);
+	vec3 color = texture2D(noise, uv).rgb;
+	float a = clamp((color.r + color.g + color.b) / 2.0, 0.0, 1.0);
+	float alpha = 1.0;
+	if (uv.y > 0.0)
+		alpha = a;
+	gl_FragColor = vec4(color, alpha);
 }
 
 </script>
