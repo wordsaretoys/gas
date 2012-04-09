@@ -1,7 +1,7 @@
-<script id="vs-gradient" type="x-shader/x-vertex">
+<script id="vs-cloud" type="x-shader/x-vertex">
 
 /**
-	gradient vertex shader
+	cloud vertex shader
 	O' = P * V * O transformation, plus texture coordinates
 	
 	@param position vertex array of positions
@@ -30,14 +30,12 @@ void main(void) {
 
 </script>
 
-<script id="fs-gradient" type="x-shader/x-fragment">
+<script id="fs-cloud" type="x-shader/x-fragment">
 
 /**
-	gradient fragment shader
+	cloud fragment shader
 
-	@param radius determines size of gradient circle
-	@param innerc inner gradient color
-	@param outerc outer gradient color
+	@param noise	noise texture
 	
 	@param uv		texture coordinates of fragment
 	
@@ -45,14 +43,14 @@ void main(void) {
 
 precision mediump float;
 
-uniform vec4 innerc;
-uniform vec4 outerc;
+uniform sampler2D noise;
 
 varying vec2 uv;
 
 void main(void) {
-	float r = clamp(length(uv), 0.0, 1.0);
-	gl_FragColor = mix(innerc, outerc, r);
+//	float alpha = pow(clamp(0.1 + texture2D(noise, uv).a, 0.0, 1.0), 32.0);
+//	gl_FragColor = vec4(0.99, 0.99, 0.99, alpha);
+	gl_FragColor = texture2D(noise, uv);
 }
 
 </script>

@@ -68,7 +68,7 @@ GAS.player = {
 			GAS.display, 
 			SOAR.camera.BOUND_ROTATION);
 		this.camera.nearLimit = 0.01;
-		this.camera.farLimit = 5000;
+		this.camera.farLimit = 1000;
 
 		// align camera to z-axis
 		this.camera.yaw.set(0, 0, 0, 1);

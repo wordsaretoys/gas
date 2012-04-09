@@ -21,7 +21,7 @@
 		<script type="text/javascript" src="/debug/gas/gas.js"></script>
 		<script type="text/javascript" src="/debug/gas/hud.js"></script>
 		<script type="text/javascript" src="/debug/gas/player.js"></script>
-		<script type="text/javascript" src="/debug/gas/skybox.js"></script>
+		<script type="text/javascript" src="/debug/gas/clouds.js"></script>
 		
 <?php
 include("gas.glsl");

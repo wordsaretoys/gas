@@ -21,6 +21,10 @@ var GAS = {
 	},
 	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
+	
+	random: function(l, u) {
+		return l + (u - l) * Math.random();
+	},
 
 	/**
 		create GL context, set up game objects, load resources
@@ -55,8 +59,8 @@ var GAS = {
 		// create an offscreen canvas for texture generation
 		GAS.texture = {};
 		GAS.texture.canvas = document.createElement("canvas");
-		GAS.texture.canvas.width = 256;
-		GAS.texture.canvas.height = 256;
+		GAS.texture.canvas.width = 512;
+		GAS.texture.canvas.height = 512;
 		GAS.texture.context = GAS.texture.canvas.getContext("2d");
 
 		// init the HUD and put up a wait message
@@ -70,6 +74,7 @@ var GAS = {
 			// this function is called when resource load is complete
 			
 			// allow game objects to process loaded resources
+			GAS.clouds.process();
 			
 			// schedule animation frame functions
 			SOAR.schedule(GAS.update, 0, true);
@@ -94,7 +99,7 @@ var GAS = {
 		
 		// while waiting for resource load, initialize game objects
 		GAS.player.init();
-		GAS.skybox.init();
+		GAS.clouds.init();
 	},
 	
 	/**
@@ -120,13 +125,11 @@ var GAS = {
 	
 	draw: function() {
 		var gl = GAS.display.gl;
-		var skyc = GAS.skybox.SKY_COLOR;
 	
-		gl.clearColor(skyc[0], skyc[1], skyc[2], 1.0);
+		gl.clearColor(0, 0, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
-		GAS.skybox.draw();
-		gl.clear(gl.DEPTH_BUFFER_BIT);
+		GAS.clouds.draw();
 	}
 
 };
