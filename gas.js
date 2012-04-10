@@ -74,7 +74,6 @@ var GAS = {
 			// this function is called when resource load is complete
 			
 			// allow game objects to process loaded resources
-			GAS.clouds.process();
 			
 			// schedule animation frame functions
 			SOAR.schedule(GAS.update, 0, true);
@@ -100,6 +99,7 @@ var GAS = {
 		// while waiting for resource load, initialize game objects
 		GAS.player.init();
 		GAS.clouds.init();
+		GAS.plants.init();
 	},
 	
 	/**
@@ -130,6 +130,9 @@ var GAS = {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
 		GAS.clouds.draw();
+		gl.clear(gl.DEPTH_BUFFER_BIT);
+		
+		GAS.plants.draw();
 	}
 
 };

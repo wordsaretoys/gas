@@ -32,9 +32,9 @@ GAS.clouds = {
 		this.mesh.add(this.shader.texturec, 2);
 
 		d = 100;
-		k = 12;
+		k = 16;
 		
-		SOAR.subdivide(6, -1, -1, 1, 1, 
+		SOAR.subdivide(4, -1, -1, 1, 1, 
 			function(x0, z0, x1, z1, x2, z2) {
 			
 				var y0 = (1 - x0 * x0) * (1 - z0 * z0);
@@ -45,9 +45,9 @@ GAS.clouds = {
 				that.mesh.set(d * x1, k * y1 - 8, d * z1, 0.5 * (1 + x1), 0.5 * (1 + z1));
 				that.mesh.set(d * x2, k * y2 - 8, d * z2, 0.5 * (1 + x2), 0.5 * (1 + z2));
 				
-				that.mesh.set(d * x0, 0.5 * k * y0 - 8, d * z0, -0.5 * (1 + x0), -0.5 * (1 + z0));
-				that.mesh.set(d * x2, 0.5 * k * y2 - 8, d * z2, -0.5 * (1 + x2), -0.5 * (1 + z2));
-				that.mesh.set(d * x1, 0.5 * k * y1 - 8, d * z1, -0.5 * (1 + x1), -0.5 * (1 + z1));
+				that.mesh.set(d * x0, 0.25 * k * y0 - 8, d * z0, -0.5 * (1 + x0), -0.5 * (1 + z0));
+				that.mesh.set(d * x2, 0.25 * k * y2 - 8, d * z2, -0.5 * (1 + x2), -0.5 * (1 + z2));
+				that.mesh.set(d * x1, 0.25 * k * y1 - 8, d * z1, -0.5 * (1 + x1), -0.5 * (1 + z1));
 
 			});
 			
@@ -60,22 +60,22 @@ GAS.clouds = {
 
 		var i;
 		ctx.globalCompositeOperation = "lighter";
-		ctx.fillStyle = "rgb(4, 3, 3)";
-		for (i = 0; i < 5000; i++) {
+		ctx.fillStyle = "rgb(6, 4, 4)";
+		for (i = 0; i < 3000; i++) {
 			ctx.beginPath();
-			ctx.arc(w * Math.random(), h * Math.random(), 15, 0, SOAR.PIMUL2, false);
+			ctx.arc(w * Math.random(), h * Math.random(), 16, 0, SOAR.PIMUL2, false);
 			ctx.fill();
 		}
-		ctx.fillStyle = "rgb(3, 4, 3)";
-		for (i = 0; i < 5000; i++) {
+		ctx.fillStyle = "rgb(4, 6, 4)";
+		for (i = 0; i < 3000; i++) {
 			ctx.beginPath();
-			ctx.arc(w * Math.random(), h * Math.random(), 15, 0, SOAR.PIMUL2, false);
+			ctx.arc(w * Math.random(), h * Math.random(), 16, 0, SOAR.PIMUL2, false);
 			ctx.fill();
 		}
-		ctx.fillStyle = "rgb(3, 3, 4)";
-		for (i = 0; i < 5000; i++) {
+		ctx.fillStyle = "rgb(4, 4, 6)";
+		for (i = 0; i < 3000; i++) {
 			ctx.beginPath();
-			ctx.arc(w * Math.random(), h * Math.random(), 15, 0, SOAR.PIMUL2, false);
+			ctx.arc(w * Math.random(), h * Math.random(), 16, 0, SOAR.PIMUL2, false);
 			ctx.fill();
 		}
 
