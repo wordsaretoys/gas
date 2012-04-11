@@ -7,7 +7,7 @@
 
 GAS.weeds = {
 
-	SYMMETRY: 8,
+	SYMMETRY: 11,
 
 	texture: {},
 
@@ -39,14 +39,14 @@ GAS.weeds = {
 		var f = SOAR.vector.create(0, 0, -1);
 		var r = SOAR.vector.create(-1, 0, 0);
 		var d = SOAR.vector.create();
-		for (i = 0, j = 0; i < 100000; i++) {
+		for (i = 0, j = 0; i < 20000; i++) {
 		
 			this.mesh.set(p.x - 0.05 * r.x, p.y - 0.05 * r.y, p.z - 0.05 * r.z, i % 2, 0);
 			this.mesh.set(p.x + 0.05 * r.x, p.y + 0.05 * r.y, p.z + 0.05 * r.z, i % 2, 1);
 
-			p.x += 0.1 * f.x;
-			p.y += 0.1 * f.y;
-			p.z += 0.1 * f.z;
+			p.x += f.x;
+			p.y += f.y;
+			p.z += f.z;
 			
 			f.x += 0.5 * (Math.random() - Math.random());
 			f.y += 0.5 * (Math.random() - Math.random());
@@ -65,7 +65,7 @@ GAS.weeds = {
 				f.add(d);
 			}
 
-			if (p.length() > 24) {
+			if (p.length() > 50) {
 				d.copy(p).norm().neg().mul(0.5);
 				f.add(d);
 			}
@@ -75,31 +75,18 @@ GAS.weeds = {
 		
 		var ctx = GAS.texture.context;
 		var w = 256;
-		var h = 256;
+		var h = 32;
 		ctx.clearRect(0, 0, w, h);
 		ctx.globalCompositeOperation = "source-over";
 
-		ctx.fillStyle = "rgba(0, 0, 128, 0.5)";
-		ctx.fillRect(0, 0, w, h);
-
 		var sp, x, y;
-		for (i = 0; i < 50; i++) {
-			x = GAS.random(16, w - 16);
-			y = GAS.random(16, h - 16);
-			sp = ctx.createRadialGradient(x + 4, y + 4, 8, x, y, 16);
-			sp.addColorStop(0, "rgb(255, 255, 0)");
-			sp.addColorStop(0.9, "rgb(192, 192, 0)");
-			sp.addColorStop(1, "rgba(192, 192, 0, 0)");
-			ctx.fillStyle = sp;
-			ctx.fillRect(0, 0, w, h);
-		}
-		for (i = 0; i < 100; i++) {
-			x = GAS.random(8, w - 8);
-			y = GAS.random(8, h - 8);
+		for (i = 0; i < 1000; i++) {
+			x = GAS.random(0, w);
+			y = GAS.random(6, h - 6);
 			sp = ctx.createRadialGradient(x + 2, y + 2, 4, x, y, 8);
-			sp.addColorStop(0, "rgb(0, 255, 0)");
-			sp.addColorStop(0.9, "rgb(0, 192, 0)");
-			sp.addColorStop(1, "rgba(0, 192, 0, 0)");
+			sp.addColorStop(0, "rgb(64, 192, 64)");
+			sp.addColorStop(0.9, "rgb(16, 64, 16)");
+			sp.addColorStop(1, "rgba(16, 64, 16, 0)");
 			ctx.fillStyle = sp;
 			ctx.fillRect(0, 0, w, h);
 		}
