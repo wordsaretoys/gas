@@ -10,7 +10,7 @@ GAS.player = {
 
 	SPIN_RATE: 0.007,
 
-	NORMAL_SPEED: 4,
+	NORMAL_SPEED: 2,
 	SPRINT_SPEED: 10,
 
 	RADIUS: 1.5,
