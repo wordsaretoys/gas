@@ -22,7 +22,7 @@
 		<script type="text/javascript" src="/debug/gas/hud.js"></script>
 		<script type="text/javascript" src="/debug/gas/player.js"></script>
 		<script type="text/javascript" src="/debug/gas/clouds.js"></script>
-		<script type="text/javascript" src="/debug/gas/plants.js"></script>
+		<script type="text/javascript" src="/debug/gas/weeds.js"></script>
 		
 <?php
 include("gas.glsl");

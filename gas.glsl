@@ -52,8 +52,11 @@ void main(void) {
 	float a = clamp((color.r + color.g + color.b) / 2.0, 0.0, 1.0);
 	float r = 2.0 * length(abs(uv) - 0.5);
 	float alpha = (1.0 - r);
-	if (uv.y > 0.0)
-		alpha = a * alpha;
+	if (uv.y > 0.0) {
+		float m = pow(r, 0.25);
+		alpha = mix(1.0, a * alpha, m);
+		color = mix(vec3(1.0, 1.0, 1.0), color, m);
+	}
 	gl_FragColor = vec4(color, alpha);
 }
 
@@ -110,6 +113,13 @@ varying vec2 uv;
 
 void main(void) {
 	gl_FragColor = texture2D(noise, uv);
+/*
+	if (uv.x < 0.1 || uv.x > 0.9 || uv.y < 0.1 || uv.y > 0.9) {
+		gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+	} else {
+		gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+	}
+*/
 }
 
 </script>

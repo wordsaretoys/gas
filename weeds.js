@@ -1,11 +1,11 @@
 /**
-	generate and display the ribbon plants
+	maintain a section of space sargassum
 	
 	@namespace GAS
-	@class plants
+	@class weeds
 **/
 
-GAS.plants = {
+GAS.weeds = {
 
 	texture: {},
 	
@@ -32,23 +32,35 @@ GAS.plants = {
 		this.mesh.add(this.shader.texturec, 2);
 		
 		var p = SOAR.vector.create();
-		var c = SOAR.freeRotor.create();
-		c.turn(0, 0, 0);
-		var fr = c.orientation.front;
-		var rt = c.orientation.right;
+		var f = SOAR.vector.create(0, 0, -1);
+		var r = SOAR.vector.create(-1, 0, 0);
+		var d = SOAR.vector.create();
 		for (i = 0, j = 0; i < 100000; i++) {
 		
-			this.mesh.set(p.x + 0.5 * rt.x, p.y + 0.5 * rt.y, p.z + 0.5 * rt.z, (i % 256) / 16, 0);
-			this.mesh.set(p.x - 0.5 * rt.x, p.y - 0.5 * rt.y, p.z - 0.5 * rt.z, (i % 256) / 16, 1);
-			//p.add(fr);
-			p.x += fr.x * 0.1;
-			p.y += fr.y * 0.1;
-			p.z += fr.z * 0.1;
+			this.mesh.set(p.x - 0.25 * r.x, p.y - 0.25 * r.y, p.z - 0.25 * r.z, i % 2, 0);
+			this.mesh.set(p.x + 0.25 * r.x, p.y + 0.25 * r.y, p.z + 0.25 * r.z, i % 2, 1);
+
+			p.x += 0.5 * f.x;
+			p.y += 0.5 * f.y;
+			p.z += 0.5 * f.z;
 			
-			c.turn( 0.1 * (Math.random() - Math.random()),
-				0.1 * (Math.random() - Math.random()),
-				0.1 * (Math.random() - Math.random()) );
+			f.x += 0.5 * (Math.random() - Math.random());
+			f.y += 0.5 * (Math.random() - Math.random());
+			f.z += 0.5 * (Math.random() - Math.random());
 			
+			f.norm();
+
+			r.x += 0.01 * (Math.random() - Math.random());
+			r.y += 0.01 * (Math.random() - Math.random());
+			r.z += 0.01 * (Math.random() - Math.random());
+			
+			r.cross(f).cross(f).cross(f).cross(f).norm();
+			
+			if (p.length() > 50) {
+				d.copy(p).norm().neg().mul(0.1);
+				f.add(d);
+			}
+
 		}
 		this.mesh.build();
 		
@@ -57,13 +69,15 @@ GAS.plants = {
 		var h = 256;
 		ctx.clearRect(0, 0, w, h);
 		ctx.globalCompositeOperation = "source-over";
-		ctx.fillStyle = "rgb(0, 255, 0)";
+		ctx.fillStyle = "rgb(255, 255, 0)";
 		ctx.fillRect(0, 0, w, h);
 		ctx.strokeStyle = "rgb(0, 0, 0)";
 		ctx.lineWidth = 2;
+		ctx.fillStyle = "rgb(0, 192, 0)";
 		for (i = 0; i < 1000; i++) {
 			ctx.beginPath();
-			ctx.arc(w * Math.random(), h * Math.random(), 5, 0, SOAR.PIMUL2, false);
+			ctx.arc(w * Math.random(), h * Math.random(), 6, 0, SOAR.PIMUL2, false);
+			ctx.fill();
 			ctx.stroke();
 		}
 

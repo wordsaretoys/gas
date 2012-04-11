@@ -13,10 +13,6 @@ var GAS = {
 		noise1: {
 			type: "image",
 			path: "res/noise1.jpg"
-		},
-		noise2: {
-			type: "image",
-			path: "res/noise2.jpg"
 		}
 	},
 	
@@ -99,7 +95,7 @@ var GAS = {
 		// while waiting for resource load, initialize game objects
 		GAS.player.init();
 		GAS.clouds.init();
-		GAS.plants.init();
+		GAS.weeds.init();
 	},
 	
 	/**
@@ -132,7 +128,7 @@ var GAS = {
 		GAS.clouds.draw();
 		gl.clear(gl.DEPTH_BUFFER_BIT);
 		
-		GAS.plants.draw();
+		GAS.weeds.draw();
 	}
 
 };
