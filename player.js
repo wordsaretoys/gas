@@ -109,7 +109,6 @@ GAS.player = {
 		this.constrain();
 		this.position.add(this.velocity);
 		
-		// TODO: adjust for eye position being at half-radius * front??
 		camera.position.copy(this.position);
 	},
 	

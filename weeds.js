@@ -35,7 +35,7 @@ GAS.weeds = {
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 		
-		var p = SOAR.vector.create(0, 0, 0);
+		var p = SOAR.vector.create(24, 0, 0);
 		var f = SOAR.vector.create(0, 0, -1);
 		var r = SOAR.vector.create(-1, 0, 0);
 		var d = SOAR.vector.create();
@@ -60,11 +60,16 @@ GAS.weeds = {
 			
 			r.cross(f).cross(f).cross(f).cross(f).norm();
 			
-			if (p.length() > 25) {
-				d.copy(p).norm().neg().mul(0.5);
+			if (p.length() < 12) {
+				d.copy(p).norm().mul(0.5);
 				f.add(d);
 			}
 
+			if (p.length() > 24) {
+				d.copy(p).norm().neg().mul(0.5);
+				f.add(d);
+			}
+			
 		}
 		this.mesh.build();
 		
@@ -73,25 +78,30 @@ GAS.weeds = {
 		var h = 256;
 		ctx.clearRect(0, 0, w, h);
 		ctx.globalCompositeOperation = "source-over";
-		ctx.fillStyle = "rgb(192, 192, 192)";
+
+		ctx.fillStyle = "rgba(0, 0, 128, 0.5)";
 		ctx.fillRect(0, 0, w, h);
-		ctx.fillStyle = "rgb(32, 64, 255)";
-		ctx.fillRect(8, 8, w - 16, h - 16);
-		ctx.strokeStyle = "rgb(0, 0, 0)";
-		ctx.lineWidth = 2;
-		ctx.fillStyle = "rgb(192, 192, 0)";
-		for (i = 0; i < 250; i++) {
-			ctx.beginPath();
-			ctx.arc(GAS.random(32, w - 32), GAS.random(32, h - 32), 16, 0, SOAR.PIMUL2, false);
-			ctx.fill();
-			ctx.stroke();
+
+		var sp, x, y;
+		for (i = 0; i < 50; i++) {
+			x = GAS.random(16, w - 16);
+			y = GAS.random(16, h - 16);
+			sp = ctx.createRadialGradient(x + 4, y + 4, 8, x, y, 16);
+			sp.addColorStop(0, "rgb(255, 255, 0)");
+			sp.addColorStop(0.9, "rgb(192, 192, 0)");
+			sp.addColorStop(1, "rgba(192, 192, 0, 0)");
+			ctx.fillStyle = sp;
+			ctx.fillRect(0, 0, w, h);
 		}
-		ctx.fillStyle = "rgb(0, 192, 0)";
-		for (i = 0; i < 500; i++) {
-			ctx.beginPath();
-			ctx.arc(GAS.random(16, w - 16), GAS.random(16, h - 16), 4, 0, SOAR.PIMUL2, false);
-			ctx.fill();
-			ctx.stroke();
+		for (i = 0; i < 100; i++) {
+			x = GAS.random(8, w - 8);
+			y = GAS.random(8, h - 8);
+			sp = ctx.createRadialGradient(x + 2, y + 2, 4, x, y, 8);
+			sp.addColorStop(0, "rgb(0, 255, 0)");
+			sp.addColorStop(0.9, "rgb(0, 192, 0)");
+			sp.addColorStop(1, "rgba(0, 192, 0, 0)");
+			ctx.fillStyle = sp;
+			ctx.fillRect(0, 0, w, h);
 		}
 
 		this.texture.noise = SOAR.texture.create(GAS.display, ctx.getImageData(0, 0, w, h));
@@ -110,6 +120,9 @@ GAS.weeds = {
 		var camera = GAS.player.camera;
 		var i, r;
 
+		gl.enable(gl.BLEND);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+		
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
@@ -122,6 +135,9 @@ GAS.weeds = {
 			this.mesh.draw();
 			this.rotor.turn(0, r, 0);
 		}
+		
+		gl.disable(gl.BLEND);
+		
 	}
 
 };
