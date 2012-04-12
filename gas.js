@@ -96,6 +96,7 @@ var GAS = {
 		GAS.player.init();
 		GAS.clouds.init();
 		GAS.weeds.init();
+		GAS.ejecta.init();
 	},
 	
 	/**
@@ -106,6 +107,7 @@ var GAS = {
 	
 	update: function() {
 		GAS.player.update();
+		GAS.ejecta.update();
 	},
 
 	/**
@@ -129,6 +131,7 @@ var GAS = {
 		gl.clear(gl.DEPTH_BUFFER_BIT);
 		
 		GAS.weeds.draw();
+		GAS.ejecta.draw();
 	}
 
 };

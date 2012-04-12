@@ -118,3 +118,44 @@ void main(void) {
 }
 
 </script>
+
+<script id="vs-ejecta" type="x-shader/x-vertex">
+
+/**
+	ejecta vertex shader
+	O' = P * V * O transformation
+	
+	@param position vertex array of positions
+	
+	@param projector projector matrix
+	@param modelview modelview matrix
+	@param center center of distribution
+	
+**/
+
+attribute vec3 position;
+
+uniform mat4 projector;
+uniform mat4 modelview;
+uniform vec3 center;
+
+void main(void) {
+	gl_Position = projector * modelview * vec4(position + center, 1.0);
+}
+
+</script>
+
+<script id="fs-ejecta" type="x-shader/x-fragment">
+
+/**
+	ejecta fragment shader
+
+**/
+
+precision mediump float;
+
+void main(void) {
+	gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+}
+
+</script>

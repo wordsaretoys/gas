@@ -7,7 +7,9 @@
 
 GAS.weeds = {
 
-	SYMMETRY: 11,
+	MAX_RADIUS: 50,
+	MIN_RADIUS: 12,
+	SYMMETRY: 8,
 
 	texture: {},
 
@@ -60,12 +62,12 @@ GAS.weeds = {
 			
 			r.cross(f).cross(f).cross(f).cross(f).norm();
 			
-			if (p.length() < 12) {
+			if (p.length() < this.MIN_RADIUS) {
 				d.copy(p).norm().mul(0.5);
 				f.add(d);
 			}
 
-			if (p.length() > 50) {
+			if (p.length() > this.MAX_RADIUS) {
 				d.copy(p).norm().neg().mul(0.5);
 				f.add(d);
 			}
@@ -107,8 +109,8 @@ GAS.weeds = {
 		var camera = GAS.player.camera;
 		var i, r;
 
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+//		gl.enable(gl.BLEND);
+//		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 		
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
@@ -123,7 +125,7 @@ GAS.weeds = {
 			this.rotor.turn(0, r, 0);
 		}
 		
-		gl.disable(gl.BLEND);
+//		gl.disable(gl.BLEND);
 		
 	}
 
