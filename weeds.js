@@ -8,10 +8,8 @@
 GAS.weeds = {
 
 	MAX_RADIUS: 50,
-	MIN_RADIUS: 12,
+	MIN_RADIUS: 45,
 	SYMMETRY: 8,
-
-	texture: {},
 
 	rotor: SOAR.freeRotor.create(),
 	
@@ -30,18 +28,18 @@ GAS.weeds = {
 			SOAR.textOf("vs-plant"), SOAR.textOf("fs-plant"),
 			["position", "texturec"], 
 			["projector", "modelview", "rotations"],
-			["noise"]
+			["skin"]
 		);
 		
 		this.mesh = SOAR.mesh.create(GAS.display, GAS.display.gl.TRIANGLE_STRIP);
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 		
-		var p = SOAR.vector.create(24, 0, 0);
+		var p = SOAR.vector.create(this.MIN_RADIUS, 0, 0);
 		var f = SOAR.vector.create(0, 0, -1);
 		var r = SOAR.vector.create(-1, 0, 0);
 		var d = SOAR.vector.create();
-		for (i = 0, j = 0; i < 20000; i++) {
+		for (i = 0, j = 0; i < 30000; i++) {
 		
 			this.mesh.set(p.x - 0.05 * r.x, p.y - 0.05 * r.y, p.z - 0.05 * r.z, i % 2, 0);
 			this.mesh.set(p.x + 0.05 * r.x, p.y + 0.05 * r.y, p.z + 0.05 * r.z, i % 2, 1);
@@ -79,21 +77,22 @@ GAS.weeds = {
 		var w = 256;
 		var h = 32;
 		ctx.clearRect(0, 0, w, h);
-		ctx.globalCompositeOperation = "source-over";
-
+		ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
+		ctx.fillRect(0, 0, w, h);
+		
 		var sp, x, y;
 		for (i = 0; i < 1000; i++) {
-			x = GAS.random(0, w);
-			y = GAS.random(6, h - 6);
+			x = GAS.random(16, w - 16);
+			y = GAS.random(12, h - 12);
 			sp = ctx.createRadialGradient(x + 2, y + 2, 4, x, y, 8);
-			sp.addColorStop(0, "rgb(64, 192, 64)");
-			sp.addColorStop(0.9, "rgb(16, 64, 16)");
-			sp.addColorStop(1, "rgba(16, 64, 16, 0)");
+			sp.addColorStop(0, "rgb(128, 192, 64)");
+			sp.addColorStop(0.9, "rgb(32, 64, 16)");
+			sp.addColorStop(1, "rgba(32, 64, 16, 0)");
 			ctx.fillStyle = sp;
 			ctx.fillRect(0, 0, w, h);
 		}
 
-		this.texture.noise = SOAR.texture.create(GAS.display, ctx.getImageData(0, 0, w, h));
+		this.skin = SOAR.texture.create(GAS.display, ctx.getImageData(0, 0, w, h));
 		
 	},
 
@@ -109,13 +108,13 @@ GAS.weeds = {
 		var camera = GAS.player.camera;
 		var i, r;
 
-//		gl.enable(gl.BLEND);
-//		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+		gl.enable(gl.BLEND);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 		
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
-		this.texture.noise.bind(0, shader.noise);
+		this.skin.bind(0, shader.skin);
 		
 		this.rotor.rotation.set(0, 0, 0, 1);
 		this.rotor.turn(0, 0, 0);
@@ -125,7 +124,7 @@ GAS.weeds = {
 			this.rotor.turn(0, r, 0);
 		}
 		
-//		gl.disable(gl.BLEND);
+		gl.disable(gl.BLEND);
 		
 	}
 

@@ -101,7 +101,7 @@ void main(void) {
 /**
 	plant fragment shader
 
-	@param noise	noise texture
+	@param skin		texture for each cell
 	
 	@param uv		texture coordinates of fragment
 	
@@ -109,12 +109,12 @@ void main(void) {
 
 precision mediump float;
 
-uniform sampler2D noise;
+uniform sampler2D skin;
 
 varying vec2 uv;
 
 void main(void) {
-	gl_FragColor = texture2D(noise, uv);
+	gl_FragColor = texture2D(skin, uv);
 }
 
 </script>
@@ -159,3 +159,144 @@ void main(void) {
 }
 
 </script>
+
+<script id="vs-clump" type="x-shader/x-vertex">
+
+/**
+	clump vertex shader
+	O' = P * V * R * O transformation, plus texture coordinates
+	
+	@param position vertex array of positions
+	@param texturec vertex array of texture coordinates
+	
+	@param projector projector matrix
+	@param modelview modelview matrix
+	@param modelview rotations matrix
+	
+	(passed to fragment shader for each vertex)
+	@param uv		texture coordinates of fragment
+	
+**/
+
+attribute vec3 position;
+attribute vec2 texturec;
+
+uniform mat4 projector;
+uniform mat4 modelview;
+uniform mat4 rotations;
+
+varying vec2 uv;
+
+void main(void) {
+	gl_Position = projector * modelview * rotations * vec4(position, 1.0);
+	uv = texturec;
+}
+
+</script>
+
+<script id="fs-clump" type="x-shader/x-fragment">
+
+/**
+	clump fragment shader
+
+	@param skin		texture for each clump
+	
+	@param uv		texture coordinates of fragment
+	
+**/
+
+precision mediump float;
+
+uniform sampler2D skin;
+
+varying vec2 uv;
+
+void main(void) {
+	gl_FragColor = texture2D(skin, uv);
+}
+
+</script>
+
+<script id="vs-paddler" type="x-shader/x-vertex">
+
+/**
+	paddler vertex shader
+	O' = P * V * (M * O + c) transformation, plus texture coordinates
+	
+	@param position vertex array of positions
+	@param texturec vertex array of texture coordinates
+	
+	@param projector projector matrix
+	@param modelview modelview matrix
+	@param rotations rotations matrix
+	@param center model center vector
+	@param time time base for vertex animations
+	
+	(passed to fragment shader for each vertex)
+	@param uv		texture coordinates of fragment
+	@param object	fragment position in object space
+	
+**/
+
+attribute vec3 position;
+attribute vec2 texturec;
+
+uniform mat4 projector;
+uniform mat4 modelview;
+uniform mat4 rotations;
+uniform vec3 center;
+uniform float time;
+
+varying vec2 uv;
+varying vec3 object;
+
+void main(void) {
+	// create paddling motions
+	vec3 pos = position;
+	pos.y += 25.0 * pow(0.5 * abs(pos.x), 4.0) * sin(time);
+	pos.z += 25.0 * pow(0.5 * abs(pos.x), 4.0) * cos(time);
+	
+	// transform the vertex
+	vec4 rotpos = rotations * vec4(pos, 1.0) + vec4(center, 0.0);
+	vec4 mvpos = modelview * rotpos;
+	gl_Position = projector * mvpos;
+	uv = texturec;
+	object = position;
+}
+
+</script>
+
+<script id="fs-paddler" type="x-shader/x-fragment">
+
+/**
+	paddler fragment shader
+	
+	@param face		standard face texture
+	@param skin		specific skin texture
+	@param light	light value for entire body
+
+	@param uv		texture coordinates of fragment
+	@param object	fragment position in object space
+	
+**/
+
+precision mediump float;
+
+uniform sampler2D face;
+uniform sampler2D skin;
+
+varying vec2 uv;
+varying vec3 object;
+
+void main(void) {
+	vec4 skinColor = texture2D(skin, uv);
+	vec4 faceColor = texture2D(face, uv);
+	// apply face to top half only
+	if (object.y >= 0.0) {
+		skinColor.rgb = mix(skinColor.rgb, faceColor.rgb, faceColor.a);
+	}
+	gl_FragColor = vec4(skinColor.rgb, 1.0);
+}
+
+</script>
+

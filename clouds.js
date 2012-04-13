@@ -78,6 +78,7 @@ GAS.clouds = {
 			ctx.arc(w * Math.random(), h * Math.random(), 16, 0, SOAR.PIMUL2, false);
 			ctx.fill();
 		}
+		ctx.globalCompositeOperation = "source-over";
 
 		this.texture.noise = SOAR.texture.create(GAS.display, ctx.getImageData(0, 0, w, h));
 	},
