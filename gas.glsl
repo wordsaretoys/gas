@@ -248,7 +248,6 @@ uniform vec3 center;
 uniform float time;
 
 varying vec2 uv;
-varying vec3 object;
 
 void main(void) {
 	// create paddling motions
@@ -261,7 +260,6 @@ void main(void) {
 	vec4 mvpos = modelview * rotpos;
 	gl_Position = projector * mvpos;
 	uv = texturec;
-	object = position;
 }
 
 </script>
@@ -271,9 +269,7 @@ void main(void) {
 /**
 	paddler fragment shader
 	
-	@param face		standard face texture
 	@param skin		specific skin texture
-	@param light	light value for entire body
 
 	@param uv		texture coordinates of fragment
 	@param object	fragment position in object space
@@ -282,20 +278,12 @@ void main(void) {
 
 precision mediump float;
 
-uniform sampler2D face;
 uniform sampler2D skin;
 
 varying vec2 uv;
-varying vec3 object;
 
 void main(void) {
-	vec4 skinColor = texture2D(skin, uv);
-	vec4 faceColor = texture2D(face, uv);
-	// apply face to top half only
-	if (object.y >= 0.0) {
-		skinColor.rgb = mix(skinColor.rgb, faceColor.rgb, faceColor.a);
-	}
-	gl_FragColor = vec4(skinColor.rgb, 1.0);
+	gl_FragColor = texture2D(skin, uv);
 }
 
 </script>

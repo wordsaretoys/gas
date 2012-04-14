@@ -13,10 +13,14 @@
 
 GAS.paddlers = {
 
-	MAX_COUNT: 8,
+	MAX_COUNT: 5,
 	SHAPE: [0, 0.25, 0.8, 0.9, 0.7, 0.4, 0.6, 0.4],
 
 	list: [],
+	
+	scratch: {
+		vel: SOAR.vector.create()
+	},
 
 	/**
 		create and init required objects
@@ -32,13 +36,11 @@ GAS.paddlers = {
 			SOAR.textOf("vs-paddler"), SOAR.textOf("fs-paddler"),
 			["position", "texturec"], 
 			["projector", "modelview", "rotations", "center", "time"],
-			["face", "skin"]
+			["skin"]
 		);
 
 		this.mesh = this.makeMesh();
 		
-		this.makeFace();
-
 		for (i = 0, il = this.MAX_COUNT; i < il; i++) {
 			p = {
 				skin: this.makeSkin(),
@@ -52,51 +54,11 @@ GAS.paddlers = {
 				Math.random() - Math.random(), 
 				Math.random() - Math.random() )
 			.norm()
-			.mul(5);
+			.mul(2);
 			
 			this.list.push(p);
 		}
 
-	},
-	
-	/**
-		generate a face texture
-		
-		the face texture allows us to have one single resource
-		rather than creating an additional texture for each of
-		the paddlers. it's blended into the skin texture right
-		inside the fragment shader.
-		
-		@method makeFace
-	**/
-	
-	makeFace: function() {
-		var ctx = GAS.texture.context;
-		var w = GAS.texture.canvas.width;
-		var h = GAS.texture.canvas.height;
-		
-		ctx.clearRect(0, 0, w, h);
-
-		ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-		ctx.fillRect(0, 0, w, h);
-		
-		// draw mouth
-		ctx.fillStyle = "rgba(0, 0, 0, 1)";
-		ctx.fillRect(0, h - 10, w, 10);
-		// draw eye spot (duplicated by mirroring)
-		ctx.fillStyle = "rgba(255, 255, 255, 1)";
-		ctx.beginPath();
-		ctx.arc(20, h - 20, 5, 0, SOAR.PIMUL2, false);
-		ctx.fill();
-		ctx.fillStyle = "rgba(0, 0, 0, 1)";
-		ctx.beginPath();
-		ctx.arc(20, h - 20, 4, 0, SOAR.PIMUL2, false);
-		ctx.fill();
-	
-		this.faceTexture = SOAR.texture.create(
-			GAS.display, 
-			ctx.getImageData(0, 0, w, h)
-		);
 	},
 	
 	/**
@@ -108,10 +70,11 @@ GAS.paddlers = {
 	
 	makeSkin: function() {
 		var ctx = GAS.texture.context;
-		var w = GAS.texture.canvas.width;
-		var h = GAS.texture.canvas.height;
+		var w = 512;
+		var h = 256;
 		var hw = w * 0.5;
 		var hh = h * 0.5;
+		var qw = hw * 0.5;
 		var r, g, b, base, coat;
 		var i, x, y, s, hs;
 
@@ -125,14 +88,68 @@ GAS.paddlers = {
 		ctx.fillStyle = base;
 		ctx.fillRect(0, 0, w, h);
 		
+		// top half is darker
+		ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+		ctx.fillRect(0, 0, hw, h);
+
+		// add symmetric spots
 		ctx.fillStyle = coat;
-		for (i = 0; i < 150; i++) {
-			s = GAS.random(8, 16);
-			x = GAS.random(0, hw);
-			y = GAS.random(0, h);
-			ctx.fillRect(x, y, s, s);
-			ctx.strokeRect(x, y, s, s);
+		ctx.strokeStyle = "rgb(0, 0, 0)";
+		ctx.lineWidth = 2;
+		for (i = 0; i < 100; i++) {
+			s = GAS.random(4, 16);
+			hs = s / 2;
+			x = GAS.random(hs, qw - hs);
+			y = GAS.random(hs, h - hs - 20);
+
+			// left side, top
+			ctx.beginPath();
+			ctx.arc(x, y, hs, 0, SOAR.PIMUL2, false);
+			ctx.fill();
+			ctx.stroke();
+
+			// right side, top
+			ctx.beginPath();
+			ctx.arc(hw - x, y, hs, 0, SOAR.PIMUL2, false);
+			ctx.fill();
+			ctx.stroke();
+
+			// left side, bottom
+			ctx.beginPath();
+			ctx.arc(hw + x, y, hs, 0, SOAR.PIMUL2, false);
+			ctx.fill();
+			ctx.stroke();
+
+			// right side, bottom
+			ctx.beginPath();
+			ctx.arc(w - x, y, hs, 0, SOAR.PIMUL2, false);
+			ctx.fill();
+			ctx.stroke();
+			
 		}
+		
+		// add mouth
+		ctx.fillStyle = "rgb(0, 0, 0)";
+		ctx.fillRect(0, h - 5, w, h);
+		
+		// add eye spots to top only
+		ctx.fillStyle = "rgb(255, 255, 255)";
+		ctx.beginPath();
+		ctx.arc(qw - 20, h - 15, 5, 0, SOAR.PIMUL2, false);
+		ctx.fill();
+		ctx.stroke();
+		ctx.beginPath();
+		ctx.arc(qw + 20, h - 15, 5, 0, SOAR.PIMUL2, false);
+		ctx.fill();
+		ctx.stroke();
+		
+		ctx.fillStyle = "rgb(0, 0, 0)";
+		ctx.beginPath();
+		ctx.arc(qw - 20, h - 15, 2, 0, SOAR.PIMUL2, false);
+		ctx.fill();
+		ctx.beginPath();
+		ctx.arc(qw + 20, h - 15, 2, 0, SOAR.PIMUL2, false);
+		ctx.fill();
 
 		return SOAR.texture.create(
 			GAS.display, 
@@ -162,6 +179,7 @@ GAS.paddlers = {
 			function(x0, z0, x1, z1, x2, z2) {
 				var y0, y1, y2;
 				var tz0, tz1, tz2;
+				var tx0, tx1, tx2;
 				var r0, r1, r2;
 			
 				tz0 = z0 + 0.5;
@@ -172,21 +190,25 @@ GAS.paddlers = {
 				r1 = Math.sqrt(shaper.get(tz1));
 				r2 = Math.sqrt(shaper.get(tz2));
 				
-				y0 = 0.25 * r0 * Math.pow(Math.cos(x0 * Math.PI), 4);
-				y1 = 0.25 * r1 * Math.pow(Math.cos(x1 * Math.PI), 4);
-				y2 = 0.25 * r2 * Math.pow(Math.cos(x2 * Math.PI), 4);
+				y0 = 0.25 * r0 * Math.cos(x0 * Math.PI);
+				y1 = 0.25 * r1 * Math.cos(x1 * Math.PI);
+				y2 = 0.25 * r2 * Math.cos(x2 * Math.PI);
 				
 				x0 = 1.5 * x0 * r0;
 				x1 = 1.5 * x1 * r1;
 				x2 = 1.5 * x2 * r2;
 				
-				mesh.set(x0, y0, z0, Math.abs(x0), tz0);
-				mesh.set(x1, y1, z1, Math.abs(x1), tz1);
-				mesh.set(x2, y2, z2, Math.abs(x2), tz2);
+				tx0 = 0.5 * (x0 + 0.5);
+				tx1 = 0.5 * (x1 + 0.5);
+				tx2 = 0.5 * (x2 + 0.5);
+				
+				mesh.set(x0, y0, z0, tx0, tz0);
+				mesh.set(x1, y1, z1, tx1, tz1);
+				mesh.set(x2, y2, z2, tx2, tz2);
 
-				mesh.set(x0, -y0, z0, Math.abs(x0), tz0);
-				mesh.set(x2, -y2, z2, Math.abs(x2), tz2);
-				mesh.set(x1, -y1, z1, Math.abs(x1), tz1);
+				mesh.set(x0, -0.5 * y0, z0, tx0 + 0.5, tz0);
+				mesh.set(x2, -0.5 * y2, z2, tx2 + 0.5, tz2);
+				mesh.set(x1, -0.5 * y1, z1, tx1 + 0.5, tz1);
 			}
 		);
 	
@@ -209,9 +231,12 @@ GAS.paddlers = {
 		for (i = 0, il = this.list.length; i < il; i++) {
 		
 			p = this.list[i];
-		
+			
 			c = p.center;
 			o = p.rotor.orientation;
+			
+			this.scratch.vel.copy(o.front).mul(0.01);
+//			p.center.add(this.scratch.vel);
 
 		}
 	},
@@ -236,7 +261,6 @@ GAS.paddlers = {
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
-		this.faceTexture.bind(0, shader.face);
 
 		for (i = 0, il = this.list.length; i < il; i++) {
 			p = this.list[i];
@@ -245,7 +269,7 @@ GAS.paddlers = {
 			gl.uniformMatrix4fv(shader.rotations, false, p.rotor.matrix.transpose);
 			gl.uniform3f(shader.center, center.x, center.y, center.z);
 			gl.uniform1f(shader.time, time);
-			p.skin.bind(1, shader.skin);
+			p.skin.bind(0, shader.skin);
 			this.mesh.draw();
 		}
 		
