@@ -128,9 +128,9 @@ GAS.paddlers = {
 			
 		}
 		
-		// add mouth
+		// add mouth stripe
 		ctx.fillStyle = "rgb(0, 0, 0)";
-		ctx.fillRect(0, h - 5, w, h);
+		ctx.fillRect(0, h - 4, w, h);
 		
 		// add eye spots to top only
 		ctx.fillStyle = "rgb(255, 255, 255)";
@@ -175,7 +175,7 @@ GAS.paddlers = {
 		shaper.interpolate = SOAR.interpolator.linear;
 		shaper.map = new Float32Array(this.SHAPE);
 	
-		SOAR.subdivide(5, -0.5, -0.5, 0.5, 0.5, 
+		SOAR.subdivide(6, -0.5, -0.5, 0.5, 0.5, 
 			function(x0, z0, x1, z1, x2, z2) {
 				var y0, y1, y2;
 				var tz0, tz1, tz2;
@@ -201,6 +201,13 @@ GAS.paddlers = {
 				tx0 = 0.5 * (x0 + 0.5);
 				tx1 = 0.5 * (x1 + 0.5);
 				tx2 = 0.5 * (x2 + 0.5);
+
+				if (tz0 < 0.001)
+					z0 += 0.05;
+				if (tz1 < 0.001)
+					z1 += 0.05;
+				if (tz2 < 0.001)
+					z2 += 0.05;
 				
 				mesh.set(x0, y0, z0, tx0, tz0);
 				mesh.set(x1, y1, z1, tx1, tz1);
@@ -236,7 +243,7 @@ GAS.paddlers = {
 			o = p.rotor.orientation;
 			
 			this.scratch.vel.copy(o.front).mul(0.01);
-//			p.center.add(this.scratch.vel);
+			//p.center.add(this.scratch.vel);
 
 		}
 	},

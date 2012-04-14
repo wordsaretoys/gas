@@ -255,6 +255,11 @@ void main(void) {
 	pos.y += 25.0 * pow(0.5 * abs(pos.x), 4.0) * sin(time);
 	pos.z += 25.0 * pow(0.5 * abs(pos.x), 4.0) * cos(time);
 	
+	// open and close mouth
+	if (pos.z < -0.48) {
+		pos.y = pos.y * abs(sin(time));
+	}
+	
 	// transform the vertex
 	vec4 rotpos = rotations * vec4(pos, 1.0) + vec4(center, 0.0);
 	vec4 mvpos = modelview * rotpos;
