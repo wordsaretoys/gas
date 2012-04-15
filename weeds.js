@@ -58,7 +58,7 @@ GAS.weeds = {
 			r.y += 0.01 * (Math.random() - Math.random());
 			r.z += 0.01 * (Math.random() - Math.random());
 			
-			r.cross(f).cross(f).cross(f).cross(f).norm();
+			r.cross(f).cross(f).neg().norm();
 			
 			if (p.length() < this.MIN_RADIUS) {
 				d.copy(p).norm().mul(0.5);
