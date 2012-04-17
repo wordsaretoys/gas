@@ -80,8 +80,8 @@ GAS.paddlers = {
 
 		ctx.clearRect(0, 0, w, h);
 		r = Math.floor(GAS.random(128, 256));
-		g = Math.floor(GAS.random(128, 256));
-		b = Math.floor(GAS.random(128, 256));
+		g = ((r + 1) * 3) % 256;
+		b = ((g + 1) * 3) % 256;
 		base = "rgb(" + r + ", " + g + ", " + b + ")";
 		coat = "rgb(" + (256 - r) + ", " + (256 - g) + ", " + (256 - b) + ")";
 
@@ -235,7 +235,7 @@ GAS.paddlers = {
 		var c, o;
 		var i, il, p;
 
-		for (i = 0, il = this.list.length; i < il; i++) {
+		for (i = 1, il = this.list.length; i < il; i++) {
 		
 			p = this.list[i];
 			
@@ -273,8 +273,15 @@ GAS.paddlers = {
 			p = this.list[i];
 			center = p.center;
 			time = p.offset + SOAR.elapsedTime * 0.01;
-			gl.uniformMatrix4fv(shader.rotations, false, p.rotor.matrix.transpose);
-			gl.uniform3f(shader.center, center.x, center.y, center.z);
+			if (i === 0) {
+				gl.uniformMatrix4fv(shader.modelview, false, GAS.I);
+				gl.uniformMatrix4fv(shader.rotations, false, GAS.I);
+				gl.uniform3f(shader.center, 0, -0.75, -2);
+			} else {
+				gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
+				gl.uniformMatrix4fv(shader.rotations, false, p.rotor.matrix.transpose);
+				gl.uniform3f(shader.center, center.x, center.y, center.z);
+			}
 			gl.uniform1f(shader.time, time);
 			p.skin.bind(0, shader.skin);
 			this.mesh.draw();

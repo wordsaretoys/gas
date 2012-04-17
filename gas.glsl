@@ -261,7 +261,7 @@ void main(void) {
 	}
 	
 	// transform the vertex
-	vec4 rotpos = rotations * vec4(pos, 1.0) + vec4(center, 0.0);
+	vec4 rotpos = normalize(rotations * vec4(pos, 1.0) + vec4(center, 0.0));
 	vec4 mvpos = modelview * rotpos;
 	gl_Position = projector * mvpos;
 	uv = texturec;

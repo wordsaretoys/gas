@@ -110,6 +110,10 @@ GAS.player = {
 		this.position.add(this.velocity);
 		
 		camera.position.copy(this.position);
+		scratch.direction.copy(camera.orientation.up).mul(0.75);
+		camera.position.add(scratch.direction);
+		scratch.direction.copy(camera.orientation.front).mul(2);
+		camera.position.sub(scratch.direction); 
 	},
 	
 	/**
