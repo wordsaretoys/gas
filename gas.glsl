@@ -90,7 +90,12 @@ uniform mat4 rotations;
 varying vec2 uv;
 
 void main(void) {
-	gl_Position = projector * modelview * rotations * vec4(position, 1.0);
+	vec4 pos = modelview * rotations * vec4(position, 1.0);
+	float f = max(2.0 - distance(vec3(0, -0.75, -2.0), pos.xyz), 0.0);
+	vec3 dir = normalize(pos.xyz);
+	dir.z = dir.y = 0.0;
+	pos = pos + vec4(dir * pow(f, 4.0), 0.0);
+	gl_Position = projector * pos;
 	uv = texturec;
 }
 

@@ -77,6 +77,8 @@ GAS.player = {
 		// align camera to z-axis
 		this.camera.yaw.set(0, 0, 0, 1);
 		this.camera.turn(0, 0, 0);
+		
+		this.position.x = -45;
 	},
 	
 	/**
