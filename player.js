@@ -8,8 +8,6 @@
 
 GAS.player = {
 
-	SPIN_RATE: 0.007,
-
 	NORMAL_SPEED: 2,
 	SPRINT_SPEED: 10,
 
@@ -25,8 +23,14 @@ GAS.player = {
 	
 	mouse: {
 		down: false,
-		x: 0,
-		y: 0,
+		last: {
+			x: 0,
+			y: 0
+		},
+		next: {
+			x: 0,
+			y: 0
+		},
 		invalid: true
 	},
 	
@@ -89,7 +93,15 @@ GAS.player = {
 		var scratch = this.scratch;
 		var motion = this.motion;
 		var camera = this.camera;
+		var mouse = this.mouse;
+		var dx, dy;
 
+		dx = 0.5 * dt * (mouse.next.x - mouse.last.x);
+		dy = 0.5 * dt * (mouse.next.y - mouse.last.y);
+		this.camera.turn(dx, dy);
+		mouse.last.x = mouse.next.x;
+		mouse.last.y = mouse.next.y;
+		
 		scratch.direction.set();
 		if (motion.movefore) {
 			scratch.direction.add(camera.orientation.front);
@@ -201,7 +213,12 @@ GAS.player = {
 	**/
 
 	onMouseDown: function(event) {
-		GAS.player.mouse.down = true;
+		var mouse = GAS.player.mouse;
+		mouse.down = true;
+		mouse.last.x = event.pageX;
+		mouse.last.y = event.pageY;
+		mouse.next.x = event.pageX;
+		mouse.next.y = event.pageY;
 		return false;
 	},
 	
@@ -228,15 +245,10 @@ GAS.player = {
 
 	onMouseMove: function(event) {
 		var that = GAS.player;
-		var dx, dy;
-
 		if (that.mouse.down && SOAR.running && !that.mouse.invalid) {
-			dx = that.SPIN_RATE * (event.pageX - that.mouse.x);
-			dy = that.SPIN_RATE * (event.pageY - that.mouse.y);
-			that.camera.turn(dx, dy);
+			that.mouse.next.x = event.pageX;
+			that.mouse.next.y = event.pageY;
 		}
-		that.mouse.x = event.pageX;
-		that.mouse.y = event.pageY;
 		that.mouse.invalid = false;
 		return false;
 	}
