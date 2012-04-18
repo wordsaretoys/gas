@@ -80,18 +80,11 @@ GAS.weeds = {
 		ctx.fillStyle = "rgba(0, 0, 0, 0.9)";
 		ctx.fillRect(0, 0, w, h);
 		
-		var sp, x, y;
+		ctx.fillStyle = "rgba(128, 255, 64, 0.025)";
 		for (i = 0; i < 1000; i++) {
-			x = GAS.random(16, w - 16);
-			y = GAS.random(12, h - 12);
-			sp = ctx.createRadialGradient(x + 2, y + 2, 4, x, y, 8);
-			sp.addColorStop(0, "rgb(128, 192, 64)");
-			sp.addColorStop(0.9, "rgb(32, 64, 16)");
-			sp.addColorStop(1, "rgba(32, 64, 16, 0)");
-			ctx.fillStyle = sp;
-			ctx.fillRect(0, 0, w, h);
+			ctx.fillRect(GAS.random(16, w - 16) - 8, GAS.random(12, h - 12) - 8, 16, 16);
 		}
-
+		
 		this.skin = SOAR.texture.create(GAS.display, ctx.getImageData(0, 0, w, h));
 		
 	},

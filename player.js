@@ -16,10 +16,7 @@ GAS.player = {
 	position: SOAR.vector.create(),
 	velocity: SOAR.vector.create(),
 	
-	motion: {
-		moveleft: false, moveright: false,
-		movefore: false, moveback: false
-	},
+	paddling: false,
 	
 	mouse: {
 		down: false,
@@ -93,7 +90,6 @@ GAS.player = {
 		var dt = SOAR.interval * 0.001;
 		var speed = (this.sprint) ? this.SPRINT_SPEED : this.NORMAL_SPEED;
 		var scratch = this.scratch;
-		var motion = this.motion;
 		var camera = this.camera;
 		var mouse = this.mouse;
 		var dx, dy;
@@ -104,25 +100,14 @@ GAS.player = {
 		mouse.last.x = mouse.next.x;
 		mouse.last.y = mouse.next.y;
 		
-		scratch.direction.set();
-		if (motion.movefore) {
-			scratch.direction.add(camera.orientation.front);
+		if (this.paddling) {
+			this.velocity.copy(camera.orientation.front).mul(speed * dt);
+			this.constrain();
+		} else {
+			this.velocity.set();
 		}
-		if (motion.moveback) {
-			scratch.direction.sub(camera.orientation.front);
-		}
-		if (motion.moveleft) {
-			scratch.direction.sub(camera.orientation.right);
-		}
-		if (motion.moveright) {
-			scratch.direction.add(camera.orientation.right);
-		}
-		scratch.direction.norm();
-		
-		this.velocity.copy(scratch.direction).mul(speed * dt);
-		this.constrain();
 		this.position.add(this.velocity);
-		
+
 		camera.position.copy(this.position);
 		scratch.direction.copy(camera.orientation.up).mul(0.75);
 		camera.position.add(scratch.direction);
@@ -150,20 +135,10 @@ GAS.player = {
 	onKeyDown: function(event) {
 
 		var that = GAS.player;
-		var motion = that.motion;
 		
 		switch(event.keyCode) {
-			case SOAR.KEY.A:
-				motion.moveleft = true;
-				break;
-			case SOAR.KEY.D:
-				motion.moveright = true;
-				break;
 			case SOAR.KEY.W:
-				motion.movefore = true;
-				break;
-			case SOAR.KEY.S:
-				motion.moveback = true;
+				that.paddling = true;
 				break;
 			case SOAR.KEY.SHIFT:
 				that.sprint = true;
@@ -183,21 +158,11 @@ GAS.player = {
 	onKeyUp: function(event) {
 
 		var that = GAS.player;
-		var motion = that.motion;
 
 		switch(event.keyCode) {
 		
-			case SOAR.KEY.A:
-				motion.moveleft = false;
-				break;
-			case SOAR.KEY.D:
-				motion.moveright = false;
-				break;
 			case SOAR.KEY.W:
-				motion.movefore = false;
-				break;
-			case SOAR.KEY.S:
-				motion.moveback = false;
+				that.paddling = false;
 				break;
 			case SOAR.KEY.SHIFT:
 				that.sprint = false;
@@ -253,6 +218,16 @@ GAS.player = {
 		}
 		that.mouse.invalid = false;
 		return false;
-	}
+	},
 	
+	/**
+		returns current speed for animation purposes
+		
+		@method getSpeed
+		@return number, speed of player avatar
+	**/
+	
+	getSpeed: function() {
+		return this.paddling ? (this.sprint ? this.SPRINT_SPEED : this.NORMAL_SPEED) : 0.5;
+	}
 };

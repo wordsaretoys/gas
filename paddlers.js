@@ -278,7 +278,7 @@ GAS.paddlers = {
 		gl.uniformMatrix4fv(shader.modelview, false, GAS.I);
 		gl.uniformMatrix4fv(shader.rotations, false, GAS.I);
 		gl.uniform3f(shader.center, 0, -0.75, -2);
-		gl.uniform1f(shader.time, this.player.offset + SOAR.elapsedTime * 0.01);
+		gl.uniform1f(shader.time, this.player.offset + SOAR.elapsedTime * GAS.player.getSpeed() * 0.005);
 		this.player.skin.bind(0, shader.skin);
 		this.mesh.draw();
 		
