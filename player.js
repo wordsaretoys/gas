@@ -74,8 +74,6 @@ GAS.player = {
 		// align camera to z-axis
 		this.camera.yaw.set(0, 0, 0, 1);
 		this.camera.turn(0, 0, 0);
-		
-		this.position.x = -45;
 	},
 	
 	/**
@@ -228,6 +226,6 @@ GAS.player = {
 	**/
 	
 	getSpeed: function() {
-		return this.paddling ? (this.sprint ? this.SPRINT_SPEED : this.NORMAL_SPEED) : 0.5;
+		return this.paddling ? (this.sprint ? this.SPRINT_SPEED : this.NORMAL_SPEED) : 0.25;
 	}
 };

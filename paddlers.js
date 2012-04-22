@@ -13,7 +13,7 @@
 
 GAS.paddlers = {
 
-	MAX_COUNT: 5,
+	MAX_COUNT: 0,
 	SHAPE: [0, 0.25, 0.8, 0.9, 0.7, 0.4, 0.6, 0.4],
 
 	list: [],
@@ -21,6 +21,8 @@ GAS.paddlers = {
 	scratch: {
 		vel: SOAR.vector.create()
 	},
+	
+	colorBase: 0,
 
 	/**
 		create and init required objects
@@ -46,7 +48,8 @@ GAS.paddlers = {
 				skin: this.makeSkin(),
 				center: SOAR.vector.create(),
 				rotor: SOAR.boundRotor.create(),
-				offset: Math.random()
+				speed: 1,
+				time: Math.random()
 			};
 
 			p.center.set( 
@@ -62,7 +65,7 @@ GAS.paddlers = {
 		// generate player avatar
 		this.player = {
 			skin: this.makeSkin(),
-			offset: Math.random()
+			time: Math.random()
 		};
 
 	},
@@ -85,11 +88,12 @@ GAS.paddlers = {
 		var i, x, y, s, hs;
 
 		ctx.clearRect(0, 0, w, h);
-		r = Math.floor(GAS.random(0, 256));
+		r = ((this.colorBase + 1) * 3) % 256;
 		g = ((r + 1) * 3) % 256;
 		b = ((g + 1) * 3) % 256;
 		base = "rgb(" + r + ", " + g + ", " + b + ")";
 		coat = "rgb(" + (256 - r) + ", " + (256 - g) + ", " + (256 - b) + ")";
+		this.colorBase = ((b + 1) * 3) % 256;
 
 		ctx.fillStyle = base;
 		ctx.fillRect(0, 0, w, h);
@@ -251,7 +255,12 @@ GAS.paddlers = {
 			this.scratch.vel.copy(o.front).mul(0.01);
 			//p.center.add(this.scratch.vel);
 
+			p.time += 2 * dt * p.speed;
+			
 		}
+		
+		// do any player bookkeeping
+		this.player.time += 2 * dt * GAS.player.getSpeed();
 	},
 	
 	/**
@@ -278,7 +287,7 @@ GAS.paddlers = {
 		gl.uniformMatrix4fv(shader.modelview, false, GAS.I);
 		gl.uniformMatrix4fv(shader.rotations, false, GAS.I);
 		gl.uniform3f(shader.center, 0, -0.75, -2);
-		gl.uniform1f(shader.time, this.player.offset + SOAR.elapsedTime * GAS.player.getSpeed() * 0.005);
+		gl.uniform1f(shader.time, this.player.time);
 		this.player.skin.bind(0, shader.skin);
 		this.mesh.draw();
 		
@@ -286,10 +295,9 @@ GAS.paddlers = {
 		for (i = 0, il = this.list.length; i < il; i++) {
 			p = this.list[i];
 			center = p.center;
-			time = p.offset + SOAR.elapsedTime * 0.01;
 			gl.uniformMatrix4fv(shader.rotations, false, p.rotor.matrix.transpose);
 			gl.uniform3f(shader.center, center.x, center.y, center.z);
-			gl.uniform1f(shader.time, time);
+			gl.uniform1f(shader.time, p.time);
 			p.skin.bind(0, shader.skin);
 			this.mesh.draw();
 		}

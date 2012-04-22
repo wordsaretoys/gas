@@ -111,6 +111,7 @@ var GAS = {
 		GAS.player.update();
 		GAS.ejecta.update();
 		GAS.paddlers.update();
+		GAS.weeds.update();
 	},
 
 	/**

@@ -88,9 +88,10 @@ uniform mat4 modelview;
 uniform mat4 rotations;
 
 varying vec2 uv;
+varying vec4 pos;
 
 void main(void) {
-	vec4 pos = modelview * rotations * vec4(position, 1.0);
+	pos = modelview * rotations * vec4(position, 1.0);
 	
 	// push plants aside if too close to player avatar
 	float f = max(2.0 - distance(vec3(0, -0.75, -2.0), pos.xyz), 0.0);
@@ -120,8 +121,15 @@ precision mediump float;
 uniform sampler2D skin;
 
 varying vec2 uv;
+varying vec4 pos;
 
 void main(void) {
+/*
+	float alpha = clamp((12.0 - length(pos.xyz) / 12.0), 0.0, 1.0);
+	vec4 color = texture2D(skin, uv);
+	gl_FragColor = vec4(color.rgb, alpha * color.a);
+	gl_FragColor = vec4(alpha, alpha, alpha, 1.0);
+*/
 	gl_FragColor = texture2D(skin, uv);
 }
 
