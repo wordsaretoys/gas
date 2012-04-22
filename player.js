@@ -16,6 +16,11 @@ GAS.player = {
 	position: SOAR.vector.create(),
 	velocity: SOAR.vector.create(),
 	
+	motion: {
+		moveleft: false, moveright: false,
+		movefore: false, moveback: false
+	},
+	
 	paddling: false,
 	
 	mouse: {
@@ -97,7 +102,26 @@ GAS.player = {
 		this.camera.turn(dx, dy);
 		mouse.last.x = mouse.next.x;
 		mouse.last.y = mouse.next.y;
+	
+		scratch.direction.set();
+		if (this.motion.movefore) {
+			scratch.direction.add(camera.orientation.front);
+		}
+		if (this.motion.moveback) {
+			scratch.direction.sub(camera.orientation.front);
+		}
+		if (this.motion.moveleft) {
+			scratch.direction.sub(camera.orientation.right);
+		}
+		if (this.motion.moveright) {
+			scratch.direction.add(camera.orientation.right);
+		}
+		scratch.direction.norm();
+		this.velocity.copy(scratch.direction).mul(speed * dt);
+		this.position.add(this.velocity);
+
 		
+/*		
 		if (this.paddling) {
 			this.velocity.copy(camera.orientation.front).mul(speed * dt);
 			this.constrain();
@@ -105,12 +129,18 @@ GAS.player = {
 			this.velocity.set();
 		}
 		this.position.add(this.velocity);
+*/
 
 		camera.position.copy(this.position);
 		scratch.direction.copy(camera.orientation.up).mul(0.75);
 		camera.position.add(scratch.direction);
 		scratch.direction.copy(camera.orientation.front).mul(2);
 		camera.position.sub(scratch.direction); 
+		
+		GAS.hud.debug(
+			Math.floor(this.position.x * 100) / 100  
+			+ ", " + Math.floor(this.position.y * 100) / 100 
+			+ ", " + Math.floor(this.position.z * 100) / 100 );
 	},
 	
 	/**
@@ -135,9 +165,23 @@ GAS.player = {
 		var that = GAS.player;
 		
 		switch(event.keyCode) {
+			case SOAR.KEY.A:
+				that.motion.moveleft = true;
+				break;
+			case SOAR.KEY.D:
+				that.motion.moveright = true;
+				break;
+			case SOAR.KEY.W:
+				that.motion.movefore = true;
+				break;
+			case SOAR.KEY.S:
+				that.motion.moveback = true;
+				break;
+/*		
 			case SOAR.KEY.W:
 				that.paddling = true;
 				break;
+*/
 			case SOAR.KEY.SHIFT:
 				that.sprint = true;
 				break;
@@ -158,10 +202,24 @@ GAS.player = {
 		var that = GAS.player;
 
 		switch(event.keyCode) {
-		
+
+			case SOAR.KEY.A:
+				that.motion.moveleft = false;
+				break;
+			case SOAR.KEY.D:
+				that.motion.moveright = false;
+				break;
+			case SOAR.KEY.W:
+				that.motion.movefore = false;
+				break;
+			case SOAR.KEY.S:
+				that.motion.moveback = false;
+				break;
+/*		
 			case SOAR.KEY.W:
 				that.paddling = false;
 				break;
+*/
 			case SOAR.KEY.SHIFT:
 				that.sprint = false;
 				break;

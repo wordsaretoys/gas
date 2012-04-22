@@ -23,6 +23,8 @@ GAS.hud = {
 	init: function() {
 
 		this.dom = {
+			debug: jQuery("#debug"),
+		
 			window: jQuery(window),
 			comment: jQuery("#comment"),
 			tracker: jQuery("#tracker"),
@@ -41,6 +43,26 @@ GAS.hud = {
 		});
 	},
 
+	/**
+		add to debug window
+		
+		@method debug
+	**/
+	
+	debug: function(msg) {
+		this.dom.debug.html(this.dom.debug.html() + "<span>" + msg + "</span>");
+	},
+		
+	/**
+		clear debug window
+		
+		@method clearDebug
+	**/
+	
+	clearDebug: function() {
+		this.dom.debug.html("");
+	},
+	
 	/**
 		adjust UI elements in response to browser window resize
 

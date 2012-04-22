@@ -51,6 +51,27 @@ div {
 	font-size: 75%;
 }
 
+/* debug window */
+
+#debug {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+
+	background: rgba(0, 0, 0, 0.5);
+	color: white;
+
+	width: 425px;
+	padding: 5px;
+	
+	font-size: 16pt;
+	font-variant: small-caps;
+
+	display: none;
+	
+	z-index: 5;
+}
+
 /* HUD commentary area */
 
 #comment {

@@ -108,6 +108,8 @@ var GAS = {
 	**/
 	
 	update: function() {
+		GAS.hud.clearDebug();
+		
 		GAS.player.update();
 		GAS.ejecta.update();
 		GAS.paddlers.update();

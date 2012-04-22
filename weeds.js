@@ -7,7 +7,7 @@
 
 GAS.weeds = {
 
-	BASE_RADIUS: 50,
+	BASE_RADIUS: 75,
 	
 	scratch: {
 		position: SOAR.vector.create()
@@ -40,7 +40,7 @@ GAS.weeds = {
 		var r = SOAR.vector.create(-1, 0, 0);
 		var d = SOAR.vector.create();
 		
-		for (i = 0, j = 0; i < 25000; i++) {
+		for (i = 0, j = 0; i < 30000; i++) {
 		
 			this.mesh.set(p.x - 0.05 * r.x, p.y - 0.05 * r.y, p.z - 0.05 * r.z, i % 2, 0);
 			this.mesh.set(p.x + 0.05 * r.x, p.y + 0.05 * r.y, p.z + 0.05 * r.z, i % 2, 1);
@@ -61,8 +61,8 @@ GAS.weeds = {
 			
 			r.cross(f).cross(f).neg().norm();
 			
-//			if (p.length() > this.BASE_RADIUS) {
-			if (Math.abs(p.x) > this.BASE_RADIUS || Math.abs(p.y) > this.BASE_RADIUS || Math.abs(p.z) > this.BASE_RADIUS) {
+			if (p.length() > this.BASE_RADIUS) {
+//			if (Math.abs(p.x) > this.BASE_RADIUS || Math.abs(p.y) > this.BASE_RADIUS || Math.abs(p.z) > this.BASE_RADIUS) {
 				d.copy(p).norm().neg().mul(0.5);
 				f.add(d);
 			}			
@@ -112,11 +112,13 @@ GAS.weeds = {
 	
 	update: function() {
 		var p = this.scratch.position;
-		var radius = 2 * this.BASE_RADIUS;
+		var radius = this.BASE_RADIUS;
 		var i, cell;
 	
 		p.copy(GAS.player.position).nearest(radius);
 		if (this.lastUpdate.distance(p) > 0) {
+
+			console.log(p.x, p.y, p.z);
 		
 			for (i = 0; i < 27; i++) {
 				cell = this.cell[i];
@@ -124,14 +126,17 @@ GAS.weeds = {
 				cell.c.x = p.x + cell.b.x * radius;
 				cell.c.y = p.y + cell.b.y * radius;
 				cell.c.z = p.z + cell.b.z * radius;
-				
-				this.rng.reseed(cell.c.x + cell.c.y + cell.c.z);
+
+				this.rng.reseed(
+					Math.abs(cell.c.x * radius * radius) +
+					Math.abs(cell.c.y * radius) + 
+					Math.abs(cell.c.z) + 1 );
 				
 				cell.q.set(
 					this.rng.get() - this.rng.get(),
 					this.rng.get() - this.rng.get(),
 					this.rng.get() - this.rng.get(), 0).norm();
-				cell.q.set(0, 0, 0, 1);
+				//cell.q.set(0, 0, 0, 1);
 				cell.q.toMatrix(cell.m);
 				
 				cell.m[12] = cell.c.x;

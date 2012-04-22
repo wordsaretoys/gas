@@ -96,7 +96,7 @@ void main(void) {
 	// push plants aside if too close to player avatar
 	float f = max(2.0 - distance(vec3(0, -0.75, -2.0), pos.xyz), 0.0);
 	vec3 dir = normalize(pos.xyz);
-	dir.z = dir.y = 0.0;
+	dir.z = 0.0;
 	pos = pos + vec4(dir * pow(f, 4.0), 0.0);
 	
 	gl_Position = projector * pos;
@@ -124,13 +124,13 @@ varying vec2 uv;
 varying vec4 pos;
 
 void main(void) {
-/*
-	float alpha = clamp((12.0 - length(pos.xyz) / 12.0), 0.0, 1.0);
+
+	float alpha = pow(clamp( (75.0 - length(pos)) / 75.0, 0.0, 1.0), 0.25);
 	vec4 color = texture2D(skin, uv);
 	gl_FragColor = vec4(color.rgb, alpha * color.a);
-	gl_FragColor = vec4(alpha, alpha, alpha, 1.0);
-*/
-	gl_FragColor = texture2D(skin, uv);
+
+
+//	gl_FragColor = texture2D(skin, uv);
 }
 
 </script>
