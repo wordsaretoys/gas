@@ -135,9 +135,10 @@ GAS.weeds = {
 				cell.q.set(
 					this.rng.get() - this.rng.get(),
 					this.rng.get() - this.rng.get(),
-					this.rng.get() - this.rng.get(), 0).norm();
-				//cell.q.set(0, 0, 0, 1);
-				cell.q.toMatrix(cell.m);
+					this.rng.get() - this.rng.get(), 
+					this.rng.get() - this.rng.get())
+				.norm()
+				.toMatrix(cell.m);
 				
 				cell.m[12] = cell.c.x;
 				cell.m[13] = cell.c.y;

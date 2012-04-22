@@ -1,5 +1,5 @@
 /**
-	generate, animate, and display paddlers
+	generate, animate, and display a paddler
 	
 	paddlers are procedurally-generated creatures with
 	bilateral symmetry. flaps of tissue that look like
@@ -8,31 +8,22 @@
 	them to move through the air.
 	
 	@namespace GAS
-	@class paddlers
+	@class paddler
 **/
 
-GAS.paddlers = {
+GAS.paddler = {
 
-	MAX_COUNT: 0,
-	SHAPE: [0, 0.25, 0.8, 0.9, 0.7, 0.4, 0.6, 0.4],
+	SHAPE: [0, 0.25, 0.8, 0.9, 0.7, 0.5, 0.6, 0.4],
 
-	list: [],
-	
-	scratch: {
-		vel: SOAR.vector.create()
-	},
-	
-	colorBase: 0,
+	colorBase: 128,
 
 	/**
-		create and init required objects
+		create and init objects usable by all paddler instances
 		
 		@method init
 	**/
 
 	init: function() {
-		var i, il, p;
-
 		this.shader = SOAR.shader.create(
 			GAS.display,
 			SOAR.textOf("vs-paddler"), SOAR.textOf("fs-paddler"),
@@ -42,32 +33,26 @@ GAS.paddlers = {
 		);
 
 		this.mesh = this.makeMesh();
+	},
+	
+	/**
+		generate and return a new paddler object
 		
-		for (i = 0, il = this.MAX_COUNT; i < il; i++) {
-			p = {
-				skin: this.makeSkin(),
-				center: SOAR.vector.create(),
-				rotor: SOAR.boundRotor.create(),
-				speed: 1,
-				time: Math.random()
-			};
-
-			p.center.set( 
-				Math.random() - Math.random(), 
-				Math.random() - Math.random(), 
-				Math.random() - Math.random() )
-			.norm()
-			.mul(2);
-			
-			this.list.push(p);
-		}
+		@method create
+		@return object, the new paddler
+	**/
+	
+	create: function() {
+		var o = Object.create(GAS.paddler);
 		
-		// generate player avatar
-		this.player = {
-			skin: this.makeSkin(),
-			time: Math.random()
-		};
-
+		o.position = SOAR.vector.create();
+		o.velocity = SOAR.vector.create();
+		
+		o.skin = this.makeSkin();
+		o.rotor = SOAR.boundRotor.create();
+		o.speed = 1;
+		o.time = Math.random();
+		return o;
 	},
 	
 	/**
@@ -242,25 +227,6 @@ GAS.paddlers = {
 
 	update: function() {
 		var dt = SOAR.interval * 0.001;
-		var c, o;
-		var i, il, p;
-
-		for (i = 0, il = this.list.length; i < il; i++) {
-		
-			p = this.list[i];
-			
-			c = p.center;
-			o = p.rotor.orientation;
-			
-			this.scratch.vel.copy(o.front).mul(0.01);
-			//p.center.add(this.scratch.vel);
-
-			p.time += 2 * dt * p.speed;
-			
-		}
-		
-		// do any player bookkeeping
-		this.player.time += 2 * dt * GAS.player.getSpeed();
 	},
 	
 	/**
@@ -274,33 +240,18 @@ GAS.paddlers = {
 		var shader = this.shader;
 		var camera = GAS.player.camera;
 		var shader = this.shader;
-		var center, light, time;
-		var i, il, p;
 
 		gl.enable(gl.CULL_FACE);
 		gl.cullFace(gl.BACK);
 
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
-		
-		// draw player avatar
-		gl.uniformMatrix4fv(shader.modelview, false, GAS.I);
-		gl.uniformMatrix4fv(shader.rotations, false, GAS.I);
-		gl.uniform3f(shader.center, 0, -0.75, -2);
-		gl.uniform1f(shader.time, this.player.time);
-		this.player.skin.bind(0, shader.skin);
-		this.mesh.draw();
-		
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
-		for (i = 0, il = this.list.length; i < il; i++) {
-			p = this.list[i];
-			center = p.center;
-			gl.uniformMatrix4fv(shader.rotations, false, p.rotor.matrix.transpose);
-			gl.uniform3f(shader.center, center.x, center.y, center.z);
-			gl.uniform1f(shader.time, p.time);
-			p.skin.bind(0, shader.skin);
-			this.mesh.draw();
-		}
+		gl.uniformMatrix4fv(shader.rotations, false, this.rotor.matrix.transpose);
+		gl.uniform3f(shader.center, this.position.x, this.position.y, this.position.z);
+		gl.uniform1f(shader.time, this.time);
+		this.skin.bind(0, shader.skin);
+		this.mesh.draw();
 		
 		gl.disable(gl.CULL_FACE);
 		

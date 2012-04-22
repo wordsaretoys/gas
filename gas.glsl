@@ -125,7 +125,7 @@ varying vec4 pos;
 
 void main(void) {
 
-	float alpha = pow(clamp( (75.0 - length(pos)) / 75.0, 0.0, 1.0), 0.25);
+	float alpha = pow(clamp( (75.0 - length(pos)) / 75.0, 0.0, 1.0), 0.5);
 	vec4 color = texture2D(skin, uv);
 	gl_FragColor = vec4(color.rgb, alpha * color.a);
 

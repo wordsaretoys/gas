@@ -93,12 +93,12 @@ var GAS = {
 		});
 		
 		// while waiting for resource load, initialize game objects
+		GAS.paddler.init();
 		GAS.player.init();
 		GAS.clouds.init();
 		GAS.weeds.init();
 		GAS.ejecta.init();
 		GAS.clumps.init();
-		GAS.paddlers.init();
 	},
 	
 	/**
@@ -112,7 +112,6 @@ var GAS = {
 		
 		GAS.player.update();
 		GAS.ejecta.update();
-		GAS.paddlers.update();
 		GAS.weeds.update();
 	},
 
@@ -139,7 +138,6 @@ var GAS = {
 		GAS.weeds.draw();
 		GAS.ejecta.draw();
 		GAS.clumps.draw();
-		GAS.paddlers.draw();
 	}
 
 };

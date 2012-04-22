@@ -56,7 +56,6 @@ GAS.player = {
 	**/
 
 	init: function() {
-		var that = this;
 		var dom = this.dom = {
 			tracker: jQuery("#tracker"),
 			window: jQuery(window)
@@ -69,16 +68,13 @@ GAS.player = {
 		dom.tracker.bind("mouseup", this.onMouseUp);
 		dom.tracker.bind("mousemove", this.onMouseMove);
 
-		// create a yaw/pitch constrained camera for player view
-		this.camera = SOAR.camera.create(
-			GAS.display, 
-			SOAR.camera.BOUND_ROTATION);
+		// create a constrained camera for player view
+		this.camera = SOAR.camera.create(GAS.display);
 		this.camera.nearLimit = 0.01;
-		this.camera.farLimit = 10000;
+		this.camera.farLimit = 500;
+		this.camera.free = false;
+		this.camera.bound.set(Math.sqrt(2) / 2, -1, 0);
 
-		// align camera to z-axis
-		this.camera.yaw.set(0, 0, 0, 1);
-		this.camera.turn(0, 0, 0);
 	},
 	
 	/**
@@ -99,7 +95,9 @@ GAS.player = {
 
 		dx = 0.5 * dt * (mouse.next.x - mouse.last.x);
 		dy = 0.5 * dt * (mouse.next.y - mouse.last.y);
-		this.camera.turn(dx, dy);
+		if (dx || dy) {
+			this.camera.turn(dy, dx, 0);
+		}
 		mouse.last.x = mouse.next.x;
 		mouse.last.y = mouse.next.y;
 	
@@ -132,10 +130,10 @@ GAS.player = {
 */
 
 		camera.position.copy(this.position);
-		scratch.direction.copy(camera.orientation.up).mul(0.75);
-		camera.position.add(scratch.direction);
-		scratch.direction.copy(camera.orientation.front).mul(2);
-		camera.position.sub(scratch.direction); 
+//		scratch.direction.copy(camera.orientation.up).mul(0.75);
+//		camera.position.add(scratch.direction);
+//		scratch.direction.copy(camera.orientation.front).mul(2);
+//		camera.position.sub(scratch.direction); 
 		
 		GAS.hud.debug(
 			Math.floor(this.position.x * 100) / 100  
