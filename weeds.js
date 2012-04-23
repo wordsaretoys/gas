@@ -1,5 +1,5 @@
 /**
-	maintain a section of space tumbleweed
+	maintain an expanse of space sargasso
 	
 	@namespace GAS
 	@class weeds
@@ -35,7 +35,7 @@ GAS.weeds = {
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 		
-		var p = SOAR.vector.create();
+		var p = SOAR.vector.create(this.BASE_RADIUS, 0, 0);
 		var f = SOAR.vector.create(0, 0, -1);
 		var r = SOAR.vector.create(-1, 0, 0);
 		var d = SOAR.vector.create();

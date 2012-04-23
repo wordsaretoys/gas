@@ -8,20 +8,14 @@
 
 GAS.player = {
 
-	NORMAL_SPEED: 2,
-	SPRINT_SPEED: 10,
-
 	RADIUS: 1.5,
 
 	position: SOAR.vector.create(),
-	velocity: SOAR.vector.create(),
 	
 	motion: {
 		moveleft: false, moveright: false,
 		movefore: false, moveback: false
 	},
-	
-	paddling: false,
 	
 	mouse: {
 		down: false,
@@ -36,14 +30,6 @@ GAS.player = {
 		invalid: true
 	},
 	
-	scratch: {
-		direction: SOAR.vector.create(),
-		velocity: SOAR.vector.create(),
-		matrix: new Float32Array(16)
-	},
-	
-	sprint: false,
-
 	/**
 		establish jQuery shells around player DOM objects &
 		set up event handlers for player controls
@@ -74,6 +60,10 @@ GAS.player = {
 		this.camera.farLimit = 500;
 		this.camera.free = false;
 		this.camera.bound.set(Math.sqrt(2) / 2, -1, 0);
+		this.camera.offset.set(0, 0.5, 2);
+		
+		// create a player avatar
+		this.avatar = GAS.paddler.create();
 
 	},
 	
@@ -87,27 +77,31 @@ GAS.player = {
 
 	update: function() {
 		var dt = SOAR.interval * 0.001;
-		var speed = (this.sprint) ? this.SPRINT_SPEED : this.NORMAL_SPEED;
-		var scratch = this.scratch;
 		var camera = this.camera;
 		var mouse = this.mouse;
 		var dx, dy;
 
-		dx = 0.5 * dt * (mouse.next.x - mouse.last.x);
-		dy = 0.5 * dt * (mouse.next.y - mouse.last.y);
+		dx = 0.25 * dt * (mouse.next.x - mouse.last.x);
+		dy = 0.25 * dt * (mouse.next.y - mouse.last.y);
 		if (dx || dy) {
 			this.camera.turn(dy, dx, 0);
+			mouse.last.x = mouse.next.x;
+			mouse.last.y = mouse.next.y;
 		}
-		mouse.last.x = mouse.next.x;
-		mouse.last.y = mouse.next.y;
-	
-		scratch.direction.set();
+		
 		if (this.motion.movefore) {
-			scratch.direction.add(camera.orientation.front);
+			this.avatar.flap();
+			this.avatar.rotator.track(camera, 0.1);
 		}
+		
 		if (this.motion.moveback) {
-			scratch.direction.sub(camera.orientation.front);
+			this.avatar.blap();
+			this.avatar.rotator.track(camera, 0.1);
 		}
+
+		this.avatar.update();
+
+/*		
 		if (this.motion.moveleft) {
 			scratch.direction.sub(camera.orientation.right);
 		}
@@ -117,28 +111,10 @@ GAS.player = {
 		scratch.direction.norm();
 		this.velocity.copy(scratch.direction).mul(speed * dt);
 		this.position.add(this.velocity);
-
-		
-/*		
-		if (this.paddling) {
-			this.velocity.copy(camera.orientation.front).mul(speed * dt);
-			this.constrain();
-		} else {
-			this.velocity.set();
-		}
-		this.position.add(this.velocity);
 */
-
-		camera.position.copy(this.position);
-//		scratch.direction.copy(camera.orientation.up).mul(0.75);
-//		camera.position.add(scratch.direction);
-//		scratch.direction.copy(camera.orientation.front).mul(2);
-//		camera.position.sub(scratch.direction); 
+		this.position.copy(this.avatar.position);
+		camera.position.copy(this.avatar.position);
 		
-		GAS.hud.debug(
-			Math.floor(this.position.x * 100) / 100  
-			+ ", " + Math.floor(this.position.y * 100) / 100 
-			+ ", " + Math.floor(this.position.z * 100) / 100 );
 	},
 	
 	/**
@@ -175,14 +151,6 @@ GAS.player = {
 			case SOAR.KEY.S:
 				that.motion.moveback = true;
 				break;
-/*		
-			case SOAR.KEY.W:
-				that.paddling = true;
-				break;
-*/
-			case SOAR.KEY.SHIFT:
-				that.sprint = true;
-				break;
 		}
 		return true;
 	},
@@ -212,14 +180,6 @@ GAS.player = {
 				break;
 			case SOAR.KEY.S:
 				that.motion.moveback = false;
-				break;
-/*		
-			case SOAR.KEY.W:
-				that.paddling = false;
-				break;
-*/
-			case SOAR.KEY.SHIFT:
-				that.sprint = false;
 				break;
 		}
 		return true;
@@ -272,16 +232,6 @@ GAS.player = {
 		}
 		that.mouse.invalid = false;
 		return false;
-	},
-	
-	/**
-		returns current speed for animation purposes
-		
-		@method getSpeed
-		@return number, speed of player avatar
-	**/
-	
-	getSpeed: function() {
-		return this.paddling ? (this.sprint ? this.SPRINT_SPEED : this.NORMAL_SPEED) : 0.25;
 	}
+	
 };

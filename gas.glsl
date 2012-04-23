@@ -94,10 +94,10 @@ void main(void) {
 	pos = modelview * rotations * vec4(position, 1.0);
 	
 	// push plants aside if too close to player avatar
-	float f = max(2.0 - distance(vec3(0, -0.75, -2.0), pos.xyz), 0.0);
-	vec3 dir = normalize(pos.xyz);
-	dir.z = 0.0;
-	pos = pos + vec4(dir * pow(f, 4.0), 0.0);
+//	float f = max(4.0 - length(pos.xyz), 0.0);
+//	vec3 dir = normalize(pos.xyz);
+//	dir.z = 0.0;
+//	pos = pos + vec4(dir * pow(f, 4.0), 0.0);
 	
 	gl_Position = projector * pos;
 	uv = texturec;
@@ -124,13 +124,9 @@ varying vec2 uv;
 varying vec4 pos;
 
 void main(void) {
-
 	float alpha = pow(clamp( (75.0 - length(pos)) / 75.0, 0.0, 1.0), 0.5);
 	vec4 color = texture2D(skin, uv);
 	gl_FragColor = vec4(color.rgb, alpha * color.a);
-
-
-//	gl_FragColor = texture2D(skin, uv);
 }
 
 </script>
@@ -246,7 +242,9 @@ void main(void) {
 	@param modelview modelview matrix
 	@param rotations rotations matrix
 	@param center model center vector
-	@param time time base for vertex animations
+	
+	@param wing phase for wing animation
+	@param mouth phase for mouth animation
 	
 	(passed to fragment shader for each vertex)
 	@param uv		texture coordinates of fragment
@@ -261,19 +259,21 @@ uniform mat4 projector;
 uniform mat4 modelview;
 uniform mat4 rotations;
 uniform vec3 center;
-uniform float time;
+
+uniform float wing;
+uniform float mouth;
 
 varying vec2 uv;
 
 void main(void) {
 	// create paddling motions
 	vec3 pos = position;
-	pos.y += 25.0 * pow(0.5 * abs(pos.x), 4.0) * sin(time);
-	pos.z += 25.0 * pow(0.5 * abs(pos.x), 4.0) * cos(time);
+	pos.y += 25.0 * pow(0.5 * abs(pos.x), 4.0) * sin(wing);
+	pos.z += 25.0 * pow(0.5 * abs(pos.x), 4.0) * cos(wing);
 	
 	// open and close mouth
 	if (pos.z < -0.48) {
-		pos.y = pos.y * abs(sin(time));
+		pos.y = pos.y * abs(sin(mouth));
 	}
 	
 	// transform the vertex

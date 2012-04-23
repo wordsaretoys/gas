@@ -138,6 +138,8 @@ var GAS = {
 		GAS.weeds.draw();
 		GAS.ejecta.draw();
 		GAS.clumps.draw();
+		
+		GAS.player.avatar.draw();
 	}
 
 };

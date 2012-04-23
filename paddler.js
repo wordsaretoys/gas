@@ -13,7 +13,11 @@
 
 GAS.paddler = {
 
-	SHAPE: [0, 0.25, 0.8, 0.9, 0.7, 0.5, 0.6, 0.4],
+	SHAPE: [0, 0.25, 0.5, 0.8, 0.9, 0.8, 0.7, 0.4],
+	
+	FLAP_RATE: 0.1,
+	FLAP_JERK: 10,
+	BLAP_RATE: 0.5,
 
 	colorBase: 128,
 
@@ -28,7 +32,7 @@ GAS.paddler = {
 			GAS.display,
 			SOAR.textOf("vs-paddler"), SOAR.textOf("fs-paddler"),
 			["position", "texturec"], 
-			["projector", "modelview", "rotations", "center", "time"],
+			["projector", "modelview", "rotations", "center", "wing", "mouth"],
 			["skin"]
 		);
 
@@ -47,11 +51,21 @@ GAS.paddler = {
 		
 		o.position = SOAR.vector.create();
 		o.velocity = SOAR.vector.create();
+		o.rotator = SOAR.rotator.create();
 		
 		o.skin = this.makeSkin();
-		o.rotor = SOAR.boundRotor.create();
-		o.speed = 1;
-		o.time = Math.random();
+
+		o.wing = 0;
+		o.mouth = 0.25 * Math.PI;
+		
+		o.flapping = false;
+		o.blapping = false;
+		
+		o.scratch = {
+			acc: SOAR.vector.create(),
+			vel: SOAR.vector.create()
+		};
+
 		return o;
 	},
 	
@@ -220,13 +234,64 @@ GAS.paddler = {
 	},
 	
 	/**
-		update orientations and positions
+		update kinematics
 		
 		@method update
 	**/
 
 	update: function() {
+		var o = this.rotator.orientation;
+		var s = this.scratch;
 		var dt = SOAR.interval * 0.001;
+		var acc, vel;
+		
+		if (this.flapping) {
+			this.wing += this.FLAP_RATE;
+			acc = this.FLAP_JERK * Math.max(0, Math.sin(SOAR.PIMUL2 * this.wing));
+			s.acc.copy(o.front).mul(acc * dt);
+			this.velocity.add(s.acc);
+			if (this.wing >= SOAR.PIMUL2) {
+				this.flapping = false;
+			}
+		}
+		
+		if (this.blapping) {
+			this.wing -= this.BLAP_RATE;
+			this.velocity.mul(0.95);
+			if (this.wing <= 0) {
+				this.blapping = false;
+			}
+		}
+
+		
+		s.vel.copy(this.velocity).mul(dt);
+		this.position.add(s.vel);
+	},
+	
+	/**
+		kick off a forward flap (and acceleration)
+		
+		@method flap
+	**/
+	
+	flap: function() {
+		if (!(this.flapping || this.blapping)) {
+			this.flapping = true;
+			this.wing = 0;
+		}
+	},
+	
+	/**
+		kick off a backward flap (and deceleration)
+		
+		@method blap
+	**/
+	
+	blap: function() {
+		if (!(this.blapping || this.flapping)) {
+			this.blapping = true;
+			this.wing = SOAR.PIMUL2;
+		}
 	},
 	
 	/**
@@ -247,9 +312,10 @@ GAS.paddler = {
 		shader.activate();
 		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
 		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
-		gl.uniformMatrix4fv(shader.rotations, false, this.rotor.matrix.transpose);
+		gl.uniformMatrix4fv(shader.rotations, false, this.rotator.matrix.transpose);
 		gl.uniform3f(shader.center, this.position.x, this.position.y, this.position.z);
-		gl.uniform1f(shader.time, this.time);
+		gl.uniform1f(shader.wing, this.wing);
+		gl.uniform1f(shader.mouth, this.mouth);
 		this.skin.bind(0, shader.skin);
 		this.mesh.draw();
 		
