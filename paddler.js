@@ -14,10 +14,10 @@
 GAS.paddler = {
 
 	SHAPE: [0, 0.25, 0.5, 0.8, 0.9, 0.8, 0.7, 0.4],
-	
-	FLAP_RATE: 0.1,
-	FLAP_JERK: 10,
-	BLAP_RATE: 0.5,
+
+	IDLE_FLAP: 0.01,
+	RAMP_RATE: 0.1,
+	MAX_SPEED: 5,
 
 	colorBase: 128,
 
@@ -52,20 +52,15 @@ GAS.paddler = {
 		o.position = SOAR.vector.create();
 		o.velocity = SOAR.vector.create();
 		o.rotator = SOAR.rotator.create();
+
+		o.target = 0;
+		o.speed = 0;
 		
 		o.skin = this.makeSkin();
 
 		o.wing = 0;
 		o.mouth = 0.25 * Math.PI;
 		
-		o.flapping = false;
-		o.blapping = false;
-		
-		o.scratch = {
-			acc: SOAR.vector.create(),
-			vel: SOAR.vector.create()
-		};
-
 		return o;
 	},
 	
@@ -243,55 +238,14 @@ GAS.paddler = {
 		var o = this.rotator.orientation;
 		var s = this.scratch;
 		var dt = SOAR.interval * 0.001;
-		var acc, vel;
-		
-		if (this.flapping) {
-			this.wing += this.FLAP_RATE;
-			acc = this.FLAP_JERK * Math.max(0, Math.sin(SOAR.PIMUL2 * this.wing));
-			s.acc.copy(o.front).mul(acc * dt);
-			this.velocity.add(s.acc);
-			if (this.wing >= SOAR.PIMUL2) {
-				this.flapping = false;
-			}
-		}
-		
-		if (this.blapping) {
-			this.wing -= this.BLAP_RATE;
-			this.velocity.mul(0.95);
-			if (this.wing <= 0) {
-				this.blapping = false;
-			}
-		}
+		var ds;
 
+		ds = this.RAMP_RATE * (this.target - this.speed);
+		this.speed += ds;
+		this.wing += 2 * ds + this.IDLE_FLAP;
 		
-		s.vel.copy(this.velocity).mul(dt);
-		this.position.add(s.vel);
-	},
-	
-	/**
-		kick off a forward flap (and acceleration)
-		
-		@method flap
-	**/
-	
-	flap: function() {
-		if (!(this.flapping || this.blapping)) {
-			this.flapping = true;
-			this.wing = 0;
-		}
-	},
-	
-	/**
-		kick off a backward flap (and deceleration)
-		
-		@method blap
-	**/
-	
-	blap: function() {
-		if (!(this.blapping || this.flapping)) {
-			this.blapping = true;
-			this.wing = SOAR.PIMUL2;
-		}
+		this.velocity.copy(o.front).mul(this.speed * dt);
+		this.position.add(this.velocity);
 	},
 	
 	/**

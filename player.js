@@ -90,15 +90,12 @@ GAS.player = {
 		}
 		
 		if (this.motion.movefore) {
-			this.avatar.flap();
+			this.avatar.target = GAS.paddler.MAX_SPEED;
 			this.avatar.rotator.track(camera, 0.1);
+		} else {
+			this.avatar.target = 0;
 		}
 		
-		if (this.motion.moveback) {
-			this.avatar.blap();
-			this.avatar.rotator.track(camera, 0.1);
-		}
-
 		this.avatar.update();
 
 /*		
