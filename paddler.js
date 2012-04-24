@@ -15,9 +15,12 @@ GAS.paddler = {
 
 	SHAPE: [0, 0.25, 0.5, 0.8, 0.9, 0.8, 0.7, 0.4],
 
-	IDLE_FLAP: 0.01,
-	RAMP_RATE: 0.1,
-	MAX_SPEED: 5,
+	IDLE_FLAP: 0.05,
+	SLOW_FLAP: 0.25,
+	FAST_FLAP: 0.75,
+	
+	RAMP_RATE: 20,
+	MAX_SPEED: 10,
 
 	colorBase: 128,
 
@@ -53,7 +56,7 @@ GAS.paddler = {
 		o.velocity = SOAR.vector.create();
 		o.rotator = SOAR.rotator.create();
 
-		o.target = 0;
+		o.flapping = false;
 		o.speed = 0;
 		
 		o.skin = this.makeSkin();
@@ -238,11 +241,21 @@ GAS.paddler = {
 		var o = this.rotator.orientation;
 		var s = this.scratch;
 		var dt = SOAR.interval * 0.001;
-		var ds;
 
-		ds = this.RAMP_RATE * (this.target - this.speed);
-		this.speed += ds;
-		this.wing += 2 * ds + this.IDLE_FLAP;
+		if (this.flapping) {
+			if (this.speed < this.MAX_SPEED) {
+				this.speed = Math.min(this.MAX_SPEED, this.speed + this.RAMP_RATE * dt);
+				this.wing += this.FAST_FLAP;
+			} else {
+				this.wing += this.SLOW_FLAP;
+			}
+		} else {
+			if (this.speed > 0) {
+				this.speed = Math.max(0, this.speed - this.RAMP_RATE * dt);
+			}
+			this.wing += this.IDLE_FLAP;
+		}
+		this.wing = this.wing % SOAR.PIMUL2;
 		
 		this.velocity.copy(o.front).mul(this.speed * dt);
 		this.position.add(this.velocity);

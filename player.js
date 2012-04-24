@@ -90,10 +90,10 @@ GAS.player = {
 		}
 		
 		if (this.motion.movefore) {
-			this.avatar.target = GAS.paddler.MAX_SPEED;
+			this.avatar.flapping = true;
 			this.avatar.rotator.track(camera, 0.1);
 		} else {
-			this.avatar.target = 0;
+			this.avatar.flapping = false;
 		}
 		
 		this.avatar.update();
