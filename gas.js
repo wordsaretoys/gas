@@ -94,11 +94,15 @@ var GAS = {
 		
 		// while waiting for resource load, initialize game objects
 		GAS.paddler.init();
+		GAS.floater.init();
 		GAS.player.init();
 		GAS.clouds.init();
 		GAS.weeds.init();
 		GAS.ejecta.init();
 		GAS.clumps.init();
+		
+		this.test = GAS.floater.create();
+		this.test.position.set(0, 0, -2);
 	},
 	
 	/**
@@ -140,6 +144,8 @@ var GAS = {
 		GAS.clumps.draw();
 		
 		GAS.player.avatar.draw();
+		
+		GAS.test.draw();
 	}
 
 };

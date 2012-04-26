@@ -30,6 +30,12 @@ GAS.player = {
 		invalid: true
 	},
 	
+	scratch: {
+		d: SOAR.vector.create()
+	},
+	
+	debug: true,
+	
 	/**
 		establish jQuery shells around player DOM objects &
 		set up event handlers for player controls
@@ -79,6 +85,7 @@ GAS.player = {
 		var dt = SOAR.interval * 0.001;
 		var camera = this.camera;
 		var mouse = this.mouse;
+		var s = this.scratch;
 		var dx, dy;
 
 		dx = 0.25 * dt * (mouse.next.x - mouse.last.x);
@@ -89,28 +96,39 @@ GAS.player = {
 			mouse.last.y = mouse.next.y;
 		}
 		
-		if (this.motion.movefore) {
-			this.avatar.flapping = true;
-			this.avatar.rotator.track(camera, 0.1);
+		if (this.debug) {
+			s.d.set();
+			if (this.motion.movefore) {
+				s.d.add(camera.orientation.front);
+			}
+			if (this.motion.moveback) {
+				s.d.sub(camera.orientation.front);
+			}
+			if (this.motion.moveleft) {
+				s.d.sub(camera.orientation.right);
+			}
+			if (this.motion.moveright) {
+				s.d.add(camera.orientation.right);
+			}
+			s.d.norm().mul(2 * dt);
+			this.position.add(s.d);
+			camera.offset.set();
+			camera.position.copy(this.position);
 		} else {
-			this.avatar.flapping = false;
-		}
 		
-		this.avatar.update();
+			
+			if (this.motion.movefore) {
+				this.avatar.flapping = true;
+				this.avatar.rotator.track(camera, 0.1);
+			} else {
+				this.avatar.flapping = false;
+			}
+			
+			this.avatar.update();
 
-/*		
-		if (this.motion.moveleft) {
-			scratch.direction.sub(camera.orientation.right);
+			this.position.copy(this.avatar.position);
+			camera.position.copy(this.avatar.position);
 		}
-		if (this.motion.moveright) {
-			scratch.direction.add(camera.orientation.right);
-		}
-		scratch.direction.norm();
-		this.velocity.copy(scratch.direction).mul(speed * dt);
-		this.position.add(this.velocity);
-*/
-		this.position.copy(this.avatar.position);
-		camera.position.copy(this.avatar.position);
 		
 	},
 	

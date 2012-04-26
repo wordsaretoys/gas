@@ -99,6 +99,14 @@ GAS.paddler = {
 		ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
 		ctx.fillRect(0, 0, hw, h);
 
+		// closure function to draw a spot
+		function spot(x, y, r) {
+			ctx.beginPath();
+			ctx.arc(x, y, r, 0, SOAR.PIMUL2, false);
+			ctx.fill();
+			ctx.stroke();
+		}
+		
 		// add symmetric spots
 		ctx.fillStyle = coat;
 		ctx.strokeStyle = "rgb(0, 0, 0)";
@@ -110,29 +118,16 @@ GAS.paddler = {
 			y = GAS.random(hs, h - hs - 20);
 
 			// left side, top
-			ctx.beginPath();
-			ctx.arc(x, y, hs, 0, SOAR.PIMUL2, false);
-			ctx.fill();
-			ctx.stroke();
-
+			spot(x, y, hs);
+			
 			// right side, top
-			ctx.beginPath();
-			ctx.arc(hw - x, y, hs, 0, SOAR.PIMUL2, false);
-			ctx.fill();
-			ctx.stroke();
+			spot(hw - x, y, hs);
 
 			// left side, bottom
-			ctx.beginPath();
-			ctx.arc(hw + x, y, hs, 0, SOAR.PIMUL2, false);
-			ctx.fill();
-			ctx.stroke();
+			spot(hw + x, y, hs);
 
 			// right side, bottom
-			ctx.beginPath();
-			ctx.arc(w - x, y, hs, 0, SOAR.PIMUL2, false);
-			ctx.fill();
-			ctx.stroke();
-			
+			spot(w - x, y, hs);
 		}
 		
 		// add mouth stripe

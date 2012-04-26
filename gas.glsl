@@ -309,3 +309,65 @@ void main(void) {
 
 </script>
 
+<script id="vs-floater" type="x-shader/x-vertex">
+
+/**
+	floater vertex shader
+	O' = P * V * (M * O + c) transformation, plus texture coordinates
+	
+	@param position vertex array of positions
+	@param texturec vertex array of texture coordinates
+	
+	@param projector projector matrix
+	@param modelview modelview matrix
+	@param rotations rotations matrix
+	@param center model center vector
+	
+	(passed to fragment shader for each vertex)
+	@param uv		texture coordinates of fragment
+	
+**/
+
+attribute vec3 position;
+attribute vec2 texturec;
+
+uniform mat4 projector;
+uniform mat4 modelview;
+uniform mat4 rotations;
+uniform vec3 center;
+
+varying vec2 uv;
+
+void main(void) {
+	// transform the vertex
+	vec4 rotpos = normalize(rotations * vec4(position, 1.0) + vec4(center, 0.0));
+	vec4 mvpos = modelview * rotpos;
+	gl_Position = projector * mvpos;
+	uv = texturec;
+}
+
+</script>
+
+<script id="fs-floater" type="x-shader/x-fragment">
+
+/**
+	floater fragment shader
+	
+	@param skin		specific skin texture
+
+	@param uv		texture coordinates of fragment
+	
+**/
+
+precision mediump float;
+
+uniform sampler2D skin;
+
+varying vec2 uv;
+
+void main(void) {
+	gl_FragColor = texture2D(skin, uv);
+}
+
+</script>
+
