@@ -55,7 +55,7 @@ GAS.paddler = {
 		o.position = SOAR.vector.create();
 		o.velocity = SOAR.vector.create();
 		o.rotator = SOAR.rotator.create();
-
+		
 		o.flapping = false;
 		o.speed = 0;
 		

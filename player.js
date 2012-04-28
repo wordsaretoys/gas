@@ -34,7 +34,7 @@ GAS.player = {
 		d: SOAR.vector.create()
 	},
 	
-	debug: true,
+	debug: false,
 	
 	/**
 		establish jQuery shells around player DOM objects &

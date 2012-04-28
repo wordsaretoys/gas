@@ -118,8 +118,6 @@ GAS.weeds = {
 		p.copy(GAS.player.position).nearest(radius);
 		if (this.lastUpdate.distance(p) > 0) {
 
-			console.log(p.x, p.y, p.z);
-		
 			for (i = 0; i < 27; i++) {
 				cell = this.cell[i];
 				

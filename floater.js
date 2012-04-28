@@ -46,6 +46,8 @@ GAS.floater = {
 		o.position = SOAR.vector.create();
 		o.rotator = SOAR.rotator.create();
 
+		o.rotator.scale = 100;
+		o.rotator.make();
 		o.skin = this.makeSkin();
 
 		return o;
@@ -77,11 +79,14 @@ GAS.floater = {
 		coat = "rgb(" + (256 - r) + ", " + (256 - g) + ", " + (256 - b) + ")";
 		this.colorBase = ((b + 1) * 3) % 256;
 
+		base = "rgb(255, 255, 255)";
+		coat = "rgb(0, 0, 0)";
+		
 		ctx.fillStyle = base;
 		ctx.fillRect(0, 0, w, h);
 		
 		// top half is darker
-		ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+		ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
 		ctx.fillRect(0, 0, hw, h);
 
 		// add symmetric spots
@@ -153,7 +158,7 @@ GAS.floater = {
 		shaper.interpolate = SOAR.interpolator.linear;
 		shaper.map = new Float32Array(this.SHAPE);
 	
-		SOAR.subdivide(6, -0.5, -0.5, 0.5, 0.5, 
+		SOAR.subdivide(4, -0.5, -0.5, 0.5, 0.5, 
 			function(x0, z0, x1, z1, x2, z2) {
 				var y0, y1, y2;
 				var tz0, tz1, tz2;
