@@ -24,9 +24,7 @@
 		<script type="text/javascript" src="/debug/gas/clouds.js"></script>
 		<script type="text/javascript" src="/debug/gas/weeds.js"></script>
 		<script type="text/javascript" src="/debug/gas/ejecta.js"></script>
-		<script type="text/javascript" src="/debug/gas/clumps.js"></script>
 		<script type="text/javascript" src="/debug/gas/paddler.js"></script>
-		<script type="text/javascript" src="/debug/gas/floater.js"></script>
 		
 <?php
 include("gas.glsl");
