@@ -1,6 +1,6 @@
 /**
 
-	Gas 'N' Food: WebGL-based Game
+	Sargasso: a WebGL game
 	
 	@module gas
 	@author cpgauthier
@@ -18,10 +18,37 @@ var GAS = {
 	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
 	
+	/**
+		generate random number in defined range
+		
+		@method random
+		@param l number, lower bound
+		@param u number, upper bound
+		@return random number between l & u
+	**/
+	
 	random: function(l, u) {
 		return l + (u - l) * Math.random();
 	},
 
+	/**
+		determine if one volume completely contains another
+		
+		@method contains
+		@param x0, y0, z0 number, center of volume 0
+		@param l0 number, length of volume 0
+		@param x1, y1, z1 number, center of volume 1
+		@param l1 number, length of volume 1
+		@return true if volume 0 completely contains volume 1
+	**/
+	
+	contains: function(x0, y0, z0, l0, x1, y1, z1, l1) {
+		var r0 = l0 * 0.5, r1 = l1 * 0.5;
+		return (x0 - r0 <= x1 - r1) && (x0 + r0 >= x1 + r1)
+			&& (y0 - r0 <= y1 - r1) && (y0 + r0 >= y1 + r1)
+			&& (z0 - r0 <= z1 - r1) && (z0 + r0 >= z1 + r1);
+	},
+	
 	/**
 		create GL context, set up game objects, load resources
 
@@ -93,14 +120,13 @@ var GAS = {
 		});
 		
 		// while waiting for resource load, initialize game objects
+		GAS.clouds.init();
+		GAS.ejecta.init();
+		GAS.weeds.init();
 		GAS.paddler.init();
 		GAS.player.init();
-		GAS.clouds.init();
-		GAS.weeds.init();
-		GAS.ejecta.init();
+		GAS.map.init();
 		
-		this.test = GAS.paddler.create();
-		this.test.position.set(0, 0, -2);
 	},
 	
 	/**
@@ -110,11 +136,10 @@ var GAS = {
 	**/
 	
 	update: function() {
-		GAS.hud.clearDebug();
-		
+		//GAS.hud.clearDebug();
+		GAS.map.update();
 		GAS.player.update();
 		GAS.ejecta.update();
-		GAS.weeds.update();
 	},
 
 	/**
@@ -136,13 +161,12 @@ var GAS = {
 		
 		GAS.clouds.draw();
 		gl.clear(gl.DEPTH_BUFFER_BIT);
+
+		GAS.map.draw();
 		
-		GAS.weeds.draw();
 		GAS.ejecta.draw();
 		
 		GAS.player.avatar.draw();
-		
-		GAS.test.draw();
 	}
 
 };

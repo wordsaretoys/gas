@@ -50,7 +50,7 @@ GAS.hud = {
 	**/
 	
 	debug: function(msg) {
-		this.dom.debug.html(this.dom.debug.html() + "<span>" + msg + "</span>");
+		this.dom.debug.html(msg);
 	},
 		
 	/**

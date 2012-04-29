@@ -67,7 +67,7 @@ div {
 	font-size: 16pt;
 	font-variant: small-caps;
 
-	display: none;
+/*	display: none; */
 	
 	z-index: 5;
 }
