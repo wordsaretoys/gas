@@ -82,6 +82,10 @@ GAS.map = {
 		var dir = this.dir;
 		var c = 0;
 
+		// reset last draw
+		this.lastDraw = "";
+		
+		// iterate through all nodes
 		for (i = 0, il = this.node.length; i < il; i++) {
 			n = this.node[i];
 			if (n.active) {

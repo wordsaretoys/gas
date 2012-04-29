@@ -122,11 +122,14 @@ GAS.weeds = {
 		var shader = this.shader;
 		var camera = GAS.player.camera;
 
-		shader.activate();
-		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
-		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
+		if (GAS.map.lastDraw !== shader) {
+			shader.activate();
+			gl.uniformMatrix4fv(shader.projector, false, camera.projector());
+			gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
+			this.skin.bind(0, shader.skin);
+			GAS.map.lastDraw = shader;
+		}
 		gl.uniformMatrix4fv(shader.rotations, false, this.matrix);
-		this.skin.bind(0, shader.skin);
 		this.mesh.draw();
 	}
 
