@@ -124,8 +124,8 @@ GAS.weeds = {
 
 		if (GAS.map.lastDraw !== shader) {
 			shader.activate();
-			gl.uniformMatrix4fv(shader.projector, false, camera.projector());
-			gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
+			gl.uniformMatrix4fv(shader.projector, false, camera.matrix.projector);
+			gl.uniformMatrix4fv(shader.modelview, false, camera.matrix.modelview);
 			this.skin.bind(0, shader.skin);
 			GAS.map.lastDraw = shader;
 		}

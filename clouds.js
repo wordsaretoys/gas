@@ -113,8 +113,8 @@ GAS.clouds = {
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 		
 		shader.activate();
-		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
-		gl.uniformMatrix4fv(shader.modelview, false, camera.rotations());
+		gl.uniformMatrix4fv(shader.projector, false, camera.matrix.projector);
+		gl.uniformMatrix4fv(shader.modelview, false, camera.matrix.rotations);
 		this.texture.noise.bind(0, shader.noise);
 		this.mesh.draw();
 

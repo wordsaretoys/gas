@@ -77,8 +77,8 @@ GAS.ejecta = {
 		var camera = GAS.player.camera;
 
 		shader.activate();
-		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
-		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
+		gl.uniformMatrix4fv(shader.projector, false, camera.matrix.projector);
+		gl.uniformMatrix4fv(shader.modelview, false, camera.matrix.modelview);
 		gl.uniform3f(shader.center, this.center.x, this.center.y, this.center.z);
 		this.mesh.draw();
 	}

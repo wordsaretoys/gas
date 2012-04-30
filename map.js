@@ -41,6 +41,14 @@ GAS.map = {
 				active: false
 			} );
 		}
+
+		// generate spice object for test
+		this.node.push( {
+			object: GAS.spice.create(0, 0, -25),
+			center: SOAR.vector.create(0, 0, -25),
+			radius: GAS.spice.CLOUD_RADIUS,
+			active: false
+		} );
 		
 	},
 	

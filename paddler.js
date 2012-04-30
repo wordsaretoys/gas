@@ -272,8 +272,8 @@ GAS.paddler = {
 		gl.cullFace(gl.BACK);
 
 		shader.activate();
-		gl.uniformMatrix4fv(shader.projector, false, camera.projector());
-		gl.uniformMatrix4fv(shader.modelview, false, camera.modelview());
+		gl.uniformMatrix4fv(shader.projector, false, camera.matrix.projector);
+		gl.uniformMatrix4fv(shader.modelview, false, camera.matrix.modelview);
 		gl.uniformMatrix4fv(shader.rotations, false, this.rotator.matrix.transpose);
 		gl.uniform3f(shader.center, this.position.x, this.position.y, this.position.z);
 		gl.uniform1f(shader.wing, this.wing);

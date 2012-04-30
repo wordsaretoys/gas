@@ -108,6 +108,7 @@ var GAS = {
 					document.body.clientWidth, 
 					document.body.clientHeight
 				);
+				GAS.player.camera.projector();
 				GAS.draw();
 			}, false);
 			
@@ -122,6 +123,7 @@ var GAS = {
 		// while waiting for resource load, initialize game objects
 		GAS.clouds.init();
 		GAS.ejecta.init();
+		GAS.spice.init();
 		GAS.weeds.init();
 		GAS.paddler.init();
 		GAS.player.init();

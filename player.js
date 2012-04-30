@@ -130,6 +130,11 @@ GAS.player = {
 			camera.position.copy(this.avatar.position);
 		}
 		
+		// generate camera matrixes
+		// (will be cached in the camera object)
+		camera.modelview();
+		camera.projector();
+		
 	},
 	
 	/**

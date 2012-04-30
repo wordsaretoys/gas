@@ -23,6 +23,7 @@
 		<script type="text/javascript" src="/debug/gas/map.js"></script>
 		<script type="text/javascript" src="/debug/gas/player.js"></script>
 		<script type="text/javascript" src="/debug/gas/clouds.js"></script>
+		<script type="text/javascript" src="/debug/gas/spice.js"></script>
 		<script type="text/javascript" src="/debug/gas/weeds.js"></script>
 		<script type="text/javascript" src="/debug/gas/ejecta.js"></script>
 		<script type="text/javascript" src="/debug/gas/paddler.js"></script>

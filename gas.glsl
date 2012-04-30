@@ -251,3 +251,45 @@ void main(void) {
 }
 
 </script>
+
+<script id="vs-spice" type="x-shader/x-vertex">
+
+/**
+	spice cloud vertex shader
+	O' = P * V * M * O transformation
+	
+	@param position vertex array of positions
+	
+	@param projector projector matrix
+	@param modelview modelview matrix
+	@param rotations rotations matrix
+	
+**/
+
+attribute vec3 position;
+
+uniform mat4 projector;
+uniform mat4 modelview;
+uniform mat4 rotations;
+
+void main(void) {
+	gl_Position = projector * modelview * rotations * vec4(position, 1.0);
+}
+
+</script>
+
+<script id="fs-spice" type="x-shader/x-fragment">
+
+/**
+	spice cloud fragment shader
+
+**/
+
+precision mediump float;
+
+void main(void) {
+	gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+}
+
+</script>
+
