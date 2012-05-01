@@ -80,6 +80,8 @@ GAS.spice = {
 		var matrix = this.rotator.matrix.rotations;
 
 		if (GAS.map.lastDraw !== shader) {
+			gl.disable(gl.BLEND);
+			gl.disable(gl.CULL_FACE);
 			shader.activate();
 			gl.uniformMatrix4fv(shader.projector, false, camera.matrix.projector);
 			gl.uniformMatrix4fv(shader.modelview, false, camera.matrix.modelview);

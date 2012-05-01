@@ -241,7 +241,6 @@ GAS.paddler = {
 		var ds;
 
 		// haste tells us how we're supposed to be moving
-
 		switch(this.haste) {
 		
 		case 0:
@@ -299,21 +298,21 @@ GAS.paddler = {
 		var camera = GAS.player.camera;
 		var shader = this.shader;
 
-		gl.enable(gl.CULL_FACE);
-		gl.cullFace(gl.BACK);
-
-		shader.activate();
-		gl.uniformMatrix4fv(shader.projector, false, camera.matrix.projector);
-		gl.uniformMatrix4fv(shader.modelview, false, camera.matrix.modelview);
+		if (GAS.map.lastDraw !== shader) {
+			gl.enable(gl.CULL_FACE);
+			gl.cullFace(gl.BACK);
+			shader.activate();
+			gl.uniformMatrix4fv(shader.projector, false, camera.matrix.projector);
+			gl.uniformMatrix4fv(shader.modelview, false, camera.matrix.modelview);
+			GAS.map.lastDraw = shader;
+		}
+		
 		gl.uniformMatrix4fv(shader.rotations, false, this.rotator.matrix.transpose);
 		gl.uniform3f(shader.center, this.position.x, this.position.y, this.position.z);
 		gl.uniform1f(shader.wing, this.wing);
 		gl.uniform1f(shader.mouth, this.mouth);
 		this.skin.bind(0, shader.skin);
 		this.mesh.draw();
-		
-		gl.disable(gl.CULL_FACE);
-		
 	}
 
 };
