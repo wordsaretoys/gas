@@ -17,10 +17,12 @@ GAS.paddler = {
 
 	IDLE_FLAP: 0.05,
 	SLOW_FLAP: 0.25,
-	FAST_FLAP: 0.75,
+	FAST_FLAP: 0.65,
+
+	SLOW_SPEED: 1,
+	FAST_SPEED: 10,
 	
-	RAMP_RATE: 20,
-	MAX_SPEED: 10,
+	COMFORT_ZONE: 50,
 
 	colorBase: 128,
 
@@ -55,9 +57,9 @@ GAS.paddler = {
 		o.position = SOAR.vector.create();
 		o.velocity = SOAR.vector.create();
 		o.rotator = SOAR.rotator.create();
-		
-		o.flapping = false;
+
 		o.speed = 0;
+		o.haste = 0;
 		
 		o.skin = this.makeSkin();
 
@@ -236,20 +238,49 @@ GAS.paddler = {
 		var o = this.rotator.orientation;
 		var s = this.scratch;
 		var dt = SOAR.interval * 0.001;
+		var ds;
 
-		if (this.flapping) {
-			if (this.speed < this.MAX_SPEED) {
-				this.speed = Math.min(this.MAX_SPEED, this.speed + this.RAMP_RATE * dt);
+		// haste tells us how we're supposed to be moving
+
+		switch(this.haste) {
+		
+		case 0:
+		
+			if (this.speed > 0) {
+				// decelerate based on how fast we're going
+				ds = (this.speed > this.SLOW_SPEED ? this.FAST_SPEED : this.SLOW_SPEED) * 2 * dt;
+				this.speed = Math.max(0, this.speed - ds);
+			}
+			this.wing += this.IDLE_FLAP;
+			break;
+			
+		case 1:
+		
+			if (this.speed < this.SLOW_SPEED) {
+				// accelerate from zero
+				ds = this.SLOW_SPEED * 2 * dt;
+				this.speed = Math.min(this.SLOW_SPEED, this.speed + ds);
+			} else if (this.speed > this.SLOW_SPEED) {
+				// decelerate from faster speed
+				ds = this.FAST_SPEED * 2 * dt;
+				this.speed = Math.max(this.SLOW_SPEED, this.speed - ds);
+			}
+			this.wing += this.SLOW_FLAP;
+			break;
+			
+		case 2:
+		
+			if (this.speed < this.FAST_SPEED) {
+				// accelerate
+				ds = this.FAST_SPEED * 2 * dt;
+				this.speed = Math.min(this.FAST_SPEED, this.speed + ds);
 				this.wing += this.FAST_FLAP;
 			} else {
 				this.wing += this.SLOW_FLAP;
 			}
-		} else {
-			if (this.speed > 0) {
-				this.speed = Math.max(0, this.speed - this.RAMP_RATE * dt);
-			}
-			this.wing += this.IDLE_FLAP;
+			break;
 		}
+
 		this.wing = this.wing % SOAR.PIMUL2;
 		
 		this.velocity.copy(o.front).mul(this.speed * dt);

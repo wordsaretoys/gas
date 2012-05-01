@@ -43,13 +43,23 @@ GAS.map = {
 		}
 
 		// generate spice object for test
-		this.node.push( {
+/*		this.node.push( {
 			object: GAS.spice.create(0, 0, -25),
 			center: SOAR.vector.create(0, 0, -25),
 			radius: GAS.spice.CLOUD_RADIUS,
 			active: false
 		} );
-		
+*/
+
+		// generate paddler for test
+		var p = GAS.paddler.create();
+		p.position.set(0, 0, -10);
+		this.node.push( {
+			object: p,
+			center: SOAR.vector.create(0, 0, -10),
+			radius: GAS.paddler.COMFORT_ZONE,
+			active: false
+		} );
 	},
 	
 	/**
@@ -110,7 +120,7 @@ GAS.map = {
 				}
 			}
 		}
-		GAS.hud.debug(c);
+//		GAS.hud.debug(c);
 	}
 
 };

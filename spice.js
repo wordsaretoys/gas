@@ -8,7 +8,7 @@
 GAS.spice = {
 
 	CLOUD_RADIUS: 1,
-	FRAG_RADIUS: 0.05,
+	FRAG_RADIUS: 0.025,
 
 	/**
 		create and init objects usable by all spice instances

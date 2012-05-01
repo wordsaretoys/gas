@@ -14,7 +14,8 @@ GAS.player = {
 	
 	motion: {
 		moveleft: false, moveright: false,
-		movefore: false, moveback: false
+		movefore: false, moveback: false,
+		movefast: false
 	},
 	
 	mouse: {
@@ -115,13 +116,12 @@ GAS.player = {
 			camera.offset.set();
 			camera.position.copy(this.position);
 		} else {
-		
 			
 			if (this.motion.movefore) {
-				this.avatar.flapping = true;
+				this.avatar.haste = this.motion.movefast ? 2 : 1;
 				this.avatar.rotator.track(camera, 0.1);
 			} else {
-				this.avatar.flapping = false;
+				this.avatar.haste = 0;
 			}
 			
 			this.avatar.update();
@@ -171,6 +171,9 @@ GAS.player = {
 			case SOAR.KEY.S:
 				that.motion.moveback = true;
 				break;
+			case SOAR.KEY.SHIFT:
+				that.motion.movefast = true;
+				break;
 		}
 		return true;
 	},
@@ -200,6 +203,9 @@ GAS.player = {
 				break;
 			case SOAR.KEY.S:
 				that.motion.moveback = false;
+				break;
+			case SOAR.KEY.SHIFT:
+				that.motion.movefast = false;
 				break;
 		}
 		return true;

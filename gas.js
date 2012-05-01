@@ -169,6 +169,9 @@ var GAS = {
 		GAS.ejecta.draw();
 		
 		GAS.player.avatar.draw();
+		
+		GAS.hud.debug(GAS.player.avatar.speed);
+
 	}
 
 };
