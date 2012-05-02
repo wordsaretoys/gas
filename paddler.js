@@ -13,6 +13,8 @@
 
 GAS.paddler = {
 
+	RADIUS: 1.5,
+
 	SHAPE: [0, 0.25, 0.5, 0.8, 0.9, 0.8, 0.7, 0.4],
 
 	IDLE_FLAP: 0.05,

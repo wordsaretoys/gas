@@ -28,7 +28,7 @@ GAS.map = {
 	
 	init: function() {
 		var i, il;
-		var x, y, z, o;
+		var x, y, z;
 	
 		// generate weed objects and map nodes for them
 		for (i = 0, il = this.WEED_COUNT; i < il; i++) {
@@ -42,21 +42,22 @@ GAS.map = {
 			} );
 		}
 
-		// generate spice object for test
-/*		this.master.push( {
-			object: GAS.spice.create(0, 0, -25),
-			center: SOAR.vector.create(0, 0, -25),
-			radius: GAS.spice.CLOUD_RADIUS
-		} );
-*/
-
-		// generate paddler for test
-		var p = GAS.paddler.create();
-		p.position.set(0, 0, -75);
+	},
+	
+	/**
+		add drawable object to map
+		
+		@method add
+		@param p object, coordinates of object center
+		@param r number, object radius
+		@param o object to add
+	**/
+	
+	add: function(p, r, o) {
 		this.master.push( {
-			object: p,
-			center: SOAR.vector.create(0, 0, -75),
-			radius: GAS.paddler.COMFORT_ZONE
+			object: o,
+			center: p,
+			radius: r
 		} );
 	},
 	
@@ -67,7 +68,7 @@ GAS.map = {
 	**/
 	
 	update: function() {
-		var p = GAS.player.camera.position;
+		var p = GAS.player.position;
 		var r = this.EYE_RADIUS;
 		var b = false;
 		var i, il, j, c, n;
@@ -104,7 +105,7 @@ GAS.map = {
 			
 			// close any gaps in the active list
 			// (object will sort before undefined)
-			GAS.map.active.sort();
+			this.active.sort();
 			// find the first undefined, and chop the array off there
 			for (i = 0; i < il; i++) {
 				if (!this.active[i]) {
@@ -125,7 +126,7 @@ GAS.map = {
 	
 	draw: function() {
 		var i, il, n;
-		var cp = GAS.player.camera.position;
+		var cp = GAS.player.position;
 		var fr = GAS.player.camera.orientation.front;
 		var dir = this.dir;
 		var c = 0;
@@ -138,7 +139,7 @@ GAS.map = {
 			n = this.active[i];
 			if (n) {
 				dir.copy(n.center).sub(cp);
-				if (dir.length() < 100) {
+				if (dir.length() < n.radius * 2) {
 					n.object.draw();
 					c++;
 				} else {
@@ -150,7 +151,7 @@ GAS.map = {
 				}
 			}
 		}
-		GAS.hud.debug(c);
+//		GAS.hud.debug(c);
 	}
 
 };

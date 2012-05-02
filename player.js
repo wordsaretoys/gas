@@ -8,14 +8,12 @@
 
 GAS.player = {
 
-	RADIUS: 1.5,
-
 	position: SOAR.vector.create(),
 	
 	motion: {
 		moveleft: false, moveright: false,
 		movefore: false, moveback: false,
-		movefast: false
+		movefast: true
 	},
 	
 	mouse: {
@@ -172,7 +170,7 @@ GAS.player = {
 				that.motion.moveback = true;
 				break;
 			case SOAR.KEY.SHIFT:
-				that.motion.movefast = true;
+				//that.motion.movefast = true;
 				break;
 		}
 		return true;
@@ -205,7 +203,7 @@ GAS.player = {
 				that.motion.moveback = false;
 				break;
 			case SOAR.KEY.SHIFT:
-				that.motion.movefast = false;
+				//that.motion.movefast = false;
 				break;
 		}
 		return true;

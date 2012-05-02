@@ -128,6 +128,7 @@ var GAS = {
 		GAS.paddler.init();
 		GAS.player.init();
 		GAS.map.init();
+		GAS.npc.init();
 		
 	},
 	
@@ -140,6 +141,7 @@ var GAS = {
 	update: function() {
 		//GAS.hud.clearDebug();
 		GAS.map.update();
+		GAS.npc.update();
 		GAS.player.update();
 		GAS.ejecta.update();
 	},
