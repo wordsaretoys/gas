@@ -59,7 +59,7 @@ GAS.paddler = {
 		o.position = SOAR.vector.create();
 		o.velocity = SOAR.vector.create();
 		o.rotator = SOAR.rotator.create();
-
+		
 		o.speed = 0;
 		o.haste = 0;
 		
@@ -286,6 +286,28 @@ GAS.paddler = {
 		
 		this.velocity.copy(o.front).mul(this.speed * dt);
 		this.position.add(this.velocity);
+	},
+	
+	/**
+		orient "front" to a particular vector
+		
+		note: p must be normalized!
+		
+		@method pointTo
+		@param p object, vector to align front
+		@param t number, rate at which to align
+	**/
+	
+	pointTo: function(p, t) {
+		var r = this.rotator;
+		var q = r.scratch.q;
+		var ro = r.orientation;
+		var fr = ro.front;
+		fr.cross(p).neg();
+		q.setFromAxisAngle(fr.x, fr.y, fr.z, t).norm();
+		r.product.mul(q).norm();
+		// reduces roll and regenerates vectors/matrixes
+		r.turn(0, 0, ro.right.y);
 	},
 	
 	/**

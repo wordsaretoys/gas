@@ -35,8 +35,6 @@ GAS.npc = {
 		var p = SOAR.vector.create(0, 0, -25);
 		var o = GAS.paddler.create();
 		o.position.copy(p);
-		o.rotator.free = false;
-		o.rotator.bound.set(Math.sqrt(2) / 2, -1, 0);
 		o.haste = 1;
 
 		this.list.push( {
@@ -134,15 +132,8 @@ GAS.npc = {
 	
 	watch: function(o) {
 		var p = this.scratch.p;
-		var q = this.scratch.q;
-		var r = o.object.rotator;
-		var ro = r.orientation;
 		p.copy(GAS.player.position).sub(o.object.position).norm();
-		var s = p.z;
-//		GAS.hud.debug(p.x + "<br>" + p.y + "<br>" + p.z);
-		p.cross(ro.front).mul(0.1);
-		var t = (s >= 0) ? -p.x : p.x;
-		o.object.rotator.turn(t, p.y, 0);
+		o.object.pointTo(p, 0.1);
 	},
 
 	/**
