@@ -40,7 +40,11 @@ GAS.npc = {
 		this.list.push( {
 			center: p,
 			object: o,
-			status: this.DRIFTING
+			status: this.DRIFTING,
+			target: SOAR.vector.create(),
+			period: 0,
+			health: 0,
+			damage: 0
 		} );
 		GAS.map.add(o.position, GAS.paddler.RADIUS, o);
 	
@@ -120,7 +124,19 @@ GAS.npc = {
 	**/
 	
 	drift: function(o) {
-		o.object.rotator.turn(0, 0.005, 0);
+		var p = this.scratch.p;
+		p.copy(o.center).sub(o.object.position);
+		if (p.length() > this.COMFORT_RADIUS) {
+			p.norm().mul(0.01);
+			o.target.add(p).norm();
+		}
+		if (o.period <= 0) {
+			o.period = GAS.random(5, 10);
+			o.target.set( GAS.random(-1, 1), GAS.random(-0.5, 0.5), GAS.random(-1, 1) ).norm();
+		}
+		
+		o.object.pointTo(o.target, 0.05);
+		o.period -= SOAR.interval * 0.001;
 	},
 
 	/**
