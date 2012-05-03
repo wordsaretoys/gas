@@ -83,9 +83,9 @@ GAS.npc = {
 					console.log("watching -> drifting");
 				}
 				if (n.distance < this.REACT_RADIUS) {
-//					n.status = this.EVADING;
-//					n.object.haste = 2;
-//					console.log("watching -> evading");
+					n.status = this.EVADING;
+					n.object.haste = 2;
+					console.log("watching -> evading");
 					proximity = true;
 				}
 				this.watch(n);
@@ -100,6 +100,7 @@ GAS.npc = {
 					n.status = this.WATCHING;
 					n.object.haste = 0;
 					console.log("evading -> watching");
+					proximity = true;
 				}
 				this.evade(n);
 				break;
@@ -171,7 +172,9 @@ GAS.npc = {
 	**/
 	
 	evade: function(o) {
-	
+		var p = this.scratch.p;
+		p.copy(o.object.position).sub(GAS.player.position).norm();
+		o.object.pointTo(p, 0.25);
 	},
 
 };
