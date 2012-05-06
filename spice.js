@@ -8,7 +8,7 @@
 GAS.spice = {
 
 	CLOUD_RADIUS: 1,
-	FRAG_RADIUS: 0.025,
+	FRAG_RADIUS: 0.01,
 
 	/**
 		create and init objects usable by all spice instances
@@ -31,12 +31,12 @@ GAS.spice = {
 		this.mesh = SOAR.mesh.create(GAS.display);
 		this.mesh.add(this.shader.position, 3);
 		
-		for (i = 0; i < 1000; i++) {
+		for (i = 0; i < 10000; i++) {
 			p.set(
 				Math.random() - Math.random(),
 				Math.random() - Math.random(),
 				Math.random() - Math.random()
-			).norm().mul(this.CLOUD_RADIUS);
+			).norm().mul(GAS.random(0, this.CLOUD_RADIUS));
 			for (j = 0; j < 3; j++) {
 				this.mesh.set(
 					p.x + GAS.random(-this.FRAG_RADIUS, this.FRAG_RADIUS), 
@@ -87,7 +87,7 @@ GAS.spice = {
 			gl.uniformMatrix4fv(shader.modelview, false, camera.matrix.modelview);
 			GAS.map.lastDraw = shader;
 		}
-		this.rotator.turn(0, 0.05, 0);
+		this.rotator.turn(0, 0.01, 0);
 		matrix[12] = this.position.x;
 		matrix[13] = this.position.y;
 		matrix[14] = this.position.z;

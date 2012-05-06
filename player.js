@@ -98,16 +98,16 @@ GAS.player = {
 		if (this.debug) {
 			s.d.set();
 			if (this.motion.movefore) {
-				s.d.add(camera.orientation.front);
+				s.d.add(camera.front);
 			}
 			if (this.motion.moveback) {
-				s.d.sub(camera.orientation.front);
+				s.d.sub(camera.front);
 			}
 			if (this.motion.moveleft) {
-				s.d.sub(camera.orientation.right);
+				s.d.sub(camera.right);
 			}
 			if (this.motion.moveright) {
-				s.d.add(camera.orientation.right);
+				s.d.add(camera.right);
 			}
 			s.d.norm().mul(2 * dt);
 			this.position.add(s.d);
@@ -170,7 +170,7 @@ GAS.player = {
 				that.motion.moveback = true;
 				break;
 			case SOAR.KEY.SHIFT:
-				//that.motion.movefast = true;
+				that.motion.movefast = true;
 				break;
 		}
 		return true;
@@ -203,7 +203,7 @@ GAS.player = {
 				that.motion.moveback = false;
 				break;
 			case SOAR.KEY.SHIFT:
-				//that.motion.movefast = false;
+				that.motion.movefast = false;
 				break;
 		}
 		return true;

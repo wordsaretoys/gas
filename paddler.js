@@ -13,8 +13,10 @@
 
 GAS.paddler = {
 
-	RADIUS: 1.5,
+	RADIUS: 1,
 
+	VIEW_ANGLE: Math.cos(120 * Math.PI / 180),
+	
 	SHAPE: [0, 0.25, 0.5, 0.8, 0.9, 0.8, 0.7, 0.4],
 
 	IDLE_FLAP: 0.05,
@@ -67,6 +69,20 @@ GAS.paddler = {
 
 		o.wing = 0;
 		o.mouth = 0.25 * Math.PI;
+		
+		o.scratch = {
+			p: SOAR.vector.create(),
+			r: SOAR.vector.create()
+		};
+		
+		o.model = [
+			SOAR.vector.create(),
+			SOAR.vector.create(),
+			SOAR.vector.create(),
+			SOAR.vector.create(),
+			SOAR.vector.create(),
+			SOAR.vector.create()
+		];
 		
 		return o;
 	},
@@ -180,6 +196,9 @@ GAS.paddler = {
 		var shaper = SOAR.noise1D.create(0, 0.5, 8, 8);
 		shaper.interpolate = SOAR.interpolator.linear;
 		shaper.map = new Float32Array(this.SHAPE);
+		
+		var min = SOAR.vector.create();
+		var max = SOAR.vector.create();
 	
 		SOAR.subdivide(6, -0.5, -0.5, 0.5, 0.5, 
 			function(x0, z0, x1, z1, x2, z2) {
@@ -218,14 +237,32 @@ GAS.paddler = {
 				mesh.set(x0, y0, z0, tx0, tz0);
 				mesh.set(x1, y1, z1, tx1, tz1);
 				mesh.set(x2, y2, z2, tx2, tz2);
+				
+				max.x = Math.max(max.x, x0, x1, x2);
+				max.y = Math.max(max.y, y0, y1, y2);
+				max.z = Math.max(max.z, z0, z1, z2);
+				
+				y0 = -0.5 * y0;
+				y1 = -0.5 * y1;
+				y2 = -0.5 * y2;
 
-				mesh.set(x0, -0.5 * y0, z0, tx0 + 0.5, tz0);
-				mesh.set(x2, -0.5 * y2, z2, tx2 + 0.5, tz2);
-				mesh.set(x1, -0.5 * y1, z1, tx1 + 0.5, tz1);
+				mesh.set(x0, y0, z0, tx0 + 0.5, tz0);
+				mesh.set(x2, y2, z2, tx2 + 0.5, tz2);
+				mesh.set(x1, y1, z1, tx1 + 0.5, tz1);
+
+				min.x = Math.min(min.x, x0, x1, x2);
+				min.y = Math.min(min.y, y0, y1, y2);
+				min.z = Math.min(min.z, z0, z1, z2);
+				
 			}
 		);
 	
 		mesh.build();
+		
+		mesh.bounds = {
+			min: min,
+			max: max
+		};
 		
 		return mesh;
 	},
@@ -237,8 +274,9 @@ GAS.paddler = {
 	**/
 
 	update: function() {
-		var o = this.rotator.orientation;
 		var s = this.scratch;
+		var m = this.model;
+		var b = this.mesh.bounds;
 		var dt = SOAR.interval * 0.001;
 		var ds;
 
@@ -284,8 +322,16 @@ GAS.paddler = {
 
 		this.wing = this.wing % SOAR.PIMUL2;
 		
-		this.velocity.copy(o.front).mul(this.speed * dt);
+		this.velocity.copy(this.rotator.front).mul(this.speed * dt);
 		this.position.add(this.velocity);
+		
+		// generate bounding box model
+		m[0].copy(this.rotator.right).mul(b.min.x).add(this.position);
+		m[1].copy(this.rotator.right).mul(b.max.x).add(this.position);
+		m[2].copy(this.rotator.up).mul(b.min.y).add(this.position);
+		m[3].copy(this.rotator.up).mul(b.max.y).add(this.position);
+		m[4].copy(this.rotator.front).mul(b.min.z).add(this.position);
+		m[5].copy(this.rotator.front).mul(b.max.z).add(this.position);
 	},
 	
 	/**
@@ -301,13 +347,55 @@ GAS.paddler = {
 	pointTo: function(p, t) {
 		var r = this.rotator;
 		var q = r.scratch.q;
-		var ro = r.orientation;
-		var fr = ro.front;
+		var fr = this.rotator.front;
 		fr.cross(p).neg();
 		q.setFromAxisAngle(fr.x, fr.y, fr.z, t).norm();
 		r.product.mul(q).norm();
 		// reduces roll and regenerates vectors/matrixes
-		r.turn(0, 0, ro.right.y);
+		r.turn(0, 0, this.rotator.right.y);
+	},
+	
+	/**
+		determines if the paddler can see another paddler
+		
+		@method isSeeing
+		@param o object, the second paddler object
+		@return true if the other paddler is in FOV
+	**/
+	
+	isSeeing: function(o) {
+		var eye = this.scratch.p;
+		var ray = this.scratch.r;
+
+		eye.copy(this.rotator.front).add(this.rotator.up).mul(0.5).norm();
+		ray.copy(this.position).sub(o.position).norm();
+		return eye.dot(ray) < this.VIEW_ANGLE;
+	},
+	
+	/**
+		determines if the paddler is touching another paddler
+		
+		@method isTouching
+		@param o object, the second paddler object
+		@return true if paddlers are in contact
+	**/
+	
+	isTouching: function(o) {
+
+		// LATER:
+		// extrapolate the two closest points on the models
+		// using the bounding points as a guide--successive
+		// approximation?
+
+		var i, j, d = Infinity;
+		for (i = 0; i < 6; i++) {
+			for (j = 0; j < 6; j++) {
+				d = Math.min(d, this.model[i].distance(o.model[j]));
+			}
+		}
+		
+		return d < 0.2;
+
 	},
 	
 	/**

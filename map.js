@@ -7,6 +7,8 @@
 
 GAS.map = {
 
+	OBJECT_WEED: 0,
+
 	WEED_COUNT: 7500,
 	MAP_RADIUS: 1000,
 	MAP_HEIGHT: 300,
@@ -28,7 +30,7 @@ GAS.map = {
 	
 	init: function() {
 		var i, il;
-		var x, y, z;
+		var x, y, z, c;
 	
 		// generate weed objects and map nodes for them
 		for (i = 0, il = this.WEED_COUNT; i < il; i++) {
@@ -36,12 +38,12 @@ GAS.map = {
 			y = GAS.random(-this.MAP_HEIGHT, this.MAP_HEIGHT);
 			z = GAS.random(-this.MAP_RADIUS, this.MAP_RADIUS);
 			this.master.push( {
+				obtype: this.OBJECT_WEED,
 				object: GAS.weeds.create(x, y, z),
 				center: SOAR.vector.create(x, y, z),
 				radius: GAS.weeds.BASE_RADIUS
-			} );
+			} ); 
 		}
-
 	},
 	
 	/**
@@ -127,7 +129,7 @@ GAS.map = {
 	draw: function() {
 		var i, il, n;
 		var cp = GAS.player.position;
-		var fr = GAS.player.camera.orientation.front;
+		var fr = GAS.player.camera.front;
 		var dir = this.dir;
 		var c = 0;
 
