@@ -13,7 +13,7 @@ GAS.player = {
 	motion: {
 		moveleft: false, moveright: false,
 		movefore: false, moveback: false,
-		movefast: true
+		movefast: false
 	},
 	
 	mouse: {
@@ -87,8 +87,8 @@ GAS.player = {
 		var s = this.scratch;
 		var dx, dy;
 
-		dx = 0.25 * dt * (mouse.next.x - mouse.last.x);
-		dy = 0.25 * dt * (mouse.next.y - mouse.last.y);
+		dx = 0.35 * dt * (mouse.next.x - mouse.last.x);
+		dy = 0.35 * dt * (mouse.next.y - mouse.last.y);
 		if (dx || dy) {
 			this.camera.turn(dy, dx, 0);
 			mouse.last.x = mouse.next.x;

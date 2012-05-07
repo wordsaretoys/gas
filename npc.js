@@ -8,15 +8,12 @@
 GAS.npc = {
 
 	COMFORT_RADIUS: 25,
-	WATCH_RADIUS: 15,
-	REACT_RADIUS: 5,
-	
-	VIEW_ANGLE: Math.cos(120 * Math.PI / 180),
+	WATCH_RADIUS: 10,
+	EVADE_RADIUS: 3,
 	
 	DRIFTING: 0,
 	WATCHING: 1,
-	FIGHTING: 2,
-	EVADING: 3,
+	EVADING: 2,
 
 	list: [],
 	
@@ -81,7 +78,7 @@ GAS.npc = {
 		for (i = 0, il = this.list.length; i < il; i++) {
 			n = this.list[i];
 			n.distance = this.player.position.distance(n.object.position);
-/*			
+			
 			// handle npc behaviors
 			switch (n.status) {
 			
@@ -98,20 +95,12 @@ GAS.npc = {
 				break;
 			
 			}
-*/			
-			// OVERRIDE
-			n.object.haste = 0;
 			
 			// actually move the object
 			n.object.update();
 		
-			GAS.hud.debug(n.object.isTouching(this.player) ? "TOUCH" : "NO TOUCH");
-			
 		}
 		
-		// advise player of npc proximity
-//		GAS.player.motion.movefast = !proximity;
-
 	},
 	
 	/**
@@ -142,8 +131,8 @@ GAS.npc = {
 		o.object.pointTo(o.target, 0.05);
 		o.period -= SOAR.interval * 0.001;
 
-		// if the player is nearby, can e see em?
-		if (o.distance < this.WATCH_RADIUS && o.object.isSeeing(this.player)) {
+		// if the player is nearby
+		if (o.distance < this.WATCH_RADIUS) {
 			o.status = this.WATCHING;
 			o.object.haste = 0;
 			console.log("drifting -> watching");
@@ -167,12 +156,12 @@ GAS.npc = {
 		if (o.distance > this.WATCH_RADIUS) {
 			o.status = this.DRIFTING;
 			o.object.haste = 1;
+			console.log("watching -> drifting");
 		}
-		if (o.distance < this.REACT_RADIUS) {
+		if (o.distance < this.EVADE_RADIUS) {
 			o.status = this.EVADING;
-			o.object.haste = 2;
+			console.log("watching -> evading");
 		}
-		
 	},
 
 	/**
@@ -184,13 +173,29 @@ GAS.npc = {
 	
 	evade: function(o) {
 		var p = this.scratch.p;
+		var l;
+
+		// point npc away from player
+		o.target.copy(o.object.position).sub(this.player.position).norm();
+		o.target.cross(this.player.rotator.up);
 		
-		p.copy(o.object.position).sub(this.player.position).norm();
-		o.object.pointTo(p, 0.25);
+		// match speed with player
+		o.object.haste = this.player.haste || 1;
+
+		// if npc is leaving e's comfort zone, pull em back in
+		p.copy(o.center).sub(o.object.position);
+		l = p.length() - this.COMFORT_RADIUS;
+		if (l > 0) {
+			p.norm().mul(l * 0.05);
+			o.target.add(p).norm();
+		} 
 		
-		if (o.distance > this.REACT_RADIUS) {
+		o.object.pointTo(o.target, 0.25);
+		
+		if (o.distance > this.EVADE_RADIUS) {
 			o.status = this.WATCHING;
 			o.object.haste = 0;
+			console.log("evading -> watching");
 		}
 		
 	},
