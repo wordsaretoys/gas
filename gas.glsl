@@ -293,3 +293,63 @@ void main(void) {
 
 </script>
 
+<script id="vs-card" type="x-shader/x-vertex">
+
+/**
+	card vertex shader
+	spice cloud vertex shader
+	O' = P * V * M * (s * O + c) transformation
+	
+	@param position vertex array of positions
+	
+	@param projector projector matrix
+	@param modelview modelview matrix
+	@param rotations rotations matrix
+	
+**/
+
+attribute vec3 position;
+
+uniform mat4 projector;
+uniform mat4 modelview;
+uniform mat4 rotations;
+uniform vec3 center;
+uniform float scale;
+
+varying vec2 uv;
+
+void main(void) {
+	vec3 rotpos = (rotations * vec4(position, 1.0)).xyz;
+	gl_Position = projector * modelview * vec4(scale * rotpos + center, 1.0);
+	uv = position.xy;
+}
+
+</script>
+
+<script id="fs-card-sound" type="x-shader/x-fragment">
+
+/**
+	card sound fragment shader
+
+**/
+
+precision mediump float;
+
+uniform float time;
+
+varying vec2 uv;
+
+void main(void) {
+	float radius = length(uv);
+	float alpha = 0.0;
+	for (int i = 0; i < 4; i++) {
+		float base = mod(time + float(i) * 0.25, 2.0);
+		float u = base + 0.01;
+		float l = base - 0.01;
+		if (radius > l && radius < u)
+			alpha = 1.0 - radius;
+	}
+	gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
+}
+
+</script>

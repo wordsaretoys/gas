@@ -30,38 +30,37 @@ GAS.npc = {
 	**/
 	
 	init: function() {
-	
-		// generate test paddler
-		var p = SOAR.vector.create(0, 0, -5);
-		var o = GAS.paddler.create();
-		o.position.copy(p);
-		o.haste = 1;
 
-		this.list.push( {
-			center: p,
-			object: o,
-			status: this.DRIFTING,
-			target: SOAR.vector.create(),
-			period: 0,
-			active: false
-		} );
-		GAS.map.add(o.position, GAS.paddler.RADIUS, o);
-/*
-		p = SOAR.vector.create(0, 25, -25);
-		o = GAS.paddler.create();
-		o.position.copy(p);
-		o.haste = 1;
+		var i, p, o;
+		var x, y, z;
+		
+		for (i = 0; i < 3; i++) {
 
-		this.list.push( {
-			center: p,
-			object: o,
-			status: this.DRIFTING,
-			target: SOAR.vector.create(),
-			period: 0,
-			active: false
-		} );
-		GAS.map.add(o.position, GAS.paddler.RADIUS, o);
-*/
+			x = GAS.random(-GAS.map.MAP_RADIUS, GAS.map.MAP_RADIUS);
+			y = GAS.random(-GAS.map.MAP_HEIGHT, GAS.map.MAP_HEIGHT);
+			z = GAS.random(-GAS.map.MAP_RADIUS, GAS.map.MAP_RADIUS);
+		
+			p = SOAR.vector.create(x, y, z);
+			o = GAS.paddler.create();
+			o.position.copy(p);
+			o.haste = 1;
+
+			this.list.push( {
+				center: p,
+				object: o,
+				status: this.DRIFTING,
+				target: SOAR.vector.create(),
+				period: 0,
+				active: false
+			} );
+			GAS.map.add(o.position, GAS.paddler.RADIUS, 1, o);
+		}
+
+		this.soundCard = GAS.card.create("sound");
+		GAS.map.addOnTop(this.soundCard);
+		this.soundCard.scale = 10;
+		//this.soundCard.hidden = true;
+
 		this.player = GAS.player.avatar;
 		
 	},
@@ -78,28 +77,34 @@ GAS.npc = {
 		for (i = 0, il = this.list.length; i < il; i++) {
 			n = this.list[i];
 			n.distance = this.player.position.distance(n.object.position);
+			if (n.distance <= GAS.map.EYE_RADIUS) {
 			
-			// handle npc behaviors
-			switch (n.status) {
-			
-			case this.DRIFTING:
-				this.drift(n);
-				break;
+				// handle npc behaviors
+				switch (n.status) {
 				
-			case this.WATCHING:
-				this.watch(n);
-				break;
+				case this.DRIFTING:
+					this.drift(n);
+					break;
+					
+				case this.WATCHING:
+					this.watch(n);
+					break;
+					
+				case this.EVADING:
+					this.evade(n);
+					break;
 				
-			case this.EVADING:
-				this.evade(n);
-				break;
-			
+				}
+				
+				// actually move the object
+				n.object.update();
+				
 			}
-			
-			// actually move the object
-			n.object.update();
 		
 		}
+		
+		// deal with sound indicator
+		this.soundCard.center.copy(this.list[0].object.position).sub(this.player.position).norm().mul(100).add(this.player.position);
 		
 	},
 	

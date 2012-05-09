@@ -23,14 +23,15 @@ GAS.hud = {
 	init: function() {
 
 		this.dom = {
-			debug: jQuery("#debug"),
-		
 			window: jQuery(window),
+			
 			comment: jQuery("#comment"),
 			tracker: jQuery("#tracker"),
 			message: jQuery("#message"),
 
 			legend: jQuery("#legend"),
+			
+			debug: jQuery("#debug")
 		};
 
 		this.dom.window.bind("keydown", this.onKeyDown);
@@ -191,5 +192,6 @@ GAS.hud = {
 			.hide(this.COMMENT_FADE_TIME, function() {
 				div.remove();
 			});
-	}
+	},
+	
 };

@@ -125,7 +125,6 @@ GAS.weeds = {
 		if (GAS.map.lastDraw !== shader) {
 			gl.enable(gl.BLEND);
 			gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-//			gl.disable(gl.BLEND);
 			gl.disable(gl.CULL_FACE);
 			shader.activate();
 			gl.uniformMatrix4fv(shader.projector, false, camera.matrix.projector);

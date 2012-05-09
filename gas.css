@@ -10,15 +10,6 @@ html, body {
 	font-family: Helvetica;
 }
 
-canvas {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	margin: 0;
-	padding: 0;
-	z-index: 0;
-}
-
 div {
 	cursor: default;
 }
@@ -49,6 +40,17 @@ div {
 
 .small {
 	font-size: 75%;
+}
+
+/* WebGL canvas */
+
+#gl {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	margin: 0;
+	padding: 0;
+	z-index: 0;
 }
 
 /* debug window */

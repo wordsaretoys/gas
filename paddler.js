@@ -46,6 +46,7 @@ GAS.paddler = {
 		);
 
 		this.mesh = this.makeMesh();
+		this.skin = this.makeSkin();
 	},
 	
 	/**
@@ -65,7 +66,7 @@ GAS.paddler = {
 		o.speed = 0;
 		o.haste = 0;
 		
-		o.skin = this.makeSkin();
+		//o.skin = this.makeSkin();
 
 		o.wing = 0;
 		o.mouth = 0.25 * Math.PI;

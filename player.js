@@ -13,7 +13,7 @@ GAS.player = {
 	motion: {
 		moveleft: false, moveright: false,
 		movefore: false, moveback: false,
-		movefast: false
+		movefast: true
 	},
 	
 	mouse: {
@@ -62,7 +62,7 @@ GAS.player = {
 		// create a constrained camera for player view
 		this.camera = SOAR.camera.create(GAS.display);
 		this.camera.nearLimit = 0.01;
-		this.camera.farLimit = 500;
+		this.camera.farLimit = GAS.map.EYE_RADIUS;
 		this.camera.free = false;
 		this.camera.bound.set(Math.sqrt(2) / 2, -1, 0);
 		this.camera.offset.set(0, 0.5, 2);
@@ -87,8 +87,8 @@ GAS.player = {
 		var s = this.scratch;
 		var dx, dy;
 
-		dx = 0.35 * dt * (mouse.next.x - mouse.last.x);
-		dy = 0.35 * dt * (mouse.next.y - mouse.last.y);
+		dx = 0.25 * dt * (mouse.next.x - mouse.last.x);
+		dy = 0.25 * dt * (mouse.next.y - mouse.last.y);
 		if (dx || dy) {
 			this.camera.turn(dy, dx, 0);
 			mouse.last.x = mouse.next.x;
@@ -170,7 +170,7 @@ GAS.player = {
 				that.motion.moveback = true;
 				break;
 			case SOAR.KEY.SHIFT:
-				that.motion.movefast = true;
+//				that.motion.movefast = true;
 				break;
 		}
 		return true;
@@ -203,7 +203,7 @@ GAS.player = {
 				that.motion.moveback = false;
 				break;
 			case SOAR.KEY.SHIFT:
-				that.motion.movefast = false;
+//				that.motion.movefast = false;
 				break;
 		}
 		return true;

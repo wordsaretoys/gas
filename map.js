@@ -7,8 +7,6 @@
 
 GAS.map = {
 
-	OBJECT_WEED: 0,
-
 	WEED_COUNT: 7500,
 	MAP_RADIUS: 1000,
 	MAP_HEIGHT: 300,
@@ -16,6 +14,7 @@ GAS.map = {
 	
 	master: [],
 	active: [],
+	always: [],
 	
 	updateIndex: 0,
 	updateLength: 400,
@@ -38,12 +37,23 @@ GAS.map = {
 			y = GAS.random(-this.MAP_HEIGHT, this.MAP_HEIGHT);
 			z = GAS.random(-this.MAP_RADIUS, this.MAP_RADIUS);
 			this.master.push( {
-				obtype: this.OBJECT_WEED,
+				sortas: 0,
 				object: GAS.weeds.create(x, y, z),
 				center: SOAR.vector.create(x, y, z),
 				radius: GAS.weeds.BASE_RADIUS
 			} ); 
 		}
+		
+		// create active list sort
+		this.activeSort = function(a, b) {
+			if (!a) {
+				return -1;
+			}
+			if (!b) {
+				return 1;
+			}
+			return a.sortas - b.sortas;
+		};
 	},
 	
 	/**
@@ -52,15 +62,28 @@ GAS.map = {
 		@method add
 		@param p object, coordinates of object center
 		@param r number, object radius
+		@param s number, sort order
 		@param o object to add
 	**/
 	
-	add: function(p, r, o) {
+	add: function(p, r, s, o) {
 		this.master.push( {
+			sortas: s,
 			object: o,
 			center: p,
 			radius: r
 		} );
+	},
+	
+	/**
+		add always-drawable object to map
+		
+		@method addOnTop
+		@param o object to add
+	**/
+	
+	addOnTop: function(o) {
+		this.always.push(o);
 	},
 	
 	/**
@@ -107,7 +130,7 @@ GAS.map = {
 			
 			// close any gaps in the active list
 			// (object will sort before undefined)
-			this.active.sort();
+			this.active.sort(this.activeSort);
 			// find the first undefined, and chop the array off there
 			for (i = 0; i < il; i++) {
 				if (!this.active[i]) {
@@ -127,11 +150,12 @@ GAS.map = {
 	**/
 	
 	draw: function() {
-		var i, il, n;
 		var cp = GAS.player.position;
 		var fr = GAS.player.camera.front;
 		var dir = this.dir;
+		var gl = GAS.display.gl;
 		var c = 0;
+		var i, il, n;
 
 		// reset last draw
 		this.lastDraw = "";
@@ -139,7 +163,7 @@ GAS.map = {
 		// iterate through active nodes
 		for (i = 0, il = this.active.length; i < il; i++) {
 			n = this.active[i];
-			if (n) {
+			if (n && !n.object.hidden) {
 				dir.copy(n.center).sub(cp);
 				if (dir.length() < n.radius * 2) {
 					n.object.draw();
@@ -154,6 +178,12 @@ GAS.map = {
 			}
 		}
 //		GAS.hud.debug(c);
+
+		// draw the always-drawn objects on top of everything else
+		gl.clear(gl.DEPTH_BUFFER_BIT);
+		for (i = 0, il = this.always.length; i < il; i++) {
+			this.always[i].draw();
+		}
 	}
 
 };

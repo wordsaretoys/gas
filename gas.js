@@ -122,6 +122,7 @@ var GAS = {
 		
 		// while waiting for resource load, initialize game objects
 		GAS.clouds.init();
+		GAS.card.init();
 		GAS.ejecta.init();
 		GAS.spice.init();
 		GAS.weeds.init();
