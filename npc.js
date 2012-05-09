@@ -53,7 +53,7 @@ GAS.npc = {
 				period: 0,
 				active: false
 			} );
-			GAS.map.add(o.position, GAS.paddler.RADIUS, 1, o);
+			GAS.map.add(o.position, GAS.paddler.RADIUS, 5, o);
 		}
 
 		this.soundCard = GAS.card.create("sound");

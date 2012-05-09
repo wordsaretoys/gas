@@ -140,7 +140,6 @@ var GAS = {
 	**/
 	
 	update: function() {
-		//GAS.hud.clearDebug();
 		GAS.map.update();
 		GAS.npc.update();
 		GAS.player.update();

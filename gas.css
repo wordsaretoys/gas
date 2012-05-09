@@ -133,6 +133,48 @@ div {
 	margin-bottom: 8px;
 }
 
+/* HUD readouts */
+
+#readout {
+
+	position: absolute;
+	bottom: 80px;
+	left: 20px;
+
+	background: transparent;
+	color: white;
+	
+	width: 64px;
+	
+	font-size: 12pt;
+	font-variant: small-caps;
+	
+	padding: 2px;
+
+	z-index: 5;
+}
+
+#readout .section {
+	width: 64px;
+	height: 48px;
+	border: solid 1px white;
+	padding: 1px;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+#readout .label {
+	text-align: left;
+}
+
+#readout .value {
+	text-align: right;
+	font-size: 150%;
+}
+
+#readout .gapper {
+	height: 16px;
+}
+
 /* mouse tracking surface */
 
 #tracker {

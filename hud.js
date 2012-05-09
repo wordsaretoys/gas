@@ -31,6 +31,8 @@ GAS.hud = {
 
 			legend: jQuery("#legend"),
 			
+			food: jQuery("#food"),
+			
 			debug: jQuery("#debug")
 		};
 
@@ -193,5 +195,16 @@ GAS.hud = {
 				div.remove();
 			});
 	},
+	
+	/**
+		set food scent/concentration
+		
+		@method setScent
+		@param con number, concentration (0..1)
+	**/
+	
+	setScent: function(con) {
+		this.dom.food.html(Math.round(con * 100) + "%");
+	}
 	
 };

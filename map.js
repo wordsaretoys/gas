@@ -29,7 +29,7 @@ GAS.map = {
 	
 	init: function() {
 		var i, il;
-		var x, y, z, c;
+		var x, y, z, c, w;
 	
 		// generate weed objects and map nodes for them
 		for (i = 0, il = this.WEED_COUNT; i < il; i++) {
@@ -43,6 +43,21 @@ GAS.map = {
 				radius: GAS.weeds.BASE_RADIUS
 			} ); 
 		}
+		
+		// add ingredient clouds inside some weed clusters
+		for (i = 0; i < il; i++) {
+			if (Math.random() < 0.25) {
+				c = this.master[i].center;
+				this.master.push( {
+					sortas: 1,
+					object: GAS.spice.create(c.x, c.y, c.z),
+					center: c,
+					radius: GAS.spice.CLOUD_RADIUS,
+					recipe: {}
+				} );
+			}
+		}
+		
 		
 		// create active list sort
 		this.activeSort = function(a, b) {
@@ -84,6 +99,32 @@ GAS.map = {
 	
 	addOnTop: function(o) {
 		this.always.push(o);
+	},
+	
+	/**
+		find local concentration of ingredients
+		
+		game-physics, for sure--but it's always
+		possible that paddlers detect smells by
+		some sort of spectographic analysis and
+		if the source is beyond their sight, it
+		isn't "smellable"
+		
+		@method getScent
+		@return number (0..1)
+	**/
+	
+	getScent: function() {
+		var p = GAS.player.position;
+		var sum = 0;
+		var i, il, n;
+		for (i = 0, il = this.active.length; i < il; i++) {
+			n = this.active[i];
+			if (n && n.recipe) {
+				sum = Math.max(sum, Math.pow(1 - p.distance(n.center) / this.EYE_RADIUS, 2));
+			}
+		}
+		return sum;
 	},
 	
 	/**
@@ -138,6 +179,10 @@ GAS.map = {
 				}
 			}
 			this.active.length = i;
+			
+			// update some HUD values that don't need to change quickly
+			GAS.hud.setScent(this.getScent());
+			
 		}
 
 //		GAS.hud.debug(this.active.length);
@@ -167,11 +212,11 @@ GAS.map = {
 				dir.copy(n.center).sub(cp);
 				if (dir.length() < n.radius * 2) {
 					n.object.draw();
-					c++;
+//					if (n.sortas === 1) c++;
 				} else {
 					dir.norm();
 					if (dir.dot(fr) > 0.5) {
-						c++;
+//						if (n.sortas === 1) c++;
 						n.object.draw();
 					}
 				}
