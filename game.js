@@ -53,7 +53,7 @@ GAS.game = {
 	
 	weed: {
 	
-		COUNT: 7500,
+		COUNT: 4000,
 		
 		list: [],
 		
@@ -65,12 +65,11 @@ GAS.game = {
 		
 		init: function() {
 			var r = GAS.map.RADIUS;
-			var h = GAS.map.HEIGHT;
 			var i, il, o;
 		
 			for (i = 0, il = this.COUNT; i < il; i++) {
 				o = GAS.weeds.create(
-					GAS.random(-r, r), GAS.random(-h, h), GAS.random(-r, r)	);
+					GAS.random(-r, r), GAS.random(-r, r), GAS.random(-r, r)	);
 				this.list.push(o);
 				GAS.map.add(o);
 			}
@@ -200,10 +199,9 @@ GAS.game = {
 
 		init: function() {
 			var r = GAS.map.RADIUS;
-			var h = GAS.map.HEIGHT;
 
 			this.actor = GAS.paddler.create(
-//				GAS.random(-r, r), GAS.random(-h, h), GAS.random(-r, r)	);
+//				GAS.random(-r, r), GAS.random(-r, r), GAS.random(-r, r)	);
 			0, 0, -100);
 				
 			GAS.map.add(this.actor);

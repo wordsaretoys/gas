@@ -7,8 +7,7 @@
 
 GAS.map = {
 
-	RADIUS: 1000,
-	HEIGHT: 300,
+	RADIUS: 500,
 	
 	EYE_RADIUS: 200,
 	
