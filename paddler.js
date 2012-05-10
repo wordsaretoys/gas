@@ -13,7 +13,8 @@
 
 GAS.paddler = {
 
-	RADIUS: 1,
+	DRAW_RADIUS: 1,
+	SORT_ORDER: 2,
 
 	VIEW_ANGLE: Math.cos(120 * Math.PI / 180),
 	
@@ -53,20 +54,21 @@ GAS.paddler = {
 		generate and return a new paddler object
 		
 		@method create
+		@param x, y, z numbers, position
 		@return object, the new paddler
 	**/
 	
-	create: function() {
+	create: function(x, y, z) {
 		var o = Object.create(GAS.paddler);
 		
-		o.position = SOAR.vector.create();
+		o.position = SOAR.vector.create(x, y, z);
 		o.velocity = SOAR.vector.create();
 		o.rotator = SOAR.rotator.create();
 		
 		o.speed = 0;
 		o.haste = 0;
 		
-		//o.skin = this.makeSkin();
+		o.skin = this.makeSkin();
 
 		o.wing = 0;
 		o.mouth = 0.25 * Math.PI;

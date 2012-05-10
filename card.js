@@ -7,6 +7,9 @@
 
 GAS.card = {
 
+	DRAW_RADIUS: 1,
+	SORT_ORDER: 10,
+
 	shader: {},
 
 	/**
@@ -16,6 +19,7 @@ GAS.card = {
 	**/
 	
 	init: function() {
+		var r = this.DRAW_RADIUS;
 	
 		// create the shaders
 		this.shader.sound = SOAR.shader.create(
@@ -28,8 +32,8 @@ GAS.card = {
 		// create the mesh
 		this.mesh = SOAR.mesh.create(GAS.display);
 		this.mesh.add(this.shader.position, 3);
-		this.mesh.set(1, 1, -1, -1, -1, -1, -1, 1, -1);
-		this.mesh.set(1, 1, -1, -1, -1, -1, 1, -1, -1);
+		this.mesh.set(r, r, -1, -r, -r, -1, -r, r, -1);
+		this.mesh.set(r, r, -1, -r, -r, -1, r, -r, -1);
 		this.mesh.build();
 	},
 	
@@ -44,8 +48,8 @@ GAS.card = {
 	create: function(type) {
 		var o = Object.create(GAS.card);
 		o.type = type;
+		o.position = SOAR.vector.create();
 		o.matrix = new Float32Array(16);
-		o.center = SOAR.vector.create();
 		o.scale = 1;
 		o.shader = this.shader[type];
 		return o;
@@ -80,7 +84,7 @@ GAS.card = {
 		case "sound":
 			break;
 		}
-		gl.uniform3f(shader.center, this.center.x, this.center.y, this.center.z);
+		gl.uniform3f(shader.center, this.position.x, this.position.y, this.position.z);
 		gl.uniform1f(shader.scale, this.scale);
 		gl.uniform1f(shader.time, SOAR.elapsedTime * 0.001);
 		this.mesh.draw();

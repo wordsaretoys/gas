@@ -31,7 +31,8 @@ GAS.hud = {
 
 			legend: jQuery("#legend"),
 			
-			food: jQuery("#food"),
+			scent: jQuery("#scent"),
+			store: jQuery("#store"),
 			
 			debug: jQuery("#debug")
 		};
@@ -204,7 +205,17 @@ GAS.hud = {
 	**/
 	
 	setScent: function(con) {
-		this.dom.food.html(Math.round(con * 100) + "%");
-	}
+		this.dom.scent.html(Math.round(con * 100) + "%");
+	},
 	
+	/**
+		set ingredient store fill percentage
+		
+		@method setStore
+		@param pct number, percent of stores filled (0..1)
+	**/
+	
+	setStore: function(pct) {
+		this.dom.store.html(Math.round(pct * 100) + "%");
+	}
 };

@@ -117,6 +117,7 @@ div {
 	
 	font-size: 12pt;
 	font-variant: small-caps;
+	border: solid 1px white;
 
 	z-index: 5;
 }
@@ -144,22 +145,24 @@ div {
 	background: transparent;
 	color: white;
 	
-	width: 64px;
+	width: 134px;
+	height: 50px;
+
+	border: solid 1px white;
 	
 	font-size: 12pt;
 	font-variant: small-caps;
 	
-	padding: 2px;
-
 	z-index: 5;
 }
 
 #readout .section {
 	width: 64px;
 	height: 48px;
-	border: solid 1px white;
+	border-right: solid 1px white;
 	padding: 1px;
 	background-color: rgba(0, 0, 0, 0.5);
+	float: left;
 }
 
 #readout .label {

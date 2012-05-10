@@ -2,6 +2,8 @@
 
 	Sargasso: a WebGL game
 	
+	game initialization and frame pump
+	
 	@module gas
 	@author cpgauthier
 
@@ -128,9 +130,7 @@ var GAS = {
 		GAS.weeds.init();
 		GAS.paddler.init();
 		GAS.player.init();
-		GAS.map.init();
-		GAS.npc.init();
-		
+		GAS.game.init();
 	},
 	
 	/**
@@ -140,8 +140,8 @@ var GAS = {
 	**/
 	
 	update: function() {
+		GAS.game.update();
 		GAS.map.update();
-		GAS.npc.update();
 		GAS.player.update();
 		GAS.ejecta.update();
 	},

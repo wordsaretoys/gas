@@ -7,7 +7,8 @@
 
 GAS.weeds = {
 
-	BASE_RADIUS: 50,
+	DRAW_RADIUS: 50,
+	SORT_ORDER: 0,
 	
 	scratch: {
 		rotation: SOAR.quaternion.create()
@@ -34,7 +35,7 @@ GAS.weeds = {
 		this.mesh.add(this.shader.position, 3);
 		this.mesh.add(this.shader.texturec, 2);
 		
-		var p = SOAR.vector.create(this.BASE_RADIUS, 0, 0);
+		var p = SOAR.vector.create(this.DRAW_RADIUS, 0, 0);
 		var f = SOAR.vector.create(0, 0, -1);
 		var r = SOAR.vector.create(-1, 0, 0);
 		var d = SOAR.vector.create();
@@ -60,7 +61,7 @@ GAS.weeds = {
 			
 			r.cross(f).cross(f).neg().norm();
 			
-			if (p.length() > this.BASE_RADIUS) {
+			if (p.length() > this.DRAW_RADIUS) {
 				d.copy(p).norm().neg().mul(0.5);
 				f.add(d);
 			}			
@@ -94,7 +95,7 @@ GAS.weeds = {
 	create: function(x, y, z) {
 		var q = this.scratch.rotation;
 		var o = Object.create(GAS.weeds);
-
+		o.position = SOAR.vector.create(x, y, z);
 		o.matrix = new Float32Array(16);
 		q.set(
 			Math.random() - Math.random(),

@@ -7,7 +7,9 @@
 
 GAS.spice = {
 
-	CLOUD_RADIUS: 1,
+	DRAW_RADIUS: 1,
+	SORT_ORDER: 1,
+	
 	FRAG_RADIUS: 0.01,
 
 	/**
@@ -36,7 +38,7 @@ GAS.spice = {
 				Math.random() - Math.random(),
 				Math.random() - Math.random(),
 				Math.random() - Math.random()
-			).norm().mul(GAS.random(0, this.CLOUD_RADIUS));
+			).norm().mul(GAS.random(0, this.DRAW_RADIUS));
 			for (j = 0; j < 3; j++) {
 				this.mesh.set(
 					p.x + GAS.random(-this.FRAG_RADIUS, this.FRAG_RADIUS), 
@@ -63,6 +65,8 @@ GAS.spice = {
 		
 		o.position = SOAR.vector.create(x, y, z);
 		o.rotator = SOAR.rotator.create();
+		
+		o.stores = GAS.game.food.createStore(0, 0.25);
 		
 		return o;
 	},
