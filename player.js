@@ -69,6 +69,13 @@ GAS.player = {
 		
 		// create a player avatar
 		this.avatar = GAS.paddler.create();
+		
+		// create an ingredient store
+		var o = {};
+		GAS.game.food.enumIngredients(function(name) {
+			o[name] = true;
+		} );
+		this.stores = o;
 
 	},
 	

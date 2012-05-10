@@ -74,33 +74,6 @@ div {
 	z-index: 5;
 }
 
-/* HUD commentary area */
-
-#comment {
-	position: absolute;
-	bottom: 104px;
-	left: 20px;
-	
-	width: 425px;
-	
-	background: transparent;
-	
-	overflow: hidden;
-
-	font-size: 16pt;
-	font-variant: small-caps;
-
-	z-index: 5;
-}
-
-#comment div {
-	margin-top: 10px;
-	border-radius: 5px;
-	color: rgb(0, 0, 0);
-	background-color: rgba(192, 192, 255, 0.75);
-	padding: 5px;
-}
-
 /* HUD legend */
 
 #legend {
@@ -139,16 +112,11 @@ div {
 #readout {
 
 	position: absolute;
-	bottom: 80px;
-	left: 20px;
+	bottom: 20px;
+	left: 465px;
 
 	background: transparent;
 	color: white;
-	
-	width: 134px;
-	height: 50px;
-
-	border: solid 1px white;
 	
 	font-size: 12pt;
 	font-variant: small-caps;
@@ -158,8 +126,8 @@ div {
 
 #readout .section {
 	width: 64px;
-	height: 48px;
-	border-right: solid 1px white;
+	height: 54px;
+	border: solid 1px white;
 	padding: 1px;
 	background-color: rgba(0, 0, 0, 0.5);
 	float: left;

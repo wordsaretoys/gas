@@ -25,14 +25,12 @@ GAS.hud = {
 		this.dom = {
 			window: jQuery(window),
 			
-			comment: jQuery("#comment"),
 			tracker: jQuery("#tracker"),
 			message: jQuery("#message"),
 
 			legend: jQuery("#legend"),
 			
 			scent: jQuery("#scent"),
-			store: jQuery("#store"),
 			
 			debug: jQuery("#debug")
 		};
@@ -174,30 +172,6 @@ GAS.hud = {
 	},
 	
 	/**
-		add an entry to the HUD commentary
-
-		entries are appended to the comment box,
-		growing as they fade in, then fading out
-		after a delay. they are removed from the
-		DOM once they are no longer visible.
-		
-		@method comment
-		@param msg string, message to display
-	**/
-
-	comment: function(msg) {
-		var div = jQuery(document.createElement("div"));
-		div.html(msg);
-		div.css("display", "none");
-		this.dom.comment.append(div);
-		div.fadeTo(this.COMMENT_FADE_TIME, 0.75)
-			.delay(this.COMMENT_READ_TIME)
-			.hide(this.COMMENT_FADE_TIME, function() {
-				div.remove();
-			});
-	},
-	
-	/**
 		set food scent/concentration
 		
 		@method setScent
@@ -208,14 +182,4 @@ GAS.hud = {
 		this.dom.scent.html(Math.round(con * 100) + "%");
 	},
 	
-	/**
-		set ingredient store fill percentage
-		
-		@method setStore
-		@param pct number, percent of stores filled (0..1)
-	**/
-	
-	setStore: function(pct) {
-		this.dom.store.html(Math.round(pct * 100) + "%");
-	}
 };

@@ -42,7 +42,7 @@ GAS.game = {
 	**/
 	
 	nudge: function() {
-		GAS.hud.setScent(this.food.getScent());
+		this.food.nudge();
 	},
 	
 	/**
@@ -85,7 +85,7 @@ GAS.game = {
 	
 	food: {
 	
-		INGREDIENTS: [
+		INGREDIENT: [
 			"A", "B", "C", "D",
 			"E", "F", "G", "H",
 			"I", "J", "K", "L",
@@ -116,56 +116,54 @@ GAS.game = {
 		},
 
 		/**
-			create a food store
+			enumerate the ingredient list
 			
-			populates with all ingredients at random percentages
-			
-			@method createStore
-			@param ll number, lower limit of percentage
-			@param ul number, upper limit of percentage
-			@return object, new store
+			@method enumIngredients
+			@param f object, function to call
 		**/
 		
-		createStore: function(ll, ul) {
-			var o = {};
+		enumIngredients: function(f) {
 			var i, il, n;
 			
-			ll = ll || 0;
-			ul = ul || 0;
-			
-			for (i = 0, il = this.INGREDIENTS.length; i < il; i++) {
-				n = this.INGREDIENTS[i];
-				o[n] = GAS.random(ll, ul);
+			for (i = 0, il = this.INGREDIENT.length; i < il; i++) {
+				f(this.INGREDIENT[i]);
 			}
-			
-			return o;
 		},
 
 		/**
-			find local concentration of ingredients
+			gauge intensity of food scent to player
+			replenish player stores if close enough
 			
-			game-physics, for sure--but it's always
+			game physics, for sure--but it's always
 			possible that paddlers detect smells by
 			some sort of spectographic analysis and
 			if the source is beyond their sight, it
 			isn't "smellable"
 			
-			@method getScent
-			@return number (0..1)
+			@method nudge
 		**/
 		
-		getScent: function() {
+		nudge: function() {
 			var p = GAS.player.position;
 			var r = GAS.map.EYE_RADIUS;
 			var sum = 0;
-			var i, il, n;
+			var i, il, n, d;
 			for (i = 0, il = this.list.length; i < il; i++) {
 				n = this.list[i];
-				if (n && n.active) {
-					sum = Math.max(sum, Math.pow(1 - p.distance(n.position) / r, 2));
+				if (n && n.active && !n.hidden) {
+					d = p.distance(n.position);
+					sum = Math.max(sum, Math.pow(1 - d / r, 2));
+					// if player slips inside a food cloud, hide it
+					// and replenish the player food stores
+					if (d < GAS.spice.DRAW_RADIUS) {
+						n.hidden = true;
+						this.enumIngredients(function(name) {
+							GAS.player.stores[name] = true;
+						});
+					}
 				}
 			}
-			return sum;
+			GAS.hud.setScent(sum);
 		}
 	
 	},
