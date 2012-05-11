@@ -186,17 +186,11 @@ GAS.hud = {
 		
 		@method setScent
 		@param value number, concentration (0..1)
-		@param store object, content of food cloud
+		@param store string, content of food cloud
 	**/
 	
 	setScent: function(value, store) {
-		var s = "";
-		GAS.game.food.INGREDIENT.enumerate(function(e) {
-			if (store[e]) {
-				s += " " + e;
-			}
-		});
-		this.dom.scent.text.html(s);
+		this.dom.scent.text.html(store);
 		this.dom.scent.value.html(Math.round(value * 100) + "%");
 	},
 
@@ -207,14 +201,9 @@ GAS.hud = {
 	**/
 	
 	setInventory: function(store) {
-		var inv = this.dom.inventory;
-		var i = 0;
-		GAS.game.food.INGREDIENT.enumerate(function(e) {
-			if (store[e]) {
-				inv[i].innerHTML = e;
-			}
-			i++;
-		});
+		for (var i = 0, il = store.length; i < il; i++) {
+			this.dom.inventory[i].innerHTML = store[i];
+		}
 	}
 	
 	

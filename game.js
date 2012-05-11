@@ -90,16 +90,16 @@ GAS.game = {
 		list: [],
 		
 		/**
-			initialize the food cloud collection
+			initialize the bolus collection
 			
 			@method init
 		**/
 
 		init: function() {
 			var weed = GAS.game.weed;
-			var ingr = this.INGREDIENT.slice(0);
 			var i, il, c, o;
 			
+			// TEMP testing entries
 			for (i = 0; i < 16; i++) {
 				var s = "";
 				for (var j = 0; j < 5; j++) {
@@ -107,20 +107,12 @@ GAS.game = {
 				}
 				this.INGREDIENT[i] = s;
 			}
-			var ingr = this.INGREDIENT.slice(0);
 			
 			for (i = 0, il = weed.list.length; i < il; i++) {
 				if (Math.random() < 0.25) {
 					c = weed.list[i].position;
-					o = GAS.spice.create(c.x, c.y, c.z);
-					
-					// select three random ingredients for this cloud to contain
-					ingr.shuffle();
-					o.stores = {};
-					o.stores[ingr[0]] = true;
-					o.stores[ingr[1]] = true;
-					o.stores[ingr[2]] = true;
-					
+					o = GAS.bolus.create(c.x, c.y, c.z);
+					o.stores = this.INGREDIENT.pick();
 					this.list.push(o);
 					GAS.map.add(o);
 				}
@@ -145,28 +137,27 @@ GAS.game = {
 			var p = GAS.player.position;
 			var r = GAS.map.EYE_RADIUS;
 			var closest = Infinity;
-			var sources;
+			var stores;
 			var i, il, n, d;
 			for (i = 0, il = this.list.length; i < il; i++) {
 				n = this.list[i];
 				if (n && n.active && !n.hidden) {
 					d = p.distance(n.position);
-					// find the closest food cloud and what's in it
+					// find the closest bolus and what's in it
 					if (d < closest) {
 						closest = d;
-						sources = n.stores;
+						stores = n.stores;
 					}
-					// if player slips inside a food cloud, hide it
-					// and replenish the player food stores
-					if (d < GAS.spice.DRAW_RADIUS) {
-						n.hidden = true;
-						this.INGREDIENT.enumerate(function(e) {
-							GAS.player.stores[e] = GAS.player.stores[e] || n.stores[e];
-						});
+					// if player slips inside a food bolus, hide it
+					// and add to player inventory (if possible)
+					if (d < GAS.bolus.DRAW_RADIUS) {
+						if (GAS.player.addToInventory(n.stores)) {
+							n.hidden = true;
+						}
 					}
 				}
 			}
-			GAS.hud.setScent(Math.pow(1 - closest / r, 2), sources);
+			GAS.hud.setScent(Math.pow(1 - closest / r, 2), stores);
 			// update player's inventory while we're at it
 			GAS.hud.setInventory(GAS.player.stores);
 		}

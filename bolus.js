@@ -1,11 +1,11 @@
 /**
-	generate and draw a cloud of spices
+	generate and draw a cloud of food particles
 	
 	@namespace GAS
-	@class spice
+	@class bolus
 **/
 
-GAS.spice = {
+GAS.bolus = {
 
 	DRAW_RADIUS: 1,
 	SORT_ORDER: 1,
@@ -13,7 +13,7 @@ GAS.spice = {
 	FRAG_RADIUS: 0.01,
 
 	/**
-		create and init objects usable by all spice instances
+		create and init objects usable by all bolus instances
 		
 		@method init
 	**/
@@ -25,7 +25,7 @@ GAS.spice = {
 	
 		this.shader = SOAR.shader.create(
 			GAS.display,
-			SOAR.textOf("vs-spice"), SOAR.textOf("fs-spice"),
+			SOAR.textOf("vs-bolus"), SOAR.textOf("fs-bolus"),
 			["position"], 
 			["projector", "modelview", "rotations"]
 		);
@@ -53,15 +53,15 @@ GAS.spice = {
 	},
 	
 	/**
-		generate and return a new spice object
+		generate and return a new bolus object
 		
 		@method create
-		@param x, y, z numbers, the center of the spice cloud
-		@return object, the new spice cloud object
+		@param x, y, z numbers, the center of the bolus cloud
+		@return object, the new bolus cloud object
 	**/
 	
 	create: function(x, y, z) {
-		var o = Object.create(GAS.spice);
+		var o = Object.create(GAS.bolus);
 		
 		o.position = SOAR.vector.create(x, y, z);
 		o.rotator = SOAR.rotator.create();
@@ -70,7 +70,7 @@ GAS.spice = {
 	},
 	
 	/**
-		draw the spice object
+		draw the bolus object
 		
 		@method draw
 	**/

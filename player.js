@@ -8,6 +8,8 @@
 
 GAS.player = {
 
+	MAX_STORES: 6,
+
 	position: SOAR.vector.create(),
 	
 	motion: {
@@ -70,12 +72,8 @@ GAS.player = {
 		// create a player avatar
 		this.avatar = GAS.paddler.create();
 		
-		// create an ingredient store and populate randomly
-		var o = {};
-		GAS.game.food.INGREDIENT.enumerate(function(e) {
-			o[e] = Math.random() < 0.25;
-		} );
-		this.stores = o;
+		// create an ingredient store
+		this.stores = [];
 
 	},
 	
@@ -263,6 +261,27 @@ GAS.player = {
 		}
 		that.mouse.invalid = false;
 		return false;
+	},
+	
+	/**
+		add to player inventory and update HUD
+		
+		if inventory is full, item will not be added
+		
+		@method addToInventory
+		@param food string, food ingredient to add
+		@return true if food added to inventory
+	**/
+	
+	addToInventory: function(food) {
+		if (this.stores.length < this.MAX_STORES) {
+			this.stores.push(food);
+			GAS.hud.setInventory(this.stores);
+			return true;
+		} else {
+			return false;
+		}
 	}
+		
 	
 };

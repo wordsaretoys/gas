@@ -252,10 +252,10 @@ void main(void) {
 
 </script>
 
-<script id="vs-spice" type="x-shader/x-vertex">
+<script id="vs-bolus" type="x-shader/x-vertex">
 
 /**
-	spice cloud vertex shader
+	bolus cloud vertex shader
 	O' = P * V * M * O transformation
 	
 	@param position vertex array of positions
@@ -278,17 +278,17 @@ void main(void) {
 
 </script>
 
-<script id="fs-spice" type="x-shader/x-fragment">
+<script id="fs-bolus" type="x-shader/x-fragment">
 
 /**
-	spice cloud fragment shader
+	bolus cloud fragment shader
 
 **/
 
 precision mediump float;
 
 void main(void) {
-	gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+	gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
 }
 
 </script>
@@ -297,7 +297,6 @@ void main(void) {
 
 /**
 	card vertex shader
-	spice cloud vertex shader
 	O' = P * V * M * (s * O + c) transformation
 	
 	@param position vertex array of positions
