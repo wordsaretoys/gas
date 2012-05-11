@@ -85,12 +85,7 @@ GAS.game = {
 	
 	food: {
 	
-		INGREDIENT: [
-			"A", "B", "C", "D",
-			"E", "F", "G", "H",
-			"I", "J", "K", "L",
-			"M", "N", "O", "P"
-		],
+		INGREDIENT: [],
 		
 		list: [],
 		
@@ -102,32 +97,35 @@ GAS.game = {
 
 		init: function() {
 			var weed = GAS.game.weed;
+			var ingr = this.INGREDIENT.slice(0);
 			var i, il, c, o;
+			
+			for (i = 0; i < 16; i++) {
+				var s = "";
+				for (var j = 0; j < 5; j++) {
+					s += "abcdefghijklmnopqrstuvwxyz".charAt(Math.floor(GAS.random(0, 26)));
+				}
+				this.INGREDIENT[i] = s;
+			}
+			var ingr = this.INGREDIENT.slice(0);
 			
 			for (i = 0, il = weed.list.length; i < il; i++) {
 				if (Math.random() < 0.25) {
 					c = weed.list[i].position;
 					o = GAS.spice.create(c.x, c.y, c.z);
+					
+					// select three random ingredients for this cloud to contain
+					ingr.shuffle();
+					o.stores = {};
+					o.stores[ingr[0]] = true;
+					o.stores[ingr[1]] = true;
+					o.stores[ingr[2]] = true;
+					
 					this.list.push(o);
 					GAS.map.add(o);
 				}
 			}
 		
-		},
-
-		/**
-			enumerate the ingredient list
-			
-			@method enumIngredients
-			@param f object, function to call
-		**/
-		
-		enumIngredients: function(f) {
-			var i, il, n;
-			
-			for (i = 0, il = this.INGREDIENT.length; i < il; i++) {
-				f(this.INGREDIENT[i]);
-			}
 		},
 
 		/**
@@ -146,24 +144,31 @@ GAS.game = {
 		nudge: function() {
 			var p = GAS.player.position;
 			var r = GAS.map.EYE_RADIUS;
-			var sum = 0;
+			var closest = Infinity;
+			var sources;
 			var i, il, n, d;
 			for (i = 0, il = this.list.length; i < il; i++) {
 				n = this.list[i];
 				if (n && n.active && !n.hidden) {
 					d = p.distance(n.position);
-					sum = Math.max(sum, Math.pow(1 - d / r, 2));
+					// find the closest food cloud and what's in it
+					if (d < closest) {
+						closest = d;
+						sources = n.stores;
+					}
 					// if player slips inside a food cloud, hide it
 					// and replenish the player food stores
 					if (d < GAS.spice.DRAW_RADIUS) {
 						n.hidden = true;
-						this.enumIngredients(function(name) {
-							GAS.player.stores[name] = true;
+						this.INGREDIENT.enumerate(function(e) {
+							GAS.player.stores[e] = GAS.player.stores[e] || n.stores[e];
 						});
 					}
 				}
 			}
-			GAS.hud.setScent(sum);
+			GAS.hud.setScent(Math.pow(1 - closest / r, 2), sources);
+			// update player's inventory while we're at it
+			GAS.hud.setInventory(GAS.player.stores);
 		}
 	
 	},
@@ -209,8 +214,6 @@ GAS.game = {
 			this.target = SOAR.vector.create();
 			this.actor.haste = 2;
 			
-			this.player = GAS.player.avatar;
-			
 			this.soundCard = GAS.card.create("sound");
 			GAS.map.always.push(this.soundCard);
 			this.soundCard.scale = 10;
@@ -224,10 +227,11 @@ GAS.game = {
 		**/
 		
 		update: function() {
+			var player = GAS.player.avatar;
 			
 			if (this.actor.active) {
 		
-				this.distance = this.player.position.distance(this.actor.position);
+				this.distance = player.position.distance(this.actor.position);
 
 				switch (this.status) {
 				
@@ -247,7 +251,7 @@ GAS.game = {
 				
 				this.actor.update();
 			}
-			this.soundCard.position.copy(this.actor.position).sub(this.player.position).norm().mul(100).add(this.player.position);
+			this.soundCard.position.copy(this.actor.position).sub(player.position).norm().mul(100).add(player.position);
 		},
 		
 		/**
@@ -291,10 +295,11 @@ GAS.game = {
 		**/
 		
 		watch: function() {
+			var player = GAS.player.avatar;
 			var p = this.scratch.p;
 			var o = this.actor;
 
-			p.copy(this.player.position).sub(o.position).norm();
+			p.copy(player.position).sub(o.position).norm();
 			o.pointTo(p, 0.1);
 			
 			if (this.distance > this.WATCH_RADIUS) {
@@ -315,13 +320,14 @@ GAS.game = {
 		**/
 		
 		evade: function() {
+			var player = GAS.player.avatar;
 			var p = this.scratch.p;
 			var o = this.actor;
 			var l;
 
 			// point npc away from player
-			this.target.copy(o.position).sub(this.player.position).norm();
-			//this.target.cross(this.player.rotator.up);
+			this.target.copy(o.position).sub(player.position).norm();
+			//this.target.cross(player.rotator.up);
 			o.pointTo(this.target, 0.25);
 			
 			if (this.distance > this.EVADE_RADIUS) {

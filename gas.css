@@ -84,13 +84,12 @@ div {
 	background: rgba(0, 0, 0, 0.5);
 	color: white;
 	
-	width: 425px;
+	width: 325px;
 	height: 45px;
 	padding: 5px;
 	
 	font-size: 12pt;
 	font-variant: small-caps;
-	border: solid 1px white;
 
 	z-index: 5;
 }
@@ -109,41 +108,44 @@ div {
 
 /* HUD readouts */
 
-#readout {
+#scent {
 
 	position: absolute;
 	bottom: 20px;
-	left: 465px;
 
-	background: transparent;
-	color: white;
+	width: 150px;
+	height: 45px;
+	padding: 5px;
 	
+	background-color: rgba(0, 0, 0, 0.5);
+	color: white;
+
 	font-size: 12pt;
+	font-variant: small-caps;
+	text-align: center;
+	
+	z-index: 5;
+}
+
+#inventory {
+	position: absolute;
+	right: 20px;
+	bottom: 20px;
+
+	background-color: rgba(0, 0, 0, 0.5);
+	color: white;
+
+	font-size: 14pt;
 	font-variant: small-caps;
 	
 	z-index: 5;
 }
 
-#readout .section {
+#inventory td {
 	width: 64px;
-	height: 54px;
+	height: 25px;
+	padding: 5px;
 	border: solid 1px white;
-	padding: 1px;
-	background-color: rgba(0, 0, 0, 0.5);
-	float: left;
-}
-
-#readout .label {
-	text-align: left;
-}
-
-#readout .value {
-	text-align: right;
-	font-size: 150%;
-}
-
-#readout .gapper {
-	height: 16px;
 }
 
 /* mouse tracking surface */

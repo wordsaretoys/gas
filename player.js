@@ -70,10 +70,10 @@ GAS.player = {
 		// create a player avatar
 		this.avatar = GAS.paddler.create();
 		
-		// create an ingredient store
+		// create an ingredient store and populate randomly
 		var o = {};
-		GAS.game.food.enumIngredients(function(name) {
-			o[name] = true;
+		GAS.game.food.INGREDIENT.enumerate(function(e) {
+			o[e] = Math.random() < 0.25;
 		} );
 		this.stores = o;
 

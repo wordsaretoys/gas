@@ -30,7 +30,13 @@ GAS.hud = {
 
 			legend: jQuery("#legend"),
 			
-			scent: jQuery("#scent"),
+			scent: {
+				box: jQuery("#scent"),
+				text: jQuery("#scent-text"),
+				value: jQuery("#scent-value")
+			},
+			
+			inventory: jQuery("#inventory td"),
 			
 			debug: jQuery("#debug")
 		};
@@ -83,6 +89,10 @@ GAS.hud = {
 		that.dom.message.offset({
 			top: (GAS.display.height - that.dom.message.height()) * 0.5,
 			left: (GAS.display.width - that.dom.message.width()) * 0.5
+		});
+		
+		that.dom.scent.box.offset({
+			left: (GAS.display.width - that.dom.scent.box.width()) * 0.5
 		});
 	},
 	
@@ -172,14 +182,40 @@ GAS.hud = {
 	},
 	
 	/**
-		set food scent/concentration
+		set food cloud contents/concentration
 		
 		@method setScent
-		@param con number, concentration (0..1)
+		@param value number, concentration (0..1)
+		@param store object, content of food cloud
 	**/
 	
-	setScent: function(con) {
-		this.dom.scent.html(Math.round(con * 100) + "%");
+	setScent: function(value, store) {
+		var s = "";
+		GAS.game.food.INGREDIENT.enumerate(function(e) {
+			if (store[e]) {
+				s += " " + e;
+			}
+		});
+		this.dom.scent.text.html(s);
+		this.dom.scent.value.html(Math.round(value * 100) + "%");
 	},
+
+	/**
+		update current player ingredient inventory
+		
+		@method setInventory
+	**/
+	
+	setInventory: function(store) {
+		var inv = this.dom.inventory;
+		var i = 0;
+		GAS.game.food.INGREDIENT.enumerate(function(e) {
+			if (store[e]) {
+				inv[i].innerHTML = e;
+			}
+			i++;
+		});
+	}
+	
 	
 };

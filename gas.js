@@ -34,24 +34,6 @@ var GAS = {
 	},
 
 	/**
-		determine if one volume completely contains another
-		
-		@method contains
-		@param x0, y0, z0 number, center of volume 0
-		@param l0 number, length of volume 0
-		@param x1, y1, z1 number, center of volume 1
-		@param l1 number, length of volume 1
-		@return true if volume 0 completely contains volume 1
-	**/
-	
-	contains: function(x0, y0, z0, l0, x1, y1, z1, l1) {
-		var r0 = l0 * 0.5, r1 = l1 * 0.5;
-		return (x0 - r0 <= x1 - r1) && (x0 + r0 >= x1 + r1)
-			&& (y0 - r0 <= y1 - r1) && (y0 + r0 >= y1 + r1)
-			&& (z0 - r0 <= z1 - r1) && (z0 + r0 >= z1 + r1);
-	},
-	
-	/**
 		create GL context, set up game objects, load resources
 
 		@method start
@@ -69,6 +51,25 @@ var GAS = {
 			return;
 		}
 
+		// array random shuffle, taken from
+		// http://sroucheray.org/blog/2009/11/array-sort-should-not-be-used-to-shuffle-an-array/
+		Array.prototype.shuffle = function (){
+			var i = this.length, j, temp;
+			if ( i == 0 ) return;
+			while ( --i ) {
+				j = Math.floor( Math.random() * ( i + 1 ) );
+				temp = this[i];
+				this[i] = this[j];
+				this[j] = temp;
+			}
+		};
+		
+		Array.prototype.enumerate = function(f) {
+			for(var i = 0, il = this.length; i < il; i++) {
+				f(this[i]);
+			}
+		};
+		
 		// set initial display dimensions
 		GAS.display.setSize(
 			document.body.clientWidth, 
@@ -112,6 +113,7 @@ var GAS = {
 				);
 				GAS.player.camera.projector();
 				GAS.draw();
+				GAS.hud.debug(GAS.display.width + ", " + GAS.display.height);
 			}, false);
 			
 			// tell the player what's going on
@@ -129,8 +131,8 @@ var GAS = {
 		GAS.spice.init();
 		GAS.weeds.init();
 		GAS.paddler.init();
-		GAS.player.init();
 		GAS.game.init();
+		GAS.player.init();
 	},
 	
 	/**
