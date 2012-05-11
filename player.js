@@ -73,7 +73,7 @@ GAS.player = {
 		this.avatar = GAS.paddler.create();
 		
 		// create an ingredient store
-		this.stores = [];
+		this.stores = {};
 
 	},
 	
@@ -276,7 +276,6 @@ GAS.player = {
 	addToInventory: function(food) {
 		if (this.stores.length < this.MAX_STORES) {
 			this.stores.push(food);
-			GAS.hud.setInventory(this.stores);
 			return true;
 		} else {
 			return false;

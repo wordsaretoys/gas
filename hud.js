@@ -7,9 +7,6 @@
 
 GAS.hud = {
 
-	COMMENT_FADE_TIME: 250,
-	COMMENT_READ_TIME: 5000,
-	
 	pauseMsg: "Press Esc To Resume",
 	waitMsg: "Loading",
 	
@@ -29,14 +26,6 @@ GAS.hud = {
 			message: jQuery("#message"),
 
 			legend: jQuery("#legend"),
-			
-			scent: {
-				box: jQuery("#scent"),
-				text: jQuery("#scent-text"),
-				value: jQuery("#scent-value")
-			},
-			
-			inventory: jQuery("#inventory td"),
 			
 			debug: jQuery("#debug")
 		};
@@ -89,10 +78,6 @@ GAS.hud = {
 		that.dom.message.offset({
 			top: (GAS.display.height - that.dom.message.height()) * 0.5,
 			left: (GAS.display.width - that.dom.message.width()) * 0.5
-		});
-		
-		that.dom.scent.box.offset({
-			left: (GAS.display.width - that.dom.scent.box.width()) * 0.5
 		});
 	},
 	
@@ -179,32 +164,6 @@ GAS.hud = {
 	lighten: function() {
 		this.setCurtain(0);
 		this.setMessage();
-	},
-	
-	/**
-		set food cloud contents/concentration
-		
-		@method setScent
-		@param value number, concentration (0..1)
-		@param store string, content of food cloud
-	**/
-	
-	setScent: function(value, store) {
-		this.dom.scent.text.html(store);
-		this.dom.scent.value.html(Math.round(value * 100) + "%");
-	},
-
-	/**
-		update current player ingredient inventory
-		
-		@method setInventory
-	**/
-	
-	setInventory: function(store) {
-		for (var i = 0, il = store.length; i < il; i++) {
-			this.dom.inventory[i].innerHTML = store[i];
-		}
 	}
-	
 	
 };

@@ -84,8 +84,8 @@ div {
 	background: rgba(0, 0, 0, 0.5);
 	color: white;
 	
-	width: 325px;
-	height: 45px;
+	width: 400px;
+	height: 20px;
 	padding: 5px;
 	
 	font-size: 12pt;
@@ -104,48 +104,6 @@ div {
 
 #legend div {
 	margin-bottom: 8px;
-}
-
-/* HUD readouts */
-
-#scent {
-
-	position: absolute;
-	bottom: 20px;
-
-	width: 150px;
-	height: 45px;
-	padding: 5px;
-	
-	background-color: rgba(0, 0, 0, 0.5);
-	color: white;
-
-	font-size: 12pt;
-	font-variant: small-caps;
-	text-align: center;
-	
-	z-index: 5;
-}
-
-#inventory {
-	position: absolute;
-	right: 20px;
-	bottom: 20px;
-
-	background-color: rgba(0, 0, 0, 0.5);
-	color: white;
-
-	font-size: 14pt;
-	font-variant: small-caps;
-	
-	z-index: 5;
-}
-
-#inventory td {
-	width: 64px;
-	height: 45px;
-	padding: 5px;
-	border: solid 1px white;
 }
 
 /* mouse tracking surface */

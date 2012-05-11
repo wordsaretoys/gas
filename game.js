@@ -112,7 +112,10 @@ GAS.game = {
 				if (Math.random() < 0.25) {
 					c = weed.list[i].position;
 					o = GAS.bolus.create(c.x, c.y, c.z);
-					o.stores = this.INGREDIENT.pick();
+					o.stores = {};
+					this.INGREDIENT.enumerate(function(e) {
+						o.stores[e] = Math.round(Math.random());
+					});
 					this.list.push(o);
 					GAS.map.add(o);
 				}
@@ -121,45 +124,28 @@ GAS.game = {
 		},
 
 		/**
-			gauge intensity of food scent to player
 			replenish player stores if close enough
-			
-			game physics, for sure--but it's always
-			possible that paddlers detect smells by
-			some sort of spectographic analysis and
-			if the source is beyond their sight, it
-			isn't "smellable"
 			
 			@method nudge
 		**/
 		
 		nudge: function() {
 			var p = GAS.player.position;
-			var r = GAS.map.EYE_RADIUS;
-			var closest = Infinity;
-			var stores;
 			var i, il, n, d;
 			for (i = 0, il = this.list.length; i < il; i++) {
 				n = this.list[i];
 				if (n && n.active && !n.hidden) {
 					d = p.distance(n.position);
-					// find the closest bolus and what's in it
-					if (d < closest) {
-						closest = d;
-						stores = n.stores;
-					}
 					// if player slips inside a food bolus, hide it
 					// and add to player inventory (if possible)
 					if (d < GAS.bolus.DRAW_RADIUS) {
-						if (GAS.player.addToInventory(n.stores)) {
-							n.hidden = true;
-						}
+						this.INGREDIENT.enumerate(function(e) {
+							GAS.player.stores[e] = (GAS.player.stores[e] || 0) + (n.stores[e] || 0);
+						});
+						n.hidden = true;
 					}
 				}
 			}
-			GAS.hud.setScent(Math.pow(1 - closest / r, 2), stores);
-			// update player's inventory while we're at it
-			GAS.hud.setInventory(GAS.player.stores);
 		}
 	
 	},
