@@ -106,6 +106,30 @@ div {
 	margin-bottom: 8px;
 }
 
+/* HUD prompts */
+
+#prompts {
+	position: absolute;
+
+	width: 100%;
+	
+	background: transparent;
+	color: white;
+
+	text-shadow: black 0.1em 0.1em 0.2em;
+	
+	font-size: 20pt;
+	font-variant: small-caps;
+	text-align: center;
+	
+	z-index: 5;
+}
+
+#prompts p {
+	margin-top: 4px;
+	margin-bottom: 4px;
+}
+
 /* mouse tracking surface */
 
 #tracker {

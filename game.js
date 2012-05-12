@@ -167,6 +167,8 @@ GAS.game = {
 			r: SOAR.vector.create()
 		},
 		
+		prompting: false,
+		
 		/**
 			initialize the NPC
 			
@@ -245,14 +247,28 @@ GAS.game = {
 				
 			case npc.WATCHING:
 			
+				// point the NPC at the player
 				p.copy(player.position).sub(this.position).norm();
 				this.pointTo(p, 0.1);
 				
+				// if the player is looking at the NPC, prompt them
+				if (this.playerDotProduct >= 0.8 && !npc.prompting) {
+					GAS.hud.prompt(this, "Cook For");
+					npc.prompting = true;
+				}
+				// if the player is looking away, remove the prompt
+				if (this.playerDotProduct < 0.8 && npc.prompting) {
+					GAS.hud.prompt();
+					npc.prompting = false;
+				}
+				
+				// player moves too far away, back to drifting
 				if (this.playerDistance > npc.WATCH_RADIUS) {
 					behave.status = npc.DRIFTING;
 					this.haste = 2;
 					npc.soundCard.hidden = false;
 				}
+				// player moves too close, switch to evade
 				if (this.playerDistance < npc.EVADE_RADIUS) {
 					behave.status = npc.EVADING;
 					this.haste = 2;

@@ -24,12 +24,21 @@ GAS.hud = {
 			
 			tracker: jQuery("#tracker"),
 			message: jQuery("#message"),
+			prompts: jQuery("#prompts"),
 
 			legend: jQuery("#legend"),
 			
 			debug: jQuery("#debug")
 		};
 
+		this.dom.prompts.resize = function() {
+			var p = GAS.hud.dom.prompts;
+			p.offset({
+				top: (GAS.display.height - p.height()) * 0.75,
+				left: (GAS.display.width - p.width()) * 0.5
+			});
+		};
+		
 		this.dom.window.bind("keydown", this.onKeyDown);
 		this.dom.window.bind("resize", this.resize);			
 		this.resize();
@@ -164,6 +173,28 @@ GAS.hud = {
 	lighten: function() {
 		this.setCurtain(0);
 		this.setMessage();
+	},
+	
+	/**
+		display prompt with specified message
+		if no object specified, remove prompt
+		
+		@method prompt
+		@method object object, what the prompt applies to
+		@param verb string, what action is implied
+	**/
+	
+	prompt: function(object, verb) {
+		var pr = this.dom.prompts;
+		var subject = "Npc";
+		
+		if (object) {
+			pr.html("<p><span class=\"key\">E</span>&nbsp;" + verb + "</p><p>" + subject + "</p>");
+			pr.resize();
+			pr.css("visibility", "visible");
+		} else {
+			pr.css("visibility", "hidden");
+		}
 	}
 	
 };
