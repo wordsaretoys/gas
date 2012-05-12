@@ -131,14 +131,19 @@ GAS.map = {
 		// iterate through active nodes
 		for (i = 0, il = this.active.length; i < il; i++) {
 			n = this.active[i];
-			if (n && !n.hidden) {
-				dir.copy(n.position).sub(cp);
-				if (dir.length() < n.DRAW_RADIUS * 2) {
-					n.draw();
-				} else {
-					dir.norm();
-					if (dir.dot(fr) > 0.5) {
+			if (n) {
+				if (n.update) {
+					n.update();
+				}
+				if (!n.hidden) {
+					dir.copy(n.position).sub(cp);
+					if (dir.length() < n.DRAW_RADIUS * 2) {
 						n.draw();
+					} else {
+						dir.norm();
+						if (dir.dot(fr) > 0.5) {
+							n.draw();
+						}
 					}
 				}
 			}
@@ -148,6 +153,9 @@ GAS.map = {
 		gl.clear(gl.DEPTH_BUFFER_BIT);
 		for (i = 0, il = this.always.length; i < il; i++) {
 			n = this.always[i];
+			if (n.update) {
+				n.update();
+			}
 			if (!n.hidden) {
 				n.draw();
 			}

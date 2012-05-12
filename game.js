@@ -22,27 +22,23 @@ GAS.game = {
 	},
 	
 	/**
-		update game objects
-		
-		called on EVERY frame, keep updates short!
+		updates not handled by individual objects
+		called on every frame
 		
 		@method update
 	**/
 	
 	update: function() {
-		this.npc.update();
 	},
 	
 	/**
-		update game objects occasionally
-		
+		lazy updates not handled by individual objects
 		called on every display list cleanup (1-2 seconds)
 		
 		@method nudge
 	**/
 	
 	nudge: function() {
-		this.food.nudge();
 	},
 	
 	/**
@@ -116,38 +112,38 @@ GAS.game = {
 					this.INGREDIENT.enumerate(function(e) {
 						o.stores[e] = Math.round(Math.random());
 					});
+					o.update = this.update;
 					this.list.push(o);
 					GAS.map.add(o);
 				}
 			}
 		
 		},
-
+		
 		/**
-			replenish player stores if close enough
+			update a food bolus
 			
-			@method nudge
+			called on EVERY frame for EVERY active bolus
+			note that "this" refers to bolus object, not
+			the GAS.game.food object
+			
+			@method update
 		**/
 		
-		nudge: function() {
-			var p = GAS.player.position;
-			var i, il, n, d;
-			for (i = 0, il = this.list.length; i < il; i++) {
-				n = this.list[i];
-				if (n && n.active && !n.hidden) {
-					d = p.distance(n.position);
-					// if player slips inside a food bolus, hide it
-					// and add to player inventory (if possible)
-					if (d < GAS.bolus.DRAW_RADIUS) {
-						this.INGREDIENT.enumerate(function(e) {
-							GAS.player.stores[e] = (GAS.player.stores[e] || 0) + (n.stores[e] || 0);
-						});
-						n.hidden = true;
-					}
+		update: function() {
+			// if player slips inside a food bolus, hide it
+			// and add to player inventory (if possible)
+			if (!this.hidden) {
+				var that = this, d = GAS.player.position.distance(this.position);
+				if (d < GAS.bolus.DRAW_RADIUS) {
+					GAS.game.food.INGREDIENT.enumerate(function(e) {
+						GAS.player.stores[e] = (GAS.player.stores[e] || 0) + (that.stores[e] || 0);
+					});
+					this.hidden = true;
 				}
 			}
 		}
-	
+
 	},
 	
 	/**
@@ -183,137 +179,109 @@ GAS.game = {
 			this.actor = GAS.paddler.create(
 //				GAS.random(-r, r), GAS.random(-r, r), GAS.random(-r, r)	);
 			0, 0, -100);
-				
-			GAS.map.add(this.actor);
 			
-			this.status = this.DRIFTING;
-			this.period = 0;
-			this.target = SOAR.vector.create();
+			// paddler object already has an update method, so swap it out
+			var update = this.actor.update;
+			this.actor.update = this.update;
+			this.actor.updateMotion = update;
+			
+			this.actor.behavior = {
+				status: this.DRIFTING,
+				period: 0,
+				target: SOAR.vector.create()
+			};
 			this.actor.haste = 2;
+			GAS.map.add(this.actor);
 			
 			this.soundCard = GAS.card.create("sound");
 			GAS.map.always.push(this.soundCard);
 			this.soundCard.scale = 10;
+			this.soundCard.hidden = true;
 			
 		},
 		
 		/**
-			update the NPC's behavior
+			update an NPC's behavior
+			
+			called for every NPC on every frame
+			"this" refers to the NPC object
 			
 			@method update
 		**/
 		
 		update: function() {
+			var p = this.scratch.p;
 			var player = GAS.player.avatar;
-			
-			if (this.actor.active) {
-		
-				this.distance = player.position.distance(this.actor.position);
+			var dp = player.position.distance(this.position);
+			var behave = this.behavior;
+			var npc = GAS.game.npc;
 
-				switch (this.status) {
-				
-				case this.DRIFTING:
-					this.drift();
-					break;
-					
-				case this.WATCHING:
-					this.watch();
-					break;
-					
-				case this.EVADING:
-					this.evade();
-					break;
-				
+			switch (behave.status) {
+			
+			case npc.DRIFTING:
+			
+				// if npc is about to exit the reef, pull em back
+				if (this.position.length() > GAS.map.RADIUS) {
+					p.copy(this.position).neg().norm().mul(0.01);
+					behave.target.add(p).norm();
+				}
+				// if it's been too long since e changed direction, pick a new target
+				if (behave.period <= 0) {
+					behave.period = GAS.random(2, 5);
+					behave.target.set( GAS.random(-1, 1), GAS.random(-0.5, 0.5), GAS.random(-1, 1) ).norm();
 				}
 				
-				this.actor.update();
-			}
-			this.soundCard.position.copy(this.actor.position).sub(player.position).norm().mul(100).add(player.position);
-		},
-		
-		/**
-			implement stochastic "drifting" behavior
-			
-			@method drift
-		**/
-		
-		drift: function() {
-			var p = this.scratch.p;
-			var o = this.actor;
-			
-			// if npc is about to exit the reef, pull em back
-			if (o.position.length() > GAS.map.RADIUS) {
-				p.copy(o.position).neg().norm().mul(0.01);
-				this.target.add(p).norm();
-			}
-			// if it's been too long since e changed direction, pick a new target
-			if (this.period <= 0) {
-				this.period = GAS.random(2, 5);
-				this.target.set( GAS.random(-1, 1), GAS.random(-0.5, 0.5), GAS.random(-1, 1) ).norm();
-			}
-			
-			// keep em pointed at the target and counting down the seconds to the next target
-			o.pointTo(this.target, 0.05);
-			this.period -= SOAR.interval * 0.001;
+				// keep em pointed at the target and counting down the seconds to the next target
+				this.pointTo(behave.target, 0.05);
+				behave.period -= SOAR.interval * 0.001;
 
-			// if the player is nearby
-			if (this.distance < this.WATCH_RADIUS) {
-				this.status = this.WATCHING;
-				o.haste = 0;
-				this.soundCard.hidden = true;
+				// if the player is nearby
+				if (dp < npc.WATCH_RADIUS) {
+					behave.status = npc.WATCHING;
+					this.haste = 0;
+					npc.soundCard.hidden = true;
+				}
+
+				break;
+				
+			case npc.WATCHING:
+			
+				p.copy(player.position).sub(this.position).norm();
+				this.pointTo(p, 0.1);
+				
+				if (dp > npc.WATCH_RADIUS) {
+					behave.status = npc.DRIFTING;
+					this.haste = 2;
+					npc.soundCard.hidden = false;
+				}
+				if (dp < npc.EVADE_RADIUS) {
+					behave.status = npc.EVADING;
+					this.haste = 2;
+				}
+				
+				break;
+				
+			case npc.EVADING:
+
+				// point npc away from player
+				behave.target.copy(this.position).sub(player.position).norm();
+				//behave.target.cross(player.rotator.up);
+				this.pointTo(behave.target, 0.25);
+				
+				if (dp > npc.EVADE_RADIUS) {
+					behave.status = npc.WATCHING;
+					this.haste = 0;
+				}
+				
+				break;
+			
 			}
 			
-		},
+			this.updateMotion();
 
-		/**
-			implement watching behavior
-			
-			@method watch
-		**/
-		
-		watch: function() {
-			var player = GAS.player.avatar;
-			var p = this.scratch.p;
-			var o = this.actor;
-
-			p.copy(player.position).sub(o.position).norm();
-			o.pointTo(p, 0.1);
-			
-			if (this.distance > this.WATCH_RADIUS) {
-				this.status = this.DRIFTING;
-				o.haste = 2;
-				this.soundCard.hidden = false;
-			}
-			if (this.distance < this.EVADE_RADIUS) {
-				this.status = this.EVADING;
-				o.haste = 2;
-			}
-		},
-
-		/**
-			implement evasive behavior
-			
-			@method evade
-		**/
-		
-		evade: function() {
-			var player = GAS.player.avatar;
-			var p = this.scratch.p;
-			var o = this.actor;
-			var l;
-
-			// point npc away from player
-			this.target.copy(o.position).sub(player.position).norm();
-			//this.target.cross(player.rotator.up);
-			o.pointTo(this.target, 0.25);
-			
-			if (this.distance > this.EVADE_RADIUS) {
-				this.status = this.WATCHING;
-				o.haste = 0;
-			}
-			
+			npc.soundCard.position.copy(this.position).sub(player.position).norm().mul(100).add(player.position);
 		}
-	
+
 	}
 
 };
