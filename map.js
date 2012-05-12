@@ -132,18 +132,22 @@ GAS.map = {
 		for (i = 0, il = this.active.length; i < il; i++) {
 			n = this.active[i];
 			if (n) {
+				// track useful player-object information
+				dir.copy(n.position).sub(cp);
+				n.playerDistance = dir.length();
+				dir.norm();
+				n.playerDotProduct = dir.dot(fr);
+				
+				// update the object if it has such a method
 				if (n.update) {
 					n.update();
 				}
+				
+				// if the object's visible
 				if (!n.hidden) {
-					dir.copy(n.position).sub(cp);
-					if (dir.length() < n.DRAW_RADIUS * 2) {
+					// and close to the player or within the player's FOV, draw it
+					if (n.playerDistance < n.DRAW_RADIUS * 2 || n.playerDotProduct > 0.5) {
 						n.draw();
-					} else {
-						dir.norm();
-						if (dir.dot(fr) > 0.5) {
-							n.draw();
-						}
 					}
 				}
 			}

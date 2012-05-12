@@ -134,8 +134,8 @@ GAS.game = {
 			// if player slips inside a food bolus, hide it
 			// and add to player inventory (if possible)
 			if (!this.hidden) {
-				var that = this, d = GAS.player.position.distance(this.position);
-				if (d < GAS.bolus.DRAW_RADIUS) {
+				var that = this;
+				if (this.playerDistance < GAS.bolus.DRAW_RADIUS) {
 					GAS.game.food.INGREDIENT.enumerate(function(e) {
 						GAS.player.stores[e] = (GAS.player.stores[e] || 0) + (that.stores[e] || 0);
 					});
@@ -212,7 +212,6 @@ GAS.game = {
 		update: function() {
 			var p = this.scratch.p;
 			var player = GAS.player.avatar;
-			var dp = player.position.distance(this.position);
 			var behave = this.behavior;
 			var npc = GAS.game.npc;
 
@@ -236,7 +235,7 @@ GAS.game = {
 				behave.period -= SOAR.interval * 0.001;
 
 				// if the player is nearby
-				if (dp < npc.WATCH_RADIUS) {
+				if (this.playerDistance < npc.WATCH_RADIUS) {
 					behave.status = npc.WATCHING;
 					this.haste = 0;
 					npc.soundCard.hidden = true;
@@ -249,12 +248,12 @@ GAS.game = {
 				p.copy(player.position).sub(this.position).norm();
 				this.pointTo(p, 0.1);
 				
-				if (dp > npc.WATCH_RADIUS) {
+				if (this.playerDistance > npc.WATCH_RADIUS) {
 					behave.status = npc.DRIFTING;
 					this.haste = 2;
 					npc.soundCard.hidden = false;
 				}
-				if (dp < npc.EVADE_RADIUS) {
+				if (this.playerDistance < npc.EVADE_RADIUS) {
 					behave.status = npc.EVADING;
 					this.haste = 2;
 				}
@@ -268,7 +267,7 @@ GAS.game = {
 				//behave.target.cross(player.rotator.up);
 				this.pointTo(behave.target, 0.25);
 				
-				if (dp > npc.EVADE_RADIUS) {
+				if (this.playerDistance > npc.EVADE_RADIUS) {
 					behave.status = npc.WATCHING;
 					this.haste = 0;
 				}
