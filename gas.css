@@ -6,7 +6,7 @@ html, body {
 	overflow: hidden;
 	margin: 0;
 	padding: 0;
-	background-color: black;
+	background-color: rgb(128, 128, 128);
 	font-family: Helvetica;
 }
 
@@ -157,4 +157,56 @@ div {
 	cursor: default;
 	z-index: 15;
 
+}
+
+/* modal cooking dialog */
+
+#cook {
+	position: absolute;
+	
+	width: 612px;
+	height: 336px;
+	bottom: 20px;
+	right: 20px;
+	
+	background: transparent;
+	color: white;
+	
+	font-size: 18pt;
+	font-variant: small-caps;
+	
+	display: none;
+	
+	z-index: 15;
+	
+}
+
+.cook-back {
+	background: rgba(0, 0, 0, 0.75);
+	border-radius: 5px;
+}
+
+.cook-back:hover {
+	background: rgba(64, 64, 64, 0.75);
+}
+
+.cook-item {
+	width: 160px;
+	height: 240px;
+	margin: 5px;
+	padding: 5px;
+	float: left;
+}
+
+.cook-nav {
+	position: relative;
+	width: 25px;
+	height: 30px;
+	padding: 3px 6px 5px 5px;
+	text-align: center;
+	font-weight: bold;
+}
+
+#cook-prev, #cook-next {
+	top: 120px;
 }

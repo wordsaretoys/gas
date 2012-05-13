@@ -25,8 +25,16 @@ GAS.hud = {
 			tracker: jQuery("#tracker"),
 			message: jQuery("#message"),
 			prompts: jQuery("#prompts"),
-
 			legend: jQuery("#legend"),
+			
+			cooking: {
+				box: jQuery("#cook"),
+				item: jQuery(".cook-item"),
+				prev: jQuery("#cook-prev"),
+				next: jQuery("#cook-next"),
+				ok: jQuery("#cook-ok"),
+				cancel: jQuery("#cook-cancel")
+			},			
 			
 			debug: jQuery("#debug")
 		};
@@ -34,7 +42,7 @@ GAS.hud = {
 		this.dom.prompts.resize = function() {
 			var p = GAS.hud.dom.prompts;
 			p.offset({
-				top: (GAS.display.height - p.height()) * 0.75,
+				top: (GAS.display.height - p.height()) * 0.85,
 				left: (GAS.display.width - p.width()) * 0.5
 			});
 		};
@@ -88,6 +96,8 @@ GAS.hud = {
 			top: (GAS.display.height - that.dom.message.height()) * 0.5,
 			left: (GAS.display.width - that.dom.message.width()) * 0.5
 		});
+		
+		that.dom.prompts.resize();
 	},
 	
 	/**
@@ -119,6 +129,15 @@ GAS.hud = {
 		case SOAR.KEY.TAB:
 			// prevent accidental TAB keypress from changing focus
 			return false;
+			break;
+		case SOAR.KEY.E:
+			// interact with something if prompted to do so
+			if (that.dom.prompts.object) {
+				// activate the interface
+				that.dom.prompts.object.interact();
+				// turn off the prompt
+				that.prompt();
+			}
 			break;
 		default:
 			//console.log(event.keyCode);
@@ -192,9 +211,71 @@ GAS.hud = {
 			pr.html("<p><span class=\"key\">E</span>&nbsp;" + verb + "</p><p>" + subject + "</p>");
 			pr.resize();
 			pr.css("visibility", "visible");
+			pr.object = object;
 		} else {
 			pr.css("visibility", "hidden");
+			delete pr.object;
 		}
+	},
+	
+	/**
+		activate cooking dialog
+		
+		@method showCookingDialog
+	**/
+	
+	showCookingDialog: function() {
+		var cook = GAS.hud.dom.cooking;
+		var ingr = GAS.game.food.INGREDIENT;
+		
+		var hideDialog = function() {
+			cook.next.bind();
+			cook.prev.bind();
+			cook.ok.bind();
+			cook.cancel.bind();
+			cook.box.hide();
+		};
+		
+		var showIngredients = function() {
+			var i, j, il;
+			for (i = 0, il = cook.item.length; i < il; i++) {
+				j = i + cook.index;
+				if (j < ingr.length) {
+					cook.item[i].innerHTML = ingr[j];
+					cook.item[i].ingredient = j;
+				} else {
+					cook.item[i].innerHTML = "";
+					cook.item[i].ingredient = -1;
+				}
+			}
+			console.log(cook.index);
+		};
+		
+		cook.next.bind("click", function() {
+			var l = cook.index + cook.item.length;
+			if (l < ingr.length) {
+				cook.index = l;
+				showIngredients();
+			}
+		});
+		cook.prev.bind("click", function() {
+			var l = cook.index - cook.item.length;
+			if (l >= 0) {
+				cook.index = l;
+				showIngredients();
+			}
+		});
+		
+		cook.cancel.bind("click", function() {
+			hideDialog();
+		});
+		cook.ok.bind("click", function() {
+			hideDialog();
+		});
+		
+		cook.index = 0;
+		showIngredients();
+		cook.box.show();
 	}
 	
 };

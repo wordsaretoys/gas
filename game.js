@@ -180,7 +180,8 @@ GAS.game = {
 
 			this.actor = GAS.paddler.create(
 //				GAS.random(-r, r), GAS.random(-r, r), GAS.random(-r, r)	);
-			0, 0, -100);
+			0, 0, -5);
+			this.actor.interact = GAS.hud.showCookingDialog;
 			
 			// paddler object already has an update method, so swap it out
 			var update = this.actor.update;
