@@ -148,6 +148,7 @@ GAS.map = {
 					// and close to the player or within the player's FOV, draw it
 					if (n.playerDistance < n.DRAW_RADIUS * 2 || n.playerDotProduct > 0.5) {
 						n.draw();
+						c++;
 					}
 				}
 			}
@@ -162,8 +163,11 @@ GAS.map = {
 			}
 			if (!n.hidden) {
 				n.draw();
+				c++;
 			}
 		}
+		
+		GAS.hud.debug("Drawcount: " + c + "<br>FPS: " + SOAR.fps);
 	}
 
 };

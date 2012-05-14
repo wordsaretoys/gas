@@ -40,24 +40,24 @@ GAS.weeds = {
 		var r = SOAR.vector.create(-1, 0, 0);
 		var d = SOAR.vector.create();
 		
-		for (i = 0, j = 0; i < 30000; i++) {
+		for (i = 0, j = 0; i < 10000; i++) {
 		
-			this.mesh.set(p.x - 0.05 * r.x, p.y - 0.05 * r.y, p.z - 0.05 * r.z, i % 2, 0);
-			this.mesh.set(p.x + 0.05 * r.x, p.y + 0.05 * r.y, p.z + 0.05 * r.z, i % 2, 1);
+			this.mesh.set(p.x - 0.1 * r.x, p.y - 0.1 * r.y, p.z - 0.1 * r.z, i % 2, 0);
+			this.mesh.set(p.x + 0.1 * r.x, p.y + 0.1 * r.y, p.z + 0.1 * r.z, i % 2, 1);
 
-			p.x += 0.5 * f.x;
-			p.y += 0.5 * f.y;
-			p.z += 0.5 * f.z;
+			p.x += f.x;
+			p.y += f.y;
+			p.z += f.z;
 			
-			f.x += 1 * (Math.random() - Math.random());
-			f.y += 1 * (Math.random() - Math.random());
-			f.z += 1 * (Math.random() - Math.random());
+			f.x += GAS.random(-1, 1);
+			f.y += GAS.random(-1, 1);
+			f.z += GAS.random(-1, 1);
 			
 			f.norm();
 
-			r.x += 0.01 * (Math.random() - Math.random());
-			r.y += 0.01 * (Math.random() - Math.random());
-			r.z += 0.01 * (Math.random() - Math.random());
+			r.x += GAS.random(-0.01, 0.01);
+			r.y += GAS.random(-0.01, 0.01);
+			r.z += GAS.random(-0.01, 0.01);
 			
 			r.cross(f).cross(f).neg().norm();
 			
