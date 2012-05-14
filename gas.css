@@ -164,8 +164,12 @@ div {
 #cook {
 	position: absolute;
 	
-	width: 612px;
-	height: 336px;
+/*
+	wait until finalized!
+
+	width: 642px;
+	height: 346px;
+*/	
 	bottom: 20px;
 	right: 20px;
 	
@@ -195,7 +199,12 @@ div {
 	height: 240px;
 	margin: 5px;
 	padding: 5px;
+	border: solid 5px black;
 	float: left;
+}
+
+.cook-item-selected {
+	border-color: white;
 }
 
 .cook-nav {

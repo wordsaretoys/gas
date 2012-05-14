@@ -118,14 +118,18 @@ GAS.hud = {
 	
 		switch(event.keyCode) {
 		case SOAR.KEY.ESCAPE:
-			if (SOAR.running) {
-				that.setMessage(that.pauseMsg);
-				that.setCurtain(0.5);
-				SOAR.running = false;
+			if (that.hideDialog) {
+				that.hideDialog();
 			} else {
-				that.lighten();
-				SOAR.running = true;
-				GAS.player.mouse.invalid = true;
+				if (SOAR.running) {
+					that.setMessage(that.pauseMsg);
+					that.setCurtain(0.5);
+					SOAR.running = false;
+				} else {
+					that.lighten();
+					SOAR.running = true;
+					GAS.player.mouse.invalid = true;
+				}
 			}
 			break;
 		case SOAR.KEY.TAB:
@@ -223,7 +227,8 @@ GAS.hud = {
 	/**
 		generate the cooking dialog
 		
-		convenience method for slapping in all the event handlers
+		convenience method for slapping in all 
+		the event handlers and helper methods
 		
 		@method makeCookingDialog
 	**/
@@ -238,21 +243,35 @@ GAS.hud = {
 			cook.ok.bind();
 			cook.cancel.bind();
 			cook.box.hide();
+			delete GAS.hud.hideDialog;
+			GAS.game.npc.prompting = false;
 		};
 		
 		cook.showIngredients = function() {
-			var i, j, il;
+			var i, j, il, nm, q;
+			cook.item.removeClass("cook-item-selected");
 			for (i = 0, il = cook.item.length; i < il; i++) {
 				j = i + cook.index;
 				if (j < ingr.length) {
-					cook.item[i].innerHTML = ingr[j];
+					nm = ingr[j];
+					q = GAS.player.stores[nm] || 0;
+					cook.item[i].innerHTML = ingr[j] + " (" + q + ")";
 					cook.item[i].ingredient = j;
+					if (cook.selected[j]) {
+						cook.item[i].className += " cook-item-selected";
+					}
 				} else {
 					cook.item[i].innerHTML = "";
 					cook.item[i].ingredient = -1;
 				}
 			}
 		};
+		
+		cook.item.bind("click", function() {
+			var i = this.ingredient;
+			cook.selected[i] = !cook.selected[i];
+			cook.showIngredients();
+		});
 		
 		cook.next.bind("click", function() {
 			var l = cook.index + cook.item.length;
@@ -291,7 +310,9 @@ GAS.hud = {
 	showCookingDialog: function() {
 		var cook = GAS.hud.dom.cooking;
 		cook.index = 0;
+		cook.selected = [];
 		cook.showIngredients();
+		GAS.hud.hideDialog = cook.hideDialog;
 		cook.box.show();
 	}
 	
