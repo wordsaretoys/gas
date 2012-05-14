@@ -123,7 +123,7 @@ var GAS = {
 			
 			// tell the player what's going on
 			GAS.hud.lighten();
-			GAS.hud.showNarrative("<div>SARGASSO<br>by Chris Gauthier</div>", true);
+			//GAS.hud.showNarrative("<div>SARGASSO<br>by Chris Gauthier</div>", true);
 			
 			// start the message pump
 			SOAR.run();

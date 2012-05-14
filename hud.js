@@ -362,7 +362,6 @@ GAS.hud = {
 		// prevent player from moving while dialog is displayed
 		GAS.player.lockout = true;
 		cook.box.show();
-		GAS.hud.showNarrative("select ingredients", true);
 	},
 	
 	/**
