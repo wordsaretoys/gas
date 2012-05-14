@@ -244,7 +244,10 @@ GAS.hud = {
 			cook.cancel.bind();
 			cook.box.hide();
 			delete GAS.hud.hideDialog;
+			// force display of prompt
 			GAS.game.npc.prompting = false;
+			// restore player control
+			GAS.player.lockout = false;
 		};
 		
 		cook.showIngredients = function() {
@@ -312,7 +315,10 @@ GAS.hud = {
 		cook.index = 0;
 		cook.selected = [];
 		cook.showIngredients();
+		// allow ESC dismissal of dialog
 		GAS.hud.hideDialog = cook.hideDialog;
+		// prevent player from moving
+		GAS.player.lockout = true;
 		cook.box.show();
 	}
 	

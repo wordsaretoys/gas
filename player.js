@@ -35,6 +35,8 @@ GAS.player = {
 		d: SOAR.vector.create()
 	},
 	
+	lockout: false,
+	
 	debug: false,
 	
 	/**
@@ -161,6 +163,10 @@ GAS.player = {
 
 		var that = GAS.player;
 		
+		if (that.lockout) {
+			return true;
+		}
+		
 		switch(event.keyCode) {
 			case SOAR.KEY.A:
 				that.motion.moveleft = true;
@@ -193,6 +199,10 @@ GAS.player = {
 
 		var that = GAS.player;
 
+		if (that.lockout) {
+			return true;
+		}
+		
 		switch(event.keyCode) {
 
 			case SOAR.KEY.A:
@@ -255,6 +265,11 @@ GAS.player = {
 
 	onMouseMove: function(event) {
 		var that = GAS.player;
+
+		if (that.lockout) {
+			return true;
+		}
+		
 		if (that.mouse.down && SOAR.running && !that.mouse.invalid) {
 			that.mouse.next.x = event.pageX;
 			that.mouse.next.y = event.pageY;
