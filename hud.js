@@ -55,8 +55,10 @@ GAS.hud = {
 		this.dom.message.bind("mousedown", function() {
 			return false;
 		});
+		
+		this.makeCookingDialog();
 	},
-
+	
 	/**
 		add to debug window
 		
@@ -219,16 +221,18 @@ GAS.hud = {
 	},
 	
 	/**
-		activate cooking dialog
+		generate the cooking dialog
 		
-		@method showCookingDialog
+		convenience method for slapping in all the event handlers
+		
+		@method makeCookingDialog
 	**/
 	
-	showCookingDialog: function() {
+	makeCookingDialog: function() {
 		var cook = GAS.hud.dom.cooking;
 		var ingr = GAS.game.food.INGREDIENT;
 		
-		var hideDialog = function() {
+		cook.hideDialog = function() {
 			cook.next.bind();
 			cook.prev.bind();
 			cook.ok.bind();
@@ -236,7 +240,7 @@ GAS.hud = {
 			cook.box.hide();
 		};
 		
-		var showIngredients = function() {
+		cook.showIngredients = function() {
 			var i, j, il;
 			for (i = 0, il = cook.item.length; i < il; i++) {
 				j = i + cook.index;
@@ -248,33 +252,46 @@ GAS.hud = {
 					cook.item[i].ingredient = -1;
 				}
 			}
-			console.log(cook.index);
 		};
 		
 		cook.next.bind("click", function() {
 			var l = cook.index + cook.item.length;
 			if (l < ingr.length) {
 				cook.index = l;
-				showIngredients();
+				cook.showIngredients();
 			}
 		});
 		cook.prev.bind("click", function() {
 			var l = cook.index - cook.item.length;
 			if (l >= 0) {
 				cook.index = l;
-				showIngredients();
+				cook.showIngredients();
 			}
 		});
 		
 		cook.cancel.bind("click", function() {
-			hideDialog();
+			cook.hideDialog();
 		});
 		cook.ok.bind("click", function() {
-			hideDialog();
+			cook.hideDialog();
 		});
 		
+		// prevent mouse highlight of elements
+		jQuery("#cook > *").bind("mousedown", function() {
+			return false;
+		});
+	},
+	
+	/**
+		display the cooking dialog
+		
+		@method showCookingDialog
+	**/
+	
+	showCookingDialog: function() {
+		var cook = GAS.hud.dom.cooking;
 		cook.index = 0;
-		showIngredients();
+		cook.showIngredients();
 		cook.box.show();
 	}
 	
