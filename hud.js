@@ -7,8 +7,11 @@
 
 GAS.hud = {
 
+	NARRATIVE_FADE_TIME: 1 / 500,
+
 	pauseMsg: "Press Esc To Resume",
 	waitMsg: "Loading",
+	hideMsg: "<div class=\"small center\"><span class=\"small key\">SPACE</span> Hide</div>",
 	
 	/**
 		establish jQuery shells around UI DOM objects &
@@ -24,8 +27,11 @@ GAS.hud = {
 			
 			tracker: jQuery("#tracker"),
 			message: jQuery("#message"),
-			prompts: jQuery("#prompts"),
 			legend: jQuery("#legend"),
+			
+			prompts: {
+				box: jQuery("#prompts")
+			},
 			
 			cooking: {
 				box: jQuery("#cook"),
@@ -34,13 +40,17 @@ GAS.hud = {
 				next: jQuery("#cook-next"),
 				ok: jQuery("#cook-ok"),
 				cancel: jQuery("#cook-cancel")
-			},			
+			},
+			
+			narrative: {
+				box: jQuery("#narrative")
+			},
 			
 			debug: jQuery("#debug")
 		};
 
 		this.dom.prompts.resize = function() {
-			var p = GAS.hud.dom.prompts;
+			var p = GAS.hud.dom.prompts.box;
 			p.offset({
 				top: (GAS.display.height - p.height()) * 0.85,
 				left: (GAS.display.width - p.width()) * 0.5
@@ -145,11 +155,43 @@ GAS.hud = {
 				that.prompt();
 			}
 			break;
+		case SOAR.KEY.SPACE:
+			// if no dialog is being shown
+			if (!that.hideDialog) {
+				// fade in a blank narrative to hide what's there
+				that.showNarrative("", false);
+			}
+			break;
 		default:
 			//console.log(event.keyCode);
 			break;
 		}
 		return true;
+	},
+	
+	/**
+		update any HUD animations
+		
+		called on every animation frame
+		
+		@method update
+	**/
+	
+	update: function() {
+		// handle narrative fading
+		var narr = this.dom.narrative;
+		if (narr.fade) {
+			narr.alpha += narr.fade * this.NARRATIVE_FADE_TIME * SOAR.interval;
+			narr.box.css("opacity", narr.alpha);
+			if (narr.fade === 1 && narr.alpha >= 1) {
+				narr.fade = 0;
+			}
+			if (narr.fade === -1 && narr.alpha <= 0) {
+				narr.fade = 1;
+				narr.box.html(narr.html);
+			}
+		}
+	
 	},
 	
 	/**
@@ -214,12 +256,12 @@ GAS.hud = {
 		var subject = "Npc";
 		
 		if (object) {
-			pr.html("<p><span class=\"key\">E</span>&nbsp;" + verb + "</p><p>" + subject + "</p>");
+			pr.box.html("<p><span class=\"key\">E</span>&nbsp;" + verb + "</p><p>" + subject + "</p>");
 			pr.resize();
-			pr.css("visibility", "visible");
+			pr.box.css("visibility", "visible");
 			pr.object = object;
 		} else {
-			pr.css("visibility", "hidden");
+			pr.box.css("visibility", "hidden");
 			delete pr.object;
 		}
 	},
@@ -317,9 +359,26 @@ GAS.hud = {
 		cook.showIngredients();
 		// allow ESC dismissal of dialog
 		GAS.hud.hideDialog = cook.hideDialog;
-		// prevent player from moving
+		// prevent player from moving while dialog is displayed
 		GAS.player.lockout = true;
 		cook.box.show();
+		GAS.hud.showNarrative("select ingredients", true);
+	},
+	
+	/**
+		display the specified narrative
+		
+		@method showNarrative
+		@param text string, the narrative to display
+		@param hide boolean, true if user can dismiss text
+	**/
+	
+	showNarrative: function(text, hide) {
+		var narr = this.dom.narrative;
+		var html = hide ? text + this.hideMsg : text;
+		narr.fade = -1;
+		narr.alpha = 1;
+		narr.html = html;
 	}
 	
 };

@@ -123,6 +123,7 @@ var GAS = {
 			
 			// tell the player what's going on
 			GAS.hud.lighten();
+			GAS.hud.showNarrative("<div>SARGASSO<br>by Chris Gauthier</div>", true);
 			
 			// start the message pump
 			SOAR.run();
@@ -149,6 +150,7 @@ var GAS = {
 	update: function() {
 		GAS.game.update();
 		GAS.map.update();
+		GAS.hud.update();
 		GAS.player.update();
 		GAS.ejecta.update();
 	},
