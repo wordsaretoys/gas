@@ -49,7 +49,12 @@ varying vec2 uv;
 varying float height;
 
 void main(void) {
-	vec3 color = (height > 0.0) ? vec3(0.23, 0.72, 1.0) : vec3(0.5, 0.5, 0.5);
+	vec3 color;
+	if (height > 0.0) {
+		color = mix(vec3(0.23, 0.72, 1.0), vec3(1.0, 1.0, 1.0), 0.75 - length(uv - vec2(0.5, 0)));
+	} else {
+		color = vec3(0.5, 0.5, 0.5);
+	}
 	gl_FragColor = vec4(color, 1.0);
 }
 
@@ -74,7 +79,10 @@ varying vec2 uv;
 varying float height;
 
 void main(void) {
-	vec3 color = (texture2D(clouds, uv).rgb + texture2D(clouds, vec2(1.0 - uv.x, uv.y)).rgb) * 0.5;
+	vec3 color = texture2D(clouds, uv).rgb;
+	vec3 treat = 2.0 * abs(0.5 - uv.x) * texture2D(clouds, vec2(1.0 - uv.x, uv.y)).rgb;
+	color += treat;
+
 	float alpha = pow(1.0 - abs(height), 2.0);
 	gl_FragColor = vec4(color, alpha);
 }

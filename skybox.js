@@ -87,7 +87,8 @@ GAS.skybox = {
 		var ctx = GAS.texture.context;
 		var w = GAS.texture.canvas.width;
 		var h = GAS.texture.canvas.height;
-		ctx.clearRect(0, 0, w, h);
+		ctx.fillStyle = "rgb(16, 16, 16)";
+		ctx.fillRect(0, 0, w, h);
 		
 		var i, j;
 		ctx.globalCompositeOperation = "lighter";
