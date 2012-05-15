@@ -131,7 +131,7 @@ var GAS = {
 		});
 		
 		// while waiting for resource load, initialize game objects
-		GAS.clouds.init();
+		GAS.skybox.init();
 		GAS.card.init();
 		GAS.ejecta.init();
 		GAS.bolus.init();
@@ -171,10 +171,10 @@ var GAS = {
 		gl.disable(gl.BLEND);
 		gl.disable(gl.CULL_FACE);
 	
-		gl.clearColor(0.23, 0.72, 1, 1);
+		gl.clearColor(0, 0, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
-		GAS.clouds.draw();
+		GAS.skybox.draw();
 		gl.clear(gl.DEPTH_BUFFER_BIT);
 		GAS.ejecta.draw();
 

@@ -411,9 +411,9 @@ GAS.paddler = {
 		var gl = GAS.display.gl;
 		var shader = this.shader;
 		var camera = GAS.player.camera;
-		var shader = this.shader;
 
 		if (GAS.map.lastDraw !== shader) {
+			gl.disable(gl.BLEND);
 			gl.enable(gl.CULL_FACE);
 			gl.cullFace(gl.BACK);
 			shader.activate();

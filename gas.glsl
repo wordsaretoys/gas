@@ -1,7 +1,7 @@
-<script id="vs-cloud" type="x-shader/x-vertex">
+<script id="vs-skybox" type="x-shader/x-vertex">
 
 /**
-	cloud vertex shader
+	skybox vertex shader
 	O' = P * V * O transformation, plus texture coordinates
 	
 	@param position vertex array of positions
@@ -12,6 +12,7 @@
 	
 	(passed to fragment shader for each vertex)
 	@param uv		texture coordinates of fragment
+	@param height	height of fragment in object space
 	
 **/
 
@@ -22,10 +23,34 @@ uniform mat4 projector;
 uniform mat4 modelview;
 
 varying vec2 uv;
+varying float height;
 
 void main(void) {
 	gl_Position = projector * modelview * vec4(position, 1.0);
+	height = position.y;
 	uv = texturec;
+}
+
+</script>
+
+<script id="fs-plane" type="x-shader/x-fragment">
+
+/**
+	plane fragment shader
+
+	@param uv		texture coordinates of fragment
+	@param height	height of fragment in object space
+	
+**/
+
+precision mediump float;
+
+varying vec2 uv;
+varying float height;
+
+void main(void) {
+	vec3 color = (height > 0.0) ? vec3(0.23, 0.72, 1.0) : vec3(0.5, 0.5, 0.5);
+	gl_FragColor = vec4(color, 1.0);
 }
 
 </script>
@@ -35,7 +60,7 @@ void main(void) {
 /**
 	cloud fragment shader
 
-	@param noise	noise texture
+	@param clouds	cloud texture
 	
 	@param uv		texture coordinates of fragment
 	
@@ -43,20 +68,14 @@ void main(void) {
 
 precision mediump float;
 
-uniform sampler2D noise;
+uniform sampler2D clouds;
 
 varying vec2 uv;
+varying float height;
 
 void main(void) {
-	vec3 color = texture2D(noise, uv).rgb;
-	float a = clamp((color.r + color.g + color.b) / 2.0, 0.0, 1.0);
-	float r = 2.0 * length(abs(uv) - 0.5);
-	float alpha = (1.0 - r);
-	if (uv.y > 0.0) {
-		float m = pow(r, 0.25);
-		alpha = mix(1.0, a * alpha, m);
-		color = mix(vec3(1.0, 1.0, 1.0), color, m);
-	}
+	vec3 color = (texture2D(clouds, uv).rgb + texture2D(clouds, vec2(1.0 - uv.x, uv.y)).rgb) * 0.5;
+	float alpha = pow(1.0 - abs(height), 2.0);
 	gl_FragColor = vec4(color, alpha);
 }
 
