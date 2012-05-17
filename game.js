@@ -289,7 +289,7 @@ GAS.game = {
 
 				// point npc away from player
 				behave.target.copy(this.position).sub(player.position).norm();
-				this.pointTo(behave.target, 0.25);
+				this.pointTo(behave.target, 0.5);
 				
 				if (this.playerDistance > npc.EVADE_RADIUS) {
 					behave.status = npc.WATCHING;

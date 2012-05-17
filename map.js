@@ -60,6 +60,8 @@ GAS.map = {
 	
 	update: function() {
 		var p = GAS.player.position;
+		var fr = GAS.player.camera.front;
+		var dir = this.dir;
 		var r = this.EYE_RADIUS;
 		var b = false;
 		var i, il, j, c, n;
@@ -109,6 +111,27 @@ GAS.map = {
 			GAS.game.nudge();
 			
 		}
+		
+		// update active drawable objects
+		for (i = 0, il = this.active.length; i < il; i++) {
+			n = this.active[i];
+			if (n) {
+				// track useful player-object information
+				dir.copy(n.position).sub(p);
+				n.playerDistance = dir.length();
+				dir.norm();
+				n.playerDotProduct = dir.dot(fr);
+				if (n.update) {
+					n.update();
+				}
+			}
+		}
+		for (i = 0, il = this.always.length; i < il; i++) {
+			n = this.always[i];
+			if (n && n.update) {
+				n.update();
+			}
+		}
 	},
 	
 	/**
@@ -118,9 +141,6 @@ GAS.map = {
 	**/
 	
 	draw: function() {
-		var cp = GAS.player.position;
-		var fr = GAS.player.camera.front;
-		var dir = this.dir;
 		var gl = GAS.display.gl;
 		var c = 0;
 		var i, il, n;
@@ -132,17 +152,6 @@ GAS.map = {
 		for (i = 0, il = this.active.length; i < il; i++) {
 			n = this.active[i];
 			if (n) {
-				// track useful player-object information
-				dir.copy(n.position).sub(cp);
-				n.playerDistance = dir.length();
-				dir.norm();
-				n.playerDotProduct = dir.dot(fr);
-				
-				// update the object if it has such a method
-				if (n.update) {
-					n.update();
-				}
-				
 				// if the object's visible
 				if (!n.hidden) {
 					// and close to the player or within the player's FOV, draw it
@@ -158,9 +167,6 @@ GAS.map = {
 		gl.clear(gl.DEPTH_BUFFER_BIT);
 		for (i = 0, il = this.always.length; i < il; i++) {
 			n = this.always[i];
-			if (n.update) {
-				n.update();
-			}
 			if (!n.hidden) {
 				n.draw();
 				c++;
