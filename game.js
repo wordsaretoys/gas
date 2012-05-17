@@ -181,19 +181,27 @@ GAS.game = {
 			this.actor = GAS.paddler.create(
 //				GAS.random(-r, r), GAS.random(-r, r), GAS.random(-r, r)	);
 			0, 0, -5);
-			this.actor.interact = GAS.hud.showCookingDialog;
 			
 			// paddler object already has an update method, so swap it out
 			var update = this.actor.update;
 			this.actor.update = this.update;
 			this.actor.updateMotion = update;
-			
+
+			// set up remaining NPC-specific stuff
 			this.actor.behavior = {
 				status: this.DRIFTING,
 				period: 0,
-				target: SOAR.vector.create()
+				target: SOAR.vector.create(),
+				calmed: false
 			};
 			this.actor.haste = 2;
+			this.actor.interact = GAS.hud.showCookingDialog;
+/*			var that = this;
+			this.actor.interact = function() {
+				that.actor.behavior.calmed = true;
+				that.prompting = false;
+			};
+*/
 			GAS.map.add(this.actor);
 			
 			this.soundCard = GAS.card.create("sound");
@@ -254,7 +262,7 @@ GAS.game = {
 				
 				// if the player is looking at the NPC, prompt them
 				if (this.playerDotProduct >= 0.8 && !npc.prompting) {
-					GAS.hud.prompt(this, "Cook For");
+					GAS.hud.prompt(this, behave.calmed ? "Question" : "Cook For");
 					npc.prompting = true;
 				}
 				// if the player is looking away, remove the prompt
@@ -266,7 +274,7 @@ GAS.game = {
 				// player moves too far away, back to drifting
 				if (this.playerDistance > npc.WATCH_RADIUS) {
 					behave.status = npc.DRIFTING;
-					this.haste = 2;
+					this.haste = behave.calmed ? 1 : 2;
 					npc.soundCard.hidden = false;
 				}
 				// player moves too close, switch to evade
@@ -281,7 +289,6 @@ GAS.game = {
 
 				// point npc away from player
 				behave.target.copy(this.position).sub(player.position).norm();
-				//behave.target.cross(player.rotator.up);
 				this.pointTo(behave.target, 0.25);
 				
 				if (this.playerDistance > npc.EVADE_RADIUS) {
