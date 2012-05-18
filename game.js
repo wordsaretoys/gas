@@ -48,7 +48,7 @@ GAS.game = {
 	
 	weed: {
 	
-		COUNT: 5000,
+		COUNT: 750,
 		
 		list: [],
 		
