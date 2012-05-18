@@ -42,6 +42,66 @@ GAS.game = {
 	
 	/**
 	
+		control script
+		
+	**/
+	
+	control: {
+	
+		calmCounter: 0,
+		calmTarget: 0,
+		
+		phase: 0,
+		
+		npcCount: [1, 2, 2, 3, 3, 3],
+		
+		/**
+			handle event, generate NPCs and adversaries,
+			advance the plot when needed based on state
+			
+			@method handle
+			@param ev string, event type
+		**/
+		
+		handle: function(ev) {
+			var npc = GAS.game.npc;
+			var i, il;
+		
+			switch(ev) {
+			
+			case "startup":
+			
+				this.handle("nextphase");
+			
+				break;
+			
+			case "nextphase":
+				for (i = 0, il = this.npcCount[this.phase]; i < il; i++) {
+					npc.add();
+				}
+				console.log("phase " + this.phase + " adding npcs " + il);
+				this.calmTarget = il;
+				this.calmCounter = 0;
+				
+				break;
+				
+			case "calmed":
+			
+				this.calmCounter++;
+				if (this.calmCounter === this.calmTarget) {
+					console.log(this.calmCounter + " reached target");
+					this.phase++;
+					this.handle("nextphase");
+				}
+				
+				break;
+			}
+		}
+		
+	},
+	
+	/**
+	
 		weed collection
 		
 	**/
@@ -181,10 +241,6 @@ GAS.game = {
 			this.marker.hidden = true;
 			this.marker.index = 0;
 			GAS.map.always.push(this.marker);
-			
-			// TEMP: generate a couple of NPCs for testing
-			this.add();
-			this.add();
 		},
 		
 		/**
@@ -194,7 +250,8 @@ GAS.game = {
 		**/
 		
 		add: function() {
-			var r = GAS.map.RADIUS;
+//			var r = GAS.map.RADIUS;
+			var r = 50;
 
 			// create the paddler object
 			var o = GAS.paddler.create(
@@ -215,7 +272,10 @@ GAS.game = {
 //			o.interact = GAS.hud.showCookingDialog;
 			var that = this;
 			o.interact = function() {
-				o.behavior.calmed = true;
+				if (!o.behavior.calmed) {
+					o.behavior.calmed = true;
+					GAS.game.control.handle("calmed");
+				}
 				that.prompting = false;
 			};
 
@@ -344,7 +404,7 @@ GAS.game = {
 					mark.index = 0;
 				}
 				// reset marker phase
-				mark.phase = 0;
+				mark.phase = -1;
 			}
 		
 		}

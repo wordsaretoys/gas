@@ -7,7 +7,7 @@
 
 GAS.map = {
 
-	RADIUS: 250,
+	RADIUS: 300,
 	
 	EYE_RADIUS: 200,
 	
@@ -16,7 +16,7 @@ GAS.map = {
 	always: [],
 	
 	updateIndex: 0,
-	updateLength: 100,
+	updateLength: 50,
 	
 	dir: SOAR.vector.create(),
 	

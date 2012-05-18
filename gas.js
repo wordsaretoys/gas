@@ -121,8 +121,9 @@ var GAS = {
 				GAS.hud.debug(GAS.display.width + ", " + GAS.display.height);
 			}, false);
 			
-			// tell the player what's going on
+			// start the game script 
 			GAS.hud.lighten();
+			GAS.game.control.handle("startup");
 			//GAS.hud.showNarrative("<div>SARGASSO<br>by Chris Gauthier</div>", true);
 			
 			// start the message pump
