@@ -132,6 +132,9 @@ GAS.map = {
 				n.update();
 			}
 		}
+		
+		// notify game objects that want frame-level updates
+		GAS.game.update();
 	},
 	
 	/**

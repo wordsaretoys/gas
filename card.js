@@ -9,7 +9,7 @@ GAS.card = {
 
 	DRAW_RADIUS: 1,
 	SORT_ORDER: 10,
-
+	
 	shader: {},
 
 	/**
@@ -51,6 +51,7 @@ GAS.card = {
 		o.position = SOAR.vector.create();
 		o.matrix = new Float32Array(16);
 		o.scale = 1;
+		o.phase = 0;
 		o.shader = this.shader[type];
 		return o;
 	},
@@ -86,7 +87,7 @@ GAS.card = {
 		}
 		gl.uniform3f(shader.center, this.position.x, this.position.y, this.position.z);
 		gl.uniform1f(shader.scale, this.scale);
-		gl.uniform1f(shader.time, SOAR.elapsedTime * 0.001);
+		gl.uniform1f(shader.time, this.phase);
 		this.mesh.draw();
 	}
 

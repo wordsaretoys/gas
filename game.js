@@ -14,11 +14,9 @@ GAS.game = {
 	**/
 	
 	init: function() {
-	
 		this.weed.init();
 		this.food.init();
 		this.npc.init();
-	
 	},
 	
 	/**
@@ -29,6 +27,7 @@ GAS.game = {
 	**/
 	
 	update: function() {
+		this.npc.updateMarker();
 	},
 	
 	/**
@@ -153,62 +152,75 @@ GAS.game = {
 	**/
 	
 	npc: {
-	
+
 		WATCH_RADIUS: 10,
 		EVADE_RADIUS: 3,
 		
 		DRIFTING: 0,
 		WATCHING: 1,
 		EVADING: 2,
+		
+		list: [],
 
 		scratch: {
-			p: SOAR.vector.create(),
-			q: SOAR.quaternion.create(),
-			r: SOAR.vector.create()
+			p: SOAR.vector.create()
 		},
 		
 		prompting: false,
 		
 		/**
-			initialize the NPC
+			initialize the NPCs
 			
 			@method init
 		**/
 
 		init: function() {
+			// create a marker for the NPCs
+			this.marker = GAS.card.create("sound");
+			this.marker.scale = 10;
+			this.marker.hidden = true;
+			this.marker.index = 0;
+			GAS.map.always.push(this.marker);
+			
+			// TEMP: generate a couple of NPCs for testing
+			this.add();
+			this.add();
+		},
+		
+		/**
+			add an NPC to the collection and the map
+			
+			@method add
+		**/
+		
+		add: function() {
 			var r = GAS.map.RADIUS;
 
-			this.actor = GAS.paddler.create(
-//				GAS.random(-r, r), GAS.random(-r, r), GAS.random(-r, r)	);
-			0, 0, -5);
+			// create the paddler object
+			var o = GAS.paddler.create(
+				GAS.random(-r, r), GAS.random(-r, r), GAS.random(-r, r)	);
 			
 			// paddler object already has an update method, so swap it out
-			var update = this.actor.update;
-			this.actor.update = this.update;
-			this.actor.updateMotion = update;
+			o.update = this.update;
+			o.updateMotion = GAS.paddler.update;
 
 			// set up remaining NPC-specific stuff
-			this.actor.behavior = {
+			o.behavior = {
 				status: this.DRIFTING,
 				period: 0,
 				target: SOAR.vector.create(),
 				calmed: false
 			};
-			this.actor.haste = 2;
-			this.actor.interact = GAS.hud.showCookingDialog;
-/*			var that = this;
-			this.actor.interact = function() {
-				that.actor.behavior.calmed = true;
+			o.haste = 2;
+//			o.interact = GAS.hud.showCookingDialog;
+			var that = this;
+			o.interact = function() {
+				o.behavior.calmed = true;
 				that.prompting = false;
 			};
-*/
-			GAS.map.add(this.actor);
-			
-			this.soundCard = GAS.card.create("sound");
-			GAS.map.always.push(this.soundCard);
-			this.soundCard.scale = 10;
-			this.soundCard.hidden = true;
-			
+
+			GAS.map.add(o);
+			this.list.push(o);
 		},
 		
 		/**
@@ -249,7 +261,6 @@ GAS.game = {
 				if (this.playerDistance < npc.WATCH_RADIUS) {
 					behave.status = npc.WATCHING;
 					this.haste = 0;
-					npc.soundCard.hidden = true;
 				}
 
 				break;
@@ -275,7 +286,6 @@ GAS.game = {
 				if (this.playerDistance > npc.WATCH_RADIUS) {
 					behave.status = npc.DRIFTING;
 					this.haste = behave.calmed ? 1 : 2;
-					npc.soundCard.hidden = false;
 				}
 				// player moves too close, switch to evade
 				if (this.playerDistance < npc.EVADE_RADIUS) {
@@ -301,8 +311,42 @@ GAS.game = {
 			}
 			
 			this.updateMotion();
-
-			npc.soundCard.position.copy(this.position).sub(player.position).norm().mul(100).add(player.position);
+		},
+		
+		/**
+			used to update the NPC marker
+			
+			called in object context on EVERY frame
+			
+			@method updateMarker
+		**/
+		
+		updateMarker: function() {
+			var player = GAS.player.avatar;
+			var npc = GAS.game.npc;
+			var mark = this.marker;
+			var n = this.list[mark.index];
+			// if the indexed NPC is in a markable state and the marker is running
+			if (n.behavior.status === npc.DRIFTING && !n.behavior.calmed && mark.phase <= 2) {
+				// insure marker is visible
+				mark.hidden = false;
+				// update its phase
+				mark.phase += SOAR.interval * 0.001;
+				// move it to a position between player and NPC
+				mark.position.copy(n.position).sub(player.position).norm().mul(50).add(player.position);
+			} else {
+				// make sure the marker is hidden
+				mark.hidden = true;
+				// go to the next NPC
+				mark.index++;
+				// wrap around if we've reached the list's end
+				if (mark.index >= npc.list.length) {
+					mark.index = 0;
+				}
+				// reset marker phase
+				mark.phase = 0;
+			}
+		
 		}
 
 	}

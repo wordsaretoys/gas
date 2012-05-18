@@ -369,7 +369,7 @@ void main(void) {
 	float radius = length(uv);
 	float alpha = 0.0;
 	for (int i = 0; i < 4; i++) {
-		float base = mod(time + float(i) * 0.25, 2.0);
+		float base = time + float(i) * 0.25;
 		float u = base + 0.01;
 		float l = base - 0.01;
 		if (radius > l && radius < u)

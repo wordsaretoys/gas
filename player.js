@@ -65,7 +65,7 @@ GAS.player = {
 
 		// create a constrained camera for player view
 		this.camera = SOAR.camera.create(GAS.display);
-		this.camera.nearLimit = 0.01;
+		this.camera.nearLimit = 0.1;
 		this.camera.farLimit = GAS.map.EYE_RADIUS;
 		this.camera.free = false;
 		this.camera.bound.set(Math.sqrt(2) / 2, -1, 0);
