@@ -241,7 +241,7 @@ GAS.game = {
 		
 		add: function() {
 //			var r = GAS.map.RADIUS;
-			var r = 5;
+			var r = 25;
 
 			// create the paddler object
 			var o = GAS.paddler.create(
@@ -410,6 +410,8 @@ GAS.game = {
 				GAS.hud.showNarrative(this.recipe.text, false);
 				GAS.hud.showCookingDialog(this);
 			} else {
+				// restore display of prompt
+				GAS.game.npc.prompting = false;
 			}
 		},
 		
