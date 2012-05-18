@@ -409,6 +409,7 @@ GAS.game = {
 				}
 				GAS.hud.showNarrative(this.recipe.text, false);
 				GAS.hud.showCookingDialog(this);
+			} else {
 			}
 		},
 		
@@ -445,6 +446,8 @@ GAS.game = {
 				// player cancelled dialog, just fade out the recipe
 				GAS.hud.showNarrative();
 			}
+			// restore display of prompt
+			GAS.game.npc.prompting = false;
 		}
 
 	}

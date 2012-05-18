@@ -51,7 +51,7 @@ varying float height;
 void main(void) {
 	vec3 color;
 	if (height > 0.0) {
-		color = mix(vec3(0.23, 0.72, 1.0), vec3(1.0, 1.0, 1.0), 0.75 - length(uv - vec2(0.5, 0)));
+		color = mix(vec3(0.23, 0.72, 1.0), vec3(1.0, 1.0, 1.0), 1.0 - length(uv - vec2(0.5, 0)));
 	} else {
 		color = vec3(0.5, 0.5, 0.5);
 	}
@@ -80,7 +80,7 @@ varying float height;
 
 void main(void) {
 	vec3 color = texture2D(clouds, uv).rgb;
-	vec3 treat = 2.0 * abs(0.5 - uv.x) * texture2D(clouds, vec2(1.0 - uv.x, uv.y)).rgb;
+	vec3 treat = vec3(0.75, 0.75, 0.75) * pow(2.0 * abs(0.5 - uv.x), 4.0); 
 	color += treat;
 
 	float alpha = pow(1.0 - abs(height), 2.0);

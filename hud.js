@@ -157,7 +157,7 @@ GAS.hud = {
 			break;
 		case SOAR.KEY.SPACE:
 			// if no dialog is being shown
-			if (!that.hideDialog) {
+			if (!that.cancel) {
 				// fade in a blank narrative to hide what's there
 				that.showNarrative("", false);
 			}
@@ -286,8 +286,6 @@ GAS.hud = {
 			cook.cancel.bind();
 			cook.box.hide();
 			delete GAS.hud.cancel;
-			// force display of prompt
-			GAS.game.npc.prompting = false;
 			// restore player control
 			GAS.player.unlock();
 		};
