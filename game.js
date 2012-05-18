@@ -71,15 +71,16 @@ GAS.game = {
 			
 			case "startup":
 			
+				GAS.lookup.recipe.shuffle();
 				this.handle("nextphase");
 			
 				break;
 			
 			case "nextphase":
+			
 				for (i = 0, il = this.npcCount[this.phase]; i < il; i++) {
 					npc.add();
 				}
-				console.log("phase " + this.phase + " adding npcs " + il);
 				this.calmTarget = il;
 				this.calmCounter = 0;
 				
@@ -89,7 +90,6 @@ GAS.game = {
 			
 				this.calmCounter++;
 				if (this.calmCounter === this.calmTarget) {
-					console.log(this.calmCounter + " reached target");
 					this.phase++;
 					this.handle("nextphase");
 				}
@@ -134,14 +134,12 @@ GAS.game = {
 	
 	/**
 	
-		food lookups, combination logic, food cloud collection
+		food bolus collection
 		
 	**/
 	
 	food: {
 	
-		INGREDIENT: [],
-		
 		list: [],
 		
 		/**
@@ -154,22 +152,13 @@ GAS.game = {
 			var weed = GAS.game.weed;
 			var i, il, c, o;
 			
-			// TEMP testing entries
-			for (i = 0; i < 16; i++) {
-				var s = "";
-				for (var j = 0; j < 5; j++) {
-					s += "abcdefghijklmnopqrstuvwxyz".charAt(Math.floor(GAS.random(0, 26)));
-				}
-				this.INGREDIENT[i] = s;
-			}
-			
 			for (i = 0, il = weed.list.length; i < il; i++) {
 				if (Math.random() < 0.25) {
 					c = weed.list[i].position;
 					o = GAS.bolus.create(c.x, c.y, c.z);
 					o.stores = {};
-					this.INGREDIENT.enumerate(function(e) {
-						o.stores[e] = Math.round(Math.random());
+					GAS.lookup.ingredient.enumerate(function(e) {
+						o.stores[e.name] = Math.round(Math.random());
 					});
 					o.update = this.update;
 					this.list.push(o);
@@ -195,8 +184,9 @@ GAS.game = {
 			if (!this.hidden) {
 				var that = this;
 				if (this.playerDistance < GAS.bolus.DRAW_RADIUS) {
-					GAS.game.food.INGREDIENT.enumerate(function(e) {
-						GAS.player.stores[e] = (GAS.player.stores[e] || 0) + (that.stores[e] || 0);
+					GAS.lookup.ingredient.enumerate(function(e) {
+						GAS.player.stores[e.name] = 
+							(GAS.player.stores[e.name] || 0) + (that.stores[e.name] || 0);
 					});
 					this.hidden = true;
 				}
@@ -251,7 +241,7 @@ GAS.game = {
 		
 		add: function() {
 //			var r = GAS.map.RADIUS;
-			var r = 50;
+			var r = 5;
 
 			// create the paddler object
 			var o = GAS.paddler.create(
@@ -269,15 +259,8 @@ GAS.game = {
 				calmed: false
 			};
 			o.haste = 2;
-//			o.interact = GAS.hud.showCookingDialog;
-			var that = this;
-			o.interact = function() {
-				if (!o.behavior.calmed) {
-					o.behavior.calmed = true;
-					GAS.game.control.handle("calmed");
-				}
-				that.prompting = false;
-			};
+			o.interact = this.interact;
+			o.consume = this.consume;
 
 			GAS.map.add(o);
 			this.list.push(o);
@@ -407,6 +390,61 @@ GAS.game = {
 				mark.phase = -1;
 			}
 		
+		},
+		
+		/**
+			called when the player attempts to interact with the NPC
+			
+			called in the NPC's context, so "this" refers to it
+			
+			@method interact
+		**/
+		
+		interact: function() {
+			// if this NPC hasn't yet been calmed
+			if (!this.behavior.calmed) {
+				// no recipe? grab the next one on the stack
+				if (!this.recipe) {
+					this.recipe = GAS.lookup.recipe.pop();
+				}
+				GAS.hud.showNarrative(this.recipe.text, false);
+				GAS.hud.showCookingDialog(this);
+			}
+		},
+		
+		/**
+			called when the NPC "eats" the player's dish
+			decides if the ingredients are correct, and
+			calms the NPC if they are
+		
+			@method consume
+			@param dish object, collection of player-selected ingredients
+		**/
+		
+		consume: function(dish) {
+			// if a dish was supplied
+			if (dish) {
+				// enumerate through the ingredients that make up the recipe
+				// count down for each one that the player selected correctly
+				var c = this.recipe.part.length;
+				this.recipe.part.enumerate(function(e) {
+					if (dish[e]) {
+						c--;
+					}
+				});
+				
+				// if player cleared them all, calm the NPC and advance the plot
+				if (c === 0) {
+					this.behavior.calmed = true;
+					GAS.game.control.handle("calmed");
+				}
+				
+				GAS.hud.showNarrative();
+				
+			} else {
+				// player cancelled dialog, just fade out the recipe
+				GAS.hud.showNarrative();
+			}
 		}
 
 	}

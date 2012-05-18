@@ -279,23 +279,23 @@ GAS.player = {
 	},
 	
 	/**
-		add to player inventory and update HUD
+		lock the player's controls and cease all motion
 		
-		if inventory is full, item will not be added
-		
-		@method addToInventory
-		@param food string, food ingredient to add
-		@return true if food added to inventory
+		@method lock
 	**/
 	
-	addToInventory: function(food) {
-		if (this.stores.length < this.MAX_STORES) {
-			this.stores.push(food);
-			return true;
-		} else {
-			return false;
-		}
-	}
-		
+	lock: function() {
+		this.lockout = true;
+		this.motion.movefore = false;
+	},
 	
+	/**
+		unlock the player's controls
+		
+		@method unlock
+	**/
+	
+	unlock: function() {
+		this.lockout = false;
+	}
 };

@@ -128,8 +128,8 @@ GAS.hud = {
 	
 		switch(event.keyCode) {
 		case SOAR.KEY.ESCAPE:
-			if (that.hideDialog) {
-				that.hideDialog();
+			if (that.cancel) {
+				that.cancel();
 			} else {
 				if (SOAR.running) {
 					that.setMessage(that.pauseMsg);
@@ -276,8 +276,8 @@ GAS.hud = {
 	**/
 	
 	makeCookingDialog: function() {
+		var ingr = GAS.lookup.ingredient;
 		var cook = GAS.hud.dom.cooking;
-		var ingr = GAS.game.food.INGREDIENT;
 		
 		cook.hideDialog = function() {
 			cook.next.bind();
@@ -285,37 +285,45 @@ GAS.hud = {
 			cook.ok.bind();
 			cook.cancel.bind();
 			cook.box.hide();
-			delete GAS.hud.hideDialog;
+			delete GAS.hud.cancel;
 			// force display of prompt
 			GAS.game.npc.prompting = false;
 			// restore player control
-			GAS.player.lockout = false;
+			GAS.player.unlock();
+		};
+		
+		cook.dismiss = function() {
+			cook.npc.consume();
+			cook.hideDialog();
 		};
 		
 		cook.showIngredients = function() {
-			var i, j, il, nm, q;
+			var i, j, il, nm, q, ds;
 			cook.item.removeClass("cook-item-selected");
 			for (i = 0, il = cook.item.length; i < il; i++) {
 				j = i + cook.index;
 				if (j < ingr.length) {
-					nm = ingr[j];
+					nm = ingr[j].name;
+					ds = ingr[j].desc;
 					q = GAS.player.stores[nm] || 0;
-					cook.item[i].innerHTML = ingr[j] + " (" + q + ")";
-					cook.item[i].ingredient = j;
-					if (cook.selected[j]) {
+					cook.item[i].innerHTML = "<h2>" + nm + "(" + q + ")</h2><p>" + ds + "</p>";
+					cook.item[i].ingredient = nm;
+					if (cook.dish[nm]) {
 						cook.item[i].className += " cook-item-selected";
 					}
 				} else {
 					cook.item[i].innerHTML = "";
-					cook.item[i].ingredient = -1;
+					delete cook.item[i].ingredient;
 				}
 			}
 		};
 		
 		cook.item.bind("click", function() {
-			var i = this.ingredient;
-			cook.selected[i] = !cook.selected[i];
-			cook.showIngredients();
+			var nm = this.ingredient;
+			if (nm) {
+				cook.dish[nm] = !cook.dish[nm];
+				cook.showIngredients();
+			}
 		});
 		
 		cook.next.bind("click", function() {
@@ -333,11 +341,12 @@ GAS.hud = {
 			}
 		});
 		
-		cook.cancel.bind("click", function() {
-			cook.hideDialog();
-		});
+		cook.cancel.bind("click", cook.dismiss);
+		
 		cook.ok.bind("click", function() {
 			cook.hideDialog();
+			// submit dish to npc
+			cook.npc.consume(cook.dish);
 		});
 		
 		// prevent mouse highlight of elements
@@ -350,17 +359,19 @@ GAS.hud = {
 		display the cooking dialog
 		
 		@method showCookingDialog
+		@param npc object, reference to the calling NPC
 	**/
 	
-	showCookingDialog: function() {
+	showCookingDialog: function(npc) {
 		var cook = GAS.hud.dom.cooking;
+		cook.npc = npc;
+		cook.dish = {};
 		cook.index = 0;
-		cook.selected = [];
 		cook.showIngredients();
 		// allow ESC dismissal of dialog
-		GAS.hud.hideDialog = cook.hideDialog;
+		GAS.hud.cancel = cook.dismiss;
 		// prevent player from moving while dialog is displayed
-		GAS.player.lockout = true;
+		GAS.player.lock();
 		cook.box.show();
 	},
 	
@@ -373,6 +384,8 @@ GAS.hud = {
 	**/
 	
 	showNarrative: function(text, hide) {
+		text = text || "";
+		hide = hide || false;
 		var narr = this.dom.narrative;
 		var html = hide ? text + this.hideMsg : text;
 		narr.fade = -1;

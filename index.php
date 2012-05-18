@@ -29,6 +29,7 @@
 		<script type="text/javascript" src="/debug/gas/weeds.js"></script>
 		<script type="text/javascript" src="/debug/gas/ejecta.js"></script>
 		<script type="text/javascript" src="/debug/gas/paddler.js"></script>
+		<script type="text/javascript" src="/debug/gas/lookup.js"></script>
 		
 <?php
 include("gas.glsl");
