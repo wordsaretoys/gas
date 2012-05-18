@@ -87,30 +87,16 @@ GAS.skybox = {
 		var ctx = GAS.texture.context;
 		var w = GAS.texture.canvas.width;
 		var h = GAS.texture.canvas.height;
-		ctx.fillStyle = "rgb(16, 16, 16)";
-		ctx.fillRect(0, 0, w, h);
+		var i;
 		
-		var i, j;
-		ctx.globalCompositeOperation = "lighter";
-		ctx.fillStyle = "rgb(6, 4, 4)";
-		for (i = 0; i < 4000; i++) {
+		ctx.fillStyle = "rgb(32, 32, 32)";
+		ctx.fillRect(0, 0, w, h);
+		ctx.fillStyle = "rgba(255, 255, 255, 0.01)";
+		for (i = 0; i < 25000; i++) {
 			ctx.beginPath();
 			ctx.arc(GAS.random(-8, w + 8), GAS.random(0, h), GAS.random(8, 16), 0, SOAR.PIMUL2, false);
 			ctx.fill();
 		}
-		ctx.fillStyle = "rgb(4, 6, 4)";
-		for (i = 0; i < 4000; i++) {
-			ctx.beginPath();
-			ctx.arc(GAS.random(-8, w + 8), GAS.random(0, h), GAS.random(8, 16), 0, SOAR.PIMUL2, false);
-			ctx.fill();
-		}
-		ctx.fillStyle = "rgb(4, 4, 6)";
-		for (i = 0; i < 4000; i++) {
-			ctx.beginPath();
-			ctx.arc(GAS.random(-8, w + 8), GAS.random(0, h), GAS.random(8, 16), 0, SOAR.PIMUL2, false);
-			ctx.fill();
-		}
-		ctx.globalCompositeOperation = "source-over";
 		this.clouds.texture = SOAR.texture.create(GAS.display, ctx.getImageData(0, 0, w, h)); 
 	},
 
