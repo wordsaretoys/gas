@@ -296,16 +296,17 @@ GAS.hud = {
 		};
 		
 		cook.showIngredients = function() {
-			var i, j, il, nm, q, ds;
+			var i, j, il, nm, qt, ds;
 			cook.item.removeClass("cook-item-selected");
 			for (i = 0, il = cook.item.length; i < il; i++) {
 				j = i + cook.index;
 				if (j < ingr.length) {
 					nm = ingr[j].name;
 					ds = ingr[j].desc;
-					q = GAS.player.stores[nm] || 0;
-					cook.item[i].innerHTML = "<h2>" + nm + "(" + q + ")</h2><p>" + ds + "</p>";
+					qt = GAS.player.stores[nm] || 0;
+					cook.item[i].innerHTML = "<h2>" + nm + "(" + qt + ")</h2><p>" + ds + "</p>";
 					cook.item[i].ingredient = nm;
+					cook.item[i].quantity = qt;
 					if (cook.dish[nm]) {
 						cook.item[i].className += " cook-item-selected";
 					}
@@ -318,7 +319,7 @@ GAS.hud = {
 		
 		cook.item.bind("click", function() {
 			var nm = this.ingredient;
-			if (nm) {
+			if (nm && this.quantity) {
 				cook.dish[nm] = !cook.dish[nm];
 				cook.showIngredients();
 			}

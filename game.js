@@ -241,7 +241,7 @@ GAS.game = {
 		
 		add: function() {
 //			var r = GAS.map.RADIUS;
-			var r = 25;
+			var r = 5;
 
 			// create the paddler object
 			var o = GAS.paddler.create(
@@ -425,11 +425,22 @@ GAS.game = {
 		**/
 		
 		consume: function(dish) {
+			var c;
+			
 			// if a dish was supplied
 			if (dish) {
+			
+				// remove each ingredient from player stores
+				GAS.lookup.ingredient.enumerate(function(e) {
+					if (dish[e.name]) {
+						// remove from player stores
+						GAS.player.stores[e.name] = GAS.player.stores[e.name] - 1;
+					}
+				});
+			
 				// enumerate through the ingredients that make up the recipe
 				// count down for each one that the player selected correctly
-				var c = this.recipe.part.length;
+				c = this.recipe.part.length;
 				this.recipe.part.enumerate(function(e) {
 					if (dish[e]) {
 						c--;
