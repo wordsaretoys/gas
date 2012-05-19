@@ -61,7 +61,7 @@ GAS.lookup = {
 	],
 	
 	story: {
-		title: "<div class=\"big\">sargasso</div><div>by Chris Gauthier</div><br><div><span class=\"key\">W</span> Paddle <span class=\"key\">M1</span> Steer (drag mouse) <span class=\"key\">E</span> Interact"
+		title: "<div class=\"big\">sargasso</div><div>by Chris Gauthier</div><div><span class=\"key\">W</span> Paddle <span class=\"key\">M1</span> Steer (drag mouse) <span class=\"key\">E</span> Interact"
 	}
 
 };
