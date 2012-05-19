@@ -375,7 +375,7 @@ void main(void) {
 		if (radius > l && radius < u)
 			alpha = 1.0 - radius;
 	}
-	gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
+	gl_FragColor = vec4(1.0, 0.0, 0.0, alpha);
 }
 
 </script>
