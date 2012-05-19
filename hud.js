@@ -128,18 +128,20 @@ GAS.hud = {
 	
 		switch(event.keyCode) {
 		case SOAR.KEY.ESCAPE:
+			// cancel any active dialog
 			if (that.cancel) {
 				that.cancel();
+			}
+			break;
+		case SOAR.KEY.PAUSE:
+			// toggle pause (dark screen/no updates)
+			if (SOAR.running) {
+				that.setCurtain(0.5);
+				SOAR.running = false;
 			} else {
-				if (SOAR.running) {
-					that.setMessage(that.pauseMsg);
-					that.setCurtain(0.5);
-					SOAR.running = false;
-				} else {
-					that.lighten();
-					SOAR.running = true;
-					GAS.player.mouse.invalid = true;
-				}
+				that.setCurtain(0);
+				SOAR.running = true;
+				GAS.player.mouse.invalid = true;
 			}
 			break;
 		case SOAR.KEY.TAB:
