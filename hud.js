@@ -7,12 +7,8 @@
 
 GAS.hud = {
 
-	NARRATIVE_FADE_TIME: 1 / 500,
+	STORY_FADE_TIME: 1 / 250,
 
-	pauseMsg: "Press Esc To Resume",
-	waitMsg: "Loading",
-	hideMsg: "<div class=\"small center\"><span class=\"small key\">SPACE</span> Hide</div>",
-	
 	/**
 		establish jQuery shells around UI DOM objects &
 		assign methods for simple behaviors (resize, etc)
@@ -26,8 +22,6 @@ GAS.hud = {
 			window: jQuery(window),
 			
 			tracker: jQuery("#tracker"),
-			message: jQuery("#message"),
-			legend: jQuery("#legend"),
 			
 			prompts: {
 				box: jQuery("#prompts")
@@ -42,8 +36,10 @@ GAS.hud = {
 				cancel: jQuery("#cook-cancel")
 			},
 			
-			narrative: {
-				box: jQuery("#narrative")
+			story: {
+				box: jQuery("#story"),
+				text: jQuery("#story-text"),
+				skip: jQuery("#story-skip")
 			},
 			
 			debug: jQuery("#debug")
@@ -57,14 +53,17 @@ GAS.hud = {
 			});
 		};
 		
+		this.dom.cooking.resize = function() {
+			var p = GAS.hud.dom.cooking.box;
+			p.offset({
+				top: (GAS.display.height - p.height()) * 0.5,
+				left: (GAS.display.width - p.width()) * 0.5
+			});
+		};
+
 		this.dom.window.bind("keydown", this.onKeyDown);
 		this.dom.window.bind("resize", this.resize);			
 		this.resize();
-		
-		// prevent highlighting of message text
-		this.dom.message.bind("mousedown", function() {
-			return false;
-		});
 		
 		this.makeCookingDialog();
 	},
@@ -104,12 +103,8 @@ GAS.hud = {
 		that.dom.tracker.width(GAS.display.width);
 		that.dom.tracker.height(GAS.display.height);
 		
-		that.dom.message.offset({
-			top: (GAS.display.height - that.dom.message.height()) * 0.5,
-			left: (GAS.display.width - that.dom.message.width()) * 0.5
-		});
-		
 		that.dom.prompts.resize();
+		that.dom.cooking.resize();
 	},
 	
 	/**
@@ -136,7 +131,7 @@ GAS.hud = {
 		case SOAR.KEY.PAUSE:
 			// toggle pause (dark screen/no updates)
 			if (SOAR.running) {
-				that.setCurtain(0.5);
+				that.setCurtain(0.75);
 				SOAR.running = false;
 			} else {
 				that.setCurtain(0);
@@ -160,9 +155,9 @@ GAS.hud = {
 		case SOAR.KEY.SPACE:
 			// if no dialog is being shown
 			if (!that.cancel) {
-				// fade in a blank narrative to hide what's there
-				that.showNarrative("", false);
-			}
+				// fade in a blank story
+				that.showStory("", false);
+			} 
 			break;
 		default:
 			//console.log(event.keyCode);
@@ -181,16 +176,21 @@ GAS.hud = {
 	
 	update: function() {
 		// handle narrative fading
-		var narr = this.dom.narrative;
-		if (narr.fade) {
-			narr.alpha += narr.fade * this.NARRATIVE_FADE_TIME * SOAR.interval;
-			narr.box.css("opacity", narr.alpha);
-			if (narr.fade === 1 && narr.alpha >= 1) {
-				narr.fade = 0;
+		var story = this.dom.story;
+		if (story.fade) {
+			story.alpha += story.fade * this.STORY_FADE_TIME * SOAR.interval;
+			story.box.css("opacity", story.alpha);
+			if (story.fade === 1 && story.alpha >= 1) {
+				story.fade = 0;
 			}
-			if (narr.fade === -1 && narr.alpha <= 0) {
-				narr.fade = 1;
-				narr.box.html(narr.html);
+			if (story.fade === -1 && story.alpha <= 0) {
+				story.fade = 1;
+				story.text.html(story.html);
+				if (story.canSkip) {
+					story.skip.show();
+				} else {
+					story.skip.hide();
+				} 
 			}
 		}
 	
@@ -205,43 +205,6 @@ GAS.hud = {
 	
 	setCurtain: function(opacity) {
 		this.dom.tracker.css("background-color", "rgba(0, 0, 0, " + opacity + ")");
-	},
-	
-	/**
-		change HUD message
-		
-		@method setMessage
-		@param msg string, message to display
-	**/
-	
-	setMessage: function(msg) {
-		msg = msg || "";
-		this.dom.message.html(msg);
-		this.resize();
-	},
-	
-	/**
-		darken the HUD with wait message
-		
-		used when the UI will be temporarily unresponsive
-		
-		@method darken
-	**/
-	
-	darken: function() {
-		this.setCurtain(0.5);
-		this.setMessage(this.waitMsg);
-	},
-	
-	/**
-		make the HUD fully visible again
-		
-		@method lighten
-	**/
-	
-	lighten: function() {
-		this.setCurtain(0);
-		this.setMessage();
 	},
 	
 	/**
@@ -374,24 +337,23 @@ GAS.hud = {
 		// prevent player from moving while dialog is displayed
 		GAS.player.lock();
 		cook.box.show();
+		cook.resize();
 	},
 	
 	/**
-		display the specified narrative
+		display the specified story text with fade in
 		
-		@method showNarrative
+		@method showStory
 		@param text string, the narrative to display
-		@param hide boolean, true if user can dismiss text
+		@param canSkip boolean, true if user can dismiss text
 	**/
 	
-	showNarrative: function(text, hide) {
-		text = text || "";
-		hide = hide || false;
-		var narr = this.dom.narrative;
-		var html = hide ? text + this.hideMsg : text;
-		narr.fade = -1;
-		narr.alpha = 1;
-		narr.html = html;
+	showStory: function(text, canSkip) {
+		var story = this.dom.story;
+		story.fade = -1;
+		story.alpha = 1;
+		story.html = text || "";
+		story.canSkip = canSkip;
 	}
 	
 };

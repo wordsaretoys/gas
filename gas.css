@@ -42,6 +42,10 @@ div {
 	font-size: 75%;
 }
 
+.big {
+	font-size: 150%;
+}
+
 /* WebGL canvas */
 
 #gl {
@@ -57,7 +61,7 @@ div {
 
 #debug {
 	position: absolute;
-	bottom: 60px;
+	top: 20px;
 	left: 20px;
 
 	background: rgba(0, 0, 0, 0.5);
@@ -67,43 +71,10 @@ div {
 	padding: 5px;
 	
 	font-size: 16pt;
-	font-variant: small-caps;
 
 /*	display: none; */
 	
 	z-index: 5;
-}
-
-/* HUD legend */
-
-#legend {
-	position: absolute;
-	bottom: 20px;
-	left: 20px;
-
-	background: rgba(0, 0, 0, 0.5);
-	color: white;
-	
-	width: 420px;
-	height: 20px;
-	padding: 5px;
-	
-	font-size: 12pt;
-	font-variant: small-caps;
-
-	z-index: 5;
-}
-
-#legend .space5 {
-	margin-right: 5px;
-}
-
-#legend .space10 {
-	margin-right: 10px;
-}
-
-#legend div {
-	margin-bottom: 8px;
 }
 
 /* HUD prompts */
@@ -130,26 +101,38 @@ div {
 	margin-bottom: 4px;
 }
 
-/* HUD narrative area */
+/* HUD story area */
 
-#narrative {
+#story {
 	position: absolute;
-	top: 20px;
-	left: 20px;
+	bottom: 0px;
+	left: 0px;
+	
+	width: 100%;
 
-	background: transparent;
+	background: rgba(0, 0, 0, 0.5);
 	color: white;
-	
-	text-shadow: black 0.1em 0.1em 0.2em;
-	
-	font-size: 20pt;
-	font-variant: small-caps;
+
+	font-size: 14pt;
 	
 	z-index: 5;
 }
 
-#narrative div {
-	margin-bottom: 1em;
+#story-text {
+	text-align: center;
+}
+
+#story-skip {
+	position: relative;
+	bottom: 0px;
+	right: 0px;
+	
+	background: transparent;
+	color: white;
+
+	display: none;
+	
+	text-align: right;
 }
 
 /* mouse tracking surface */
@@ -166,21 +149,6 @@ div {
 	cursor: default;
 }
 
-/* modal message */
-
-#message {
-
-	position: absolute;
-	width: 100%;
-	color: white;
-	text-align: center;
-	font-size: 32px;
-	font-variant: small-caps;
-	cursor: default;
-	z-index: 15;
-
-}
-
 /* modal cooking dialog */
 
 #cook {
@@ -192,9 +160,6 @@ div {
 	width: 642px;
 	height: 346px;
 */	
-	bottom: 20px;
-	right: 20px;
-	
 	background: transparent;
 	color: white;
 	

@@ -407,7 +407,7 @@ GAS.game = {
 				if (!this.recipe) {
 					this.recipe = GAS.lookup.recipe.pop();
 				}
-				GAS.hud.showNarrative(this.recipe.text, false);
+				GAS.hud.showStory(this.recipe.text, false);
 				GAS.hud.showCookingDialog(this);
 			} else {
 				// restore display of prompt
@@ -453,11 +453,11 @@ GAS.game = {
 					GAS.game.control.handle("calmed");
 				}
 				
-				GAS.hud.showNarrative();
+				GAS.hud.showStory();
 				
 			} else {
 				// player cancelled dialog, just fade out the recipe
-				GAS.hud.showNarrative();
+				GAS.hud.showStory();
 			}
 			// restore display of prompt
 			GAS.game.npc.prompting = false;

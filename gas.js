@@ -94,11 +94,6 @@ var GAS = {
 		GAS.texture.canvas.height = 512;
 		GAS.texture.context = GAS.texture.canvas.getContext("2d");
 
-		// init the HUD and put up a wait message
-		GAS.hud.init();
-		GAS.hud.setCurtain(0.9);
-		GAS.hud.setMessage(GAS.hud.waitMsg);
-		
 		// begin async loading of resources from the server
 		SOAR.loadResources(GAS.resources, function() {
 
@@ -122,9 +117,7 @@ var GAS = {
 			}, false);
 			
 			// start the game script 
-			GAS.hud.lighten();
 			GAS.game.control.handle("startup");
-			//GAS.hud.showNarrative("<div>SARGASSO<br>by Chris Gauthier</div>", true);
 			
 			// start the message pump
 			SOAR.run();
@@ -132,6 +125,7 @@ var GAS = {
 		});
 		
 		// while waiting for resource load, initialize game objects
+		GAS.hud.init();
 		GAS.skybox.init();
 		GAS.card.init();
 		GAS.ejecta.init();
@@ -140,6 +134,8 @@ var GAS = {
 		GAS.paddler.init();
 		GAS.game.init();
 		GAS.player.init();
+		
+		GAS.hud.showStory(GAS.lookup.story.title, true);
 	},
 	
 	/**
