@@ -376,7 +376,7 @@ GAS.game = {
 				// update its phase
 				mark.phase += SOAR.interval * 0.001;
 				// move it to a position between player and NPC
-				mark.position.copy(n.position).sub(player.position).norm().mul(50).add(player.position);
+				mark.position.copy(n.position).sub(player.position).norm().mul(100).add(player.position);
 			} else {
 				// make sure the marker is hidden
 				mark.hidden = true;

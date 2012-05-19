@@ -370,8 +370,8 @@ void main(void) {
 	float alpha = 0.0;
 	for (int i = 0; i < 4; i++) {
 		float base = time + float(i) * 0.25;
-		float u = base + 0.01;
-		float l = base - 0.01;
+		float u = base + 0.05;
+		float l = base - 0.05;
 		if (radius > l && radius < u)
 			alpha = 1.0 - radius;
 	}
