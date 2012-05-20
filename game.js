@@ -95,6 +95,10 @@ GAS.game = {
 				}
 				
 				break;
+				
+			default:
+				console.log("game.control.handle intercepted unknown event: ", ev);
+				break;
 			}
 		}
 		

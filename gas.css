@@ -113,8 +113,9 @@ div {
 	left: 0px;
 	
 	width: 100%;
+	padding: 5px;
 
-	background: rgba(0, 0, 0, 0.5);
+	background: rgba(0, 0, 0, 0.75);
 	color: white;
 
 	font-size: 14pt;
@@ -127,10 +128,10 @@ div {
 	line-height: 200%;
 }
 
-#story-skip {
+#story-cont {
 	position: relative;
-	bottom: 0px;
-	right: 0px;
+	bottom: 5px;
+	right: 10px;
 	
 	background: transparent;
 	color: white;

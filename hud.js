@@ -38,7 +38,7 @@ GAS.hud = {
 			story: {
 				box: jQuery("#story"),
 				text: jQuery("#story-text"),
-				skip: jQuery("#story-skip")
+				cont: jQuery("#story-cont")
 			},
 			
 			debug: jQuery("#debug")
@@ -154,8 +154,7 @@ GAS.hud = {
 		case SOAR.KEY.SPACE:
 			// if no dialog is being shown
 			if (!that.cancel) {
-				// fade in a blank story
-				that.showStory("", false);
+				that.showStory();
 			} 
 			break;
 		default:
@@ -175,6 +174,7 @@ GAS.hud = {
 	
 	update: function() {
 		// handle narrative fading
+/*		
 		var story = this.dom.story;
 		if (story.fade) {
 			story.alpha += story.fade * this.STORY_FADE_TIME * SOAR.interval;
@@ -185,14 +185,9 @@ GAS.hud = {
 			if (story.fade === -1 && story.alpha <= 0) {
 				story.fade = 1;
 				story.text.html(story.html);
-				if (story.canSkip) {
-					story.skip.show();
-				} else {
-					story.skip.hide();
-				} 
 			}
 		}
-	
+*/	
 	},
 	
 	/**
@@ -304,10 +299,9 @@ GAS.hud = {
 		display the cooking dialog
 		
 		@method showCookingDialog
-		@param npc object, reference to the calling NPC
 	**/
 	
-	showCookingDialog: function(npc) {
+	showCookingDialog: function() {
 		var cook = GAS.hud.dom.cooking;
 		// serve up a blank dish object
 		cook.dish = {};
@@ -325,16 +319,24 @@ GAS.hud = {
 		display the specified story text with fade in
 		
 		@method showStory
-		@param text string, the narrative to display
-		@param canSkip boolean, true if user can dismiss text
+		@param text string, the narrative to display or blank to hide
+		@param cont boolean, true if continue is to be displayed
+		@param next string, event to fire on exit (optional)
 	**/
 	
-	showStory: function(text, canSkip) {
+	showStory: function(text, cont) {
 		var story = this.dom.story;
-		story.fade = -1;
-		story.alpha = 1;
-		story.html = text || "";
-		story.canSkip = canSkip;
+		if (text) {
+			story.text.html(text);
+			if (cont) {
+				story.cont.show();
+			} else {
+				story.cont.hide();
+			}
+			story.box.fadeIn(this.STORY_FADE_TIME);
+		} else {
+			story.box.fadeOut(this.STORY_FADE_TIME);
+		}
 	}
-	
+
 };
