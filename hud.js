@@ -29,9 +29,8 @@ GAS.hud = {
 			
 			cooking: {
 				box: jQuery("#cook"),
-				item: jQuery(".cook-item"),
-				prev: jQuery("#cook-prev"),
-				next: jQuery("#cook-next"),
+				itemsLeft: jQuery("#cook-items-left"),
+				itemsRight: jQuery("#cook-items-right"),
 				ok: jQuery("#cook-ok"),
 				cancel: jQuery("#cook-cancel")
 			},
@@ -243,13 +242,39 @@ GAS.hud = {
 	makeCookingDialog: function() {
 		var ingr = GAS.lookup.ingredient;
 		var cook = GAS.hud.dom.cooking;
+
+		// populate the ingredients list
+		var side = false;
+		GAS.lookup.ingredient.enumerate(function(e) {
+			var div = jQuery(document.createElement("div"));
+			div.html("<span class=\"big left\">" + e.name + "</span><span class=\"right\">" + e.desc + "</span>");
+			div.addClass("cook-back cook-item");
+			div.ingredient = e.name;
+			div.bind("click", function() {
+				var nm = div.ingredient;
+				if (cook.dish[nm]) {
+					cook.dish[nm] = false;
+					div.removeClass("cook-item-selected");
+				} else {
+					cook.dish[nm] = true;
+					div.addClass("cook-item-selected");
+				}
+			});
+			if (side) {
+				cook.itemsLeft.append(div);
+			} else {
+				cook.itemsRight.append(div);
+			}
+			side = !side;
+		});
+		
 		
 		cook.hideDialog = function() {
-			cook.next.bind();
-			cook.prev.bind();
-			cook.ok.bind();
-			cook.cancel.bind();
+			// remove all selections
+			jQuery("#cook-items > *").removeClass("cook-item-selected");
+			// hide the dialog box
 			cook.box.hide();
+			// remove HUD dismissal flag
 			delete GAS.hud.cancel;
 			// restore player control
 			GAS.player.unlock();
@@ -259,49 +284,6 @@ GAS.hud = {
 			cook.npc.consume();
 			cook.hideDialog();
 		};
-		
-		cook.showIngredients = function() {
-			var i, j, il, nm, qt, ds;
-			cook.item.removeClass("cook-item-selected");
-			for (i = 0, il = cook.item.length; i < il; i++) {
-				j = i + cook.index;
-				if (j < ingr.length) {
-					nm = ingr[j].name;
-					ds = ingr[j].desc;
-					cook.item[i].innerHTML = "<h2>" + nm + "</h2><p>" + ds + "</p>";
-					cook.item[i].ingredient = nm;
-					if (cook.dish[nm]) {
-						cook.item[i].className += " cook-item-selected";
-					}
-				} else {
-					cook.item[i].innerHTML = "";
-					delete cook.item[i].ingredient;
-				}
-			}
-		};
-		
-		cook.item.bind("click", function() {
-			var nm = this.ingredient;
-			if (nm) {
-				cook.dish[nm] = !cook.dish[nm];
-				cook.showIngredients();
-			}
-		});
-		
-		cook.next.bind("click", function() {
-			var l = cook.index + cook.item.length;
-			if (l < ingr.length) {
-				cook.index = l;
-				cook.showIngredients();
-			}
-		});
-		cook.prev.bind("click", function() {
-			var l = cook.index - cook.item.length;
-			if (l >= 0) {
-				cook.index = l;
-				cook.showIngredients();
-			}
-		});
 		
 		cook.cancel.bind("click", cook.dismiss);
 		
@@ -315,6 +297,7 @@ GAS.hud = {
 		jQuery("#cook > *").bind("mousedown", function() {
 			return false;
 		});
+		
 	},
 	
 	/**
@@ -326,15 +309,16 @@ GAS.hud = {
 	
 	showCookingDialog: function(npc) {
 		var cook = GAS.hud.dom.cooking;
+		// set up the initial parameters
 		cook.npc = npc;
 		cook.dish = {};
-		cook.index = 0;
-		cook.showIngredients();
 		// allow ESC dismissal of dialog
 		GAS.hud.cancel = cook.dismiss;
 		// prevent player from moving while dialog is displayed
 		GAS.player.lock();
+		// show the dialog box
 		cook.box.show();
+		// make sure it's in the right place
 		cook.resize();
 	},
 	

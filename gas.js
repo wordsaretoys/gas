@@ -113,7 +113,7 @@ var GAS = {
 				);
 				GAS.player.camera.projector();
 				GAS.draw();
-				GAS.hud.debug(GAS.display.width + ", " + GAS.display.height);
+				//GAS.hud.debug(GAS.display.width + ", " + GAS.display.height);
 			}, false);
 			
 			// start the game script 

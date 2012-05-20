@@ -158,18 +158,13 @@ div {
 
 #cook {
 	position: absolute;
-	
-/*
-	wait until finalized!
 
-	width: 642px;
-	height: 346px;
-*/	
+	width: 950px;
+	
 	background: transparent;
 	color: white;
 	
 	font-size: 18pt;
-	font-variant: small-caps;
 	
 	display: none;
 	
@@ -187,16 +182,15 @@ div {
 }
 
 .cook-item {
-	width: 160px;
-	height: 240px;
+	width: 450px;
+	height: 50px;
 	margin: 5px;
 	padding: 5px;
-	border: solid 5px rgba(0, 0, 0, 0.75);
-	float: left;
+	text-align: left;
 }
 
 .cook-item-selected {
-	border-color: white;
+	text-shadow: 0px 0px 5px white, 0px 0px 5px white, 0px 0px 5px white;
 }
 
 .cook-nav {
@@ -206,8 +200,4 @@ div {
 	padding: 3px 6px 5px 5px;
 	text-align: center;
 	font-weight: bold;
-}
-
-#cook-prev, #cook-next {
-	top: 120px;
 }
