@@ -271,7 +271,7 @@ GAS.hud = {
 		
 		cook.hideDialog = function() {
 			// remove all selections
-			jQuery("#cook-items > *").removeClass("cook-item-selected");
+			jQuery(".cook-item").removeClass("cook-item-selected");
 			// hide the dialog box
 			cook.box.hide();
 			// remove HUD dismissal flag
@@ -281,7 +281,7 @@ GAS.hud = {
 		};
 		
 		cook.dismiss = function() {
-			cook.npc.consume();
+			GAS.game.control.activeNpc.consume();
 			cook.hideDialog();
 		};
 		
@@ -290,7 +290,7 @@ GAS.hud = {
 		cook.ok.bind("click", function() {
 			cook.hideDialog();
 			// submit dish to npc
-			cook.npc.consume(cook.dish);
+			GAS.game.control.activeNpc.consume(cook.dish);
 		});
 		
 		// prevent mouse highlight of elements
@@ -309,8 +309,7 @@ GAS.hud = {
 	
 	showCookingDialog: function(npc) {
 		var cook = GAS.hud.dom.cooking;
-		// set up the initial parameters
-		cook.npc = npc;
+		// serve up a blank dish object
 		cook.dish = {};
 		// allow ESC dismissal of dialog
 		GAS.hud.cancel = cook.dismiss;

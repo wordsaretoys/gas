@@ -406,8 +406,9 @@ GAS.game = {
 					if (!this.recipe) {
 						this.recipe = GAS.lookup.recipe.pop();
 					}
+					GAS.game.control.activeNpc = this;
 					GAS.hud.showStory(this.recipe.text + "<br>" + this.recipe.part, false);
-					GAS.hud.showCookingDialog(this);
+					GAS.hud.showCookingDialog();
 				} else {
 					GAS.hud.showStory(GAS.lookup.errors.cantcook, true);
 				}
