@@ -61,7 +61,13 @@ GAS.lookup = {
 	],
 	
 	story: {
-		title: "<div class=\"big\">sargasso</div><div>by Chris Gauthier</div><div><span class=\"key\">W</span> Paddle <span class=\"key\">M1</span> Steer (drag mouse) <span class=\"key\">E</span> Interact"
+		title: "<div class=\"big\">sargasso</div><div>by Chris Gauthier</div><div><span class=\"key\">W</span> Paddle <span class=\"key\">M1</span> Steer (drag mouse) <span class=\"key\">E</span> Interact",
+		bolus: "Good! A food bolus. My ingredients are replenished."
+	},
+	
+	errors: {
+		cantcook: "I'm lacking some important ingredients. I should seek out a food bolus. They're the whitish clouds scattered throughout the weeds.",
+		noneedto: "My stores are already full. I'll just leave this food bolus for another time."
 	}
 
 };

@@ -268,10 +268,8 @@ GAS.hud = {
 				if (j < ingr.length) {
 					nm = ingr[j].name;
 					ds = ingr[j].desc;
-					qt = GAS.player.stores[nm] || 0;
-					cook.item[i].innerHTML = "<h2>" + nm + "(" + qt + ")</h2><p>" + ds + "</p>";
+					cook.item[i].innerHTML = "<h2>" + nm + "</h2><p>" + ds + "</p>";
 					cook.item[i].ingredient = nm;
-					cook.item[i].quantity = qt;
 					if (cook.dish[nm]) {
 						cook.item[i].className += " cook-item-selected";
 					}
@@ -284,7 +282,7 @@ GAS.hud = {
 		
 		cook.item.bind("click", function() {
 			var nm = this.ingredient;
-			if (nm && this.quantity) {
+			if (nm) {
 				cook.dish[nm] = !cook.dish[nm];
 				cook.showIngredients();
 			}

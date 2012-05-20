@@ -8,9 +8,9 @@
 
 GAS.player = {
 
-	MAX_STORES: 6,
-
 	position: SOAR.vector.create(),
+	
+	stores: true,
 	
 	motion: {
 		moveleft: false, moveright: false,
@@ -73,10 +73,6 @@ GAS.player = {
 		
 		// create a player avatar
 		this.avatar = GAS.paddler.create();
-		
-		// create an ingredient store
-		this.stores = {};
-
 	},
 	
 	/**

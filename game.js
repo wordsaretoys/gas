@@ -156,10 +156,6 @@ GAS.game = {
 				if (Math.random() < 0.25) {
 					c = weed.list[i].position;
 					o = GAS.bolus.create(c.x, c.y, c.z);
-					o.stores = {};
-					GAS.lookup.ingredient.enumerate(function(e) {
-						o.stores[e.name] = Math.round(Math.random());
-					});
 					o.update = this.update;
 					this.list.push(o);
 					GAS.map.add(o);
@@ -180,15 +176,16 @@ GAS.game = {
 		
 		update: function() {
 			// if player slips inside a food bolus, hide it
-			// and add to player inventory (if possible)
+			// and replenish player stores if necessary
 			if (!this.hidden) {
-				var that = this;
 				if (this.playerDistance < GAS.bolus.DRAW_RADIUS) {
-					GAS.lookup.ingredient.enumerate(function(e) {
-						GAS.player.stores[e.name] = 
-							(GAS.player.stores[e.name] || 0) + (that.stores[e.name] || 0);
-					});
-					this.hidden = true;
+					if (!GAS.player.stores) {
+						GAS.player.stores = true;
+						this.hidden = true;
+						GAS.hud.showStory(GAS.lookup.story.bolus, true);
+					} else {
+						GAS.hud.showStory(GAS.lookup.errors.noneedto, true);
+					}
 				}
 			}
 		}
@@ -403,12 +400,17 @@ GAS.game = {
 		interact: function() {
 			// if this NPC hasn't yet been calmed
 			if (!this.behavior.calmed) {
-				// no recipe? grab the next one on the stack
-				if (!this.recipe) {
-					this.recipe = GAS.lookup.recipe.pop();
+				// if the player has adequate stores
+				if (GAS.player.stores) {
+					// no recipe? grab the next one on the stack
+					if (!this.recipe) {
+						this.recipe = GAS.lookup.recipe.pop();
+					}
+					GAS.hud.showStory(this.recipe.text + "<br>" + this.recipe.part, false);
+					GAS.hud.showCookingDialog(this);
+				} else {
+					GAS.hud.showStory(GAS.lookup.errors.cantcook, true);
 				}
-				GAS.hud.showStory(this.recipe.text, false);
-				GAS.hud.showCookingDialog(this);
 			} else {
 				// restore display of prompt
 				GAS.game.npc.prompting = false;
@@ -429,14 +431,8 @@ GAS.game = {
 			
 			// if a dish was supplied
 			if (dish) {
-			
-				// remove each ingredient from player stores
-				GAS.lookup.ingredient.enumerate(function(e) {
-					if (dish[e.name]) {
-						// remove from player stores
-						GAS.player.stores[e.name] = GAS.player.stores[e.name] - 1;
-					}
-				});
+				// deplete player stores
+				GAS.player.stores = false;
 			
 				// enumerate through the ingredients that make up the recipe
 				// count down for each one that the player selected correctly
