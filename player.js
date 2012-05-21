@@ -72,7 +72,7 @@ GAS.player = {
 		this.camera.offset.set(0, 0.5, 2);
 		
 		// create a player avatar
-		this.avatar = GAS.paddler.create();
+		this.avatar = GAS.paddler.create(GAS.lookup.character.player);
 	},
 	
 	/**

@@ -28,6 +28,7 @@ GAS.paddler = {
 	FAST_SPEED: 10,
 	
 	colorBase: 128,
+	rng: SOAR.random.create(333221),
 
 	/**
 		create and init objects usable by all paddler instances
@@ -52,23 +53,24 @@ GAS.paddler = {
 		generate and return a new paddler object
 		
 		@method create
-		@param x, y, z numbers, position
+		@param info object, describes appearance and position
 		@return object, the new paddler
 	**/
 	
-	create: function(x, y, z) {
+	create: function(info) {
 		var o = Object.create(GAS.paddler);
+		var p = info.position;
 		
-		o.position = SOAR.vector.create(x, y, z);
+		o.position = SOAR.vector.create(p.x, p.y, p.z);
 		o.velocity = SOAR.vector.create();
 		o.rotator = SOAR.rotator.create();
 		
 		o.speed = 0;
 		o.haste = 0;
 		
-		o.skin = this.makeSkin();
+		o.skin = this.makeSkin(info.coat, info.spot, info.seed);
 
-		o.wing = 0;
+		o.wing = Math.random();
 		o.mouth = 0.25 * Math.PI;
 		
 		o.scratch = {
@@ -86,53 +88,44 @@ GAS.paddler = {
 		@return the texture object
 	**/
 	
-	makeSkin: function() {
+	makeSkin: function(coat, spot, seed) {
 		var ctx = GAS.texture.context;
+		var rng = SOAR.random.create(seed);
 		var w = 256;
 		var h = 256;
 		var hw = w * 0.5;
 		var hh = h * 0.5;
-		var r, g, b, base, coat;
 		var i, x, y, s, hs;
 
-		ctx.clearRect(0, 0, w, h);
-		r = ((this.colorBase + 1) * 3) % 256;
-		g = ((r + 1) * 3) % 256;
-		b = ((g + 1) * 3) % 256;
-		base = "rgb(" + r + ", " + g + ", " + b + ")";
-		coat = "rgb(" + (256 - r) + ", " + (256 - g) + ", " + (256 - b) + ")";
-		this.colorBase = ((b + 1) * 3) % 256;
-
-		ctx.fillStyle = base;
+		// fill in the coat color
+		ctx.fillStyle = coat;
 		ctx.fillRect(0, 0, w, h);
 		
 		// top half is darker
 		ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
 		ctx.fillRect(0, 0, hw, h);
 
-		// closure function to draw a spot
-		function spot(x, y, r) {
-			ctx.beginPath();
-			ctx.arc(x, y, r, 0, SOAR.PIMUL2, false);
-			ctx.fill();
-			ctx.stroke();
-		}
-		
 		// add symmetric spots
-		ctx.fillStyle = coat;
+		ctx.fillStyle = spot;
 		ctx.strokeStyle = "rgb(0, 0, 0)";
 		ctx.lineWidth = 2;
 		for (i = 0; i < 100; i++) {
-			s = GAS.random(4, 16);
+			s = this.rng.get(4, 16);
 			hs = s / 2;
-			x = GAS.random(hs, hw - hs);
-			y = GAS.random(hs, h - hs - 20);
+			x = this.rng.get(hs, hw - hs);
+			y = this.rng.get(hs, h - hs - 20);
 
 			// top
-			spot(x, y, hs);
+			ctx.beginPath();
+			ctx.arc(x, y, hs, 0, SOAR.PIMUL2, false);
+			ctx.fill();
+			ctx.stroke();
 			
 			// bottom
-			spot(hw + x, y, hs);
+			ctx.beginPath();
+			ctx.arc(hw + x, y, hs, 0, SOAR.PIMUL2, false);
+			ctx.fill();
+			ctx.stroke();
 		}
 		
 		// add mouth stripe

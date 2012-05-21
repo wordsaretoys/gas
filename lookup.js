@@ -60,6 +60,24 @@ GAS.lookup = {
 		}
 	],
 	
+	character: {
+	
+		player: {
+			coat: "rgb(255, 0, 0)",
+			spot: "rgb(0, 255, 0)",
+			seed: 12301969,
+			position: {x: 0, y: 0, z: 0}
+		},
+		
+		pistwoob: {
+			coat: "rgb(255, 255, 0)",
+			spot: "rgb(0, 0, 255)",
+			seed: 101,
+			position: {x: 0, y: 0, z: -5}
+		}
+	
+	},
+	
 	story: {
 		title: "<div class=\"big\">sargasso</div><div>by Chris Gauthier</div><div><span class=\"key\">W</span> Paddle <span class=\"key\">M1</span> Steer (drag mouse) <span class=\"key\">E</span> Interact",
 		bolus: "Good! A food bolus. My ingredients are replenished."

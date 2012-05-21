@@ -241,12 +241,9 @@ GAS.game = {
 		**/
 		
 		add: function() {
-//			var r = GAS.map.RADIUS;
-			var r = 5;
 
 			// create the paddler object
-			var o = GAS.paddler.create(
-				GAS.random(-r, r), GAS.random(-r, r), GAS.random(-r, r)	);
+			var o = GAS.paddler.create(GAS.lookup.character.pistwoob);
 			
 			// paddler object already has an update method, so swap it out
 			o.update = this.update;
