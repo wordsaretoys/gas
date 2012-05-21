@@ -120,6 +120,8 @@ div {
 
 	font-size: 14pt;
 	
+	display: none;
+	
 	z-index: 5;
 }
 
