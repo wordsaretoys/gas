@@ -88,11 +88,10 @@ GAS.paddler = {
 	
 	makeSkin: function() {
 		var ctx = GAS.texture.context;
-		var w = 512;
+		var w = 256;
 		var h = 256;
 		var hw = w * 0.5;
 		var hh = h * 0.5;
-		var qw = hw * 0.5;
 		var r, g, b, base, coat;
 		var i, x, y, s, hs;
 
@@ -126,43 +125,29 @@ GAS.paddler = {
 		for (i = 0; i < 100; i++) {
 			s = GAS.random(4, 16);
 			hs = s / 2;
-			x = GAS.random(hs, qw - hs);
+			x = GAS.random(hs, hw - hs);
 			y = GAS.random(hs, h - hs - 20);
 
-			// left side, top
+			// top
 			spot(x, y, hs);
 			
-			// right side, top
-			spot(hw - x, y, hs);
-
-			// left side, bottom
+			// bottom
 			spot(hw + x, y, hs);
-
-			// right side, bottom
-			spot(w - x, y, hs);
 		}
 		
 		// add mouth stripe
 		ctx.fillStyle = "rgb(0, 0, 0)";
 		ctx.fillRect(0, h - 4, w, h);
 		
-		// add eye spots to top only
+		// add eye spot to top only
 		ctx.fillStyle = "rgb(255, 255, 255)";
 		ctx.beginPath();
-		ctx.arc(qw - 20, h - 15, 5, 0, SOAR.PIMUL2, false);
+		ctx.arc(hw - 20, h - 15, 5, 0, SOAR.PIMUL2, false);
 		ctx.fill();
 		ctx.stroke();
-		ctx.beginPath();
-		ctx.arc(qw + 20, h - 15, 5, 0, SOAR.PIMUL2, false);
-		ctx.fill();
-		ctx.stroke();
-		
 		ctx.fillStyle = "rgb(0, 0, 0)";
 		ctx.beginPath();
-		ctx.arc(qw - 20, h - 15, 2, 0, SOAR.PIMUL2, false);
-		ctx.fill();
-		ctx.beginPath();
-		ctx.arc(qw + 20, h - 15, 2, 0, SOAR.PIMUL2, false);
+		ctx.arc(hw - 20, h - 15, 2, 0, SOAR.PIMUL2, false);
 		ctx.fill();
 
 		return SOAR.texture.create(
@@ -212,10 +197,13 @@ GAS.paddler = {
 				x1 = 1.5 * x1 * r1;
 				x2 = 1.5 * x2 * r2;
 				
-				tx0 = 0.5 * (x0 + 0.5);
-				tx1 = 0.5 * (x1 + 0.5);
-				tx2 = 0.5 * (x2 + 0.5);
+				// cut x texture off at 0.49 to prevent
+				// top & bottom textures crossing over
+				tx0 = Math.min(0.5 - Math.abs(x0), 0.49);
+				tx1 = Math.min(0.5 - Math.abs(x1), 0.49);
+				tx2 = Math.min(0.5 - Math.abs(x2), 0.49);
 
+				// paddler mouth should tuck inwards
 				if (tz0 < 0.001)
 					z0 += 0.05;
 				if (tz1 < 0.001)
