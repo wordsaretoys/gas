@@ -51,9 +51,7 @@ GAS.game = {
 		calmCounter: 0,
 		calmTarget: 0,
 		
-		phase: 0,
-		
-		npcCount: [1, 2, 2, 3, 3, 3],
+		scene: 0,
 		
 		/**
 			handle event, generate NPCs and adversaries,
@@ -65,21 +63,22 @@ GAS.game = {
 		
 		handle: function(ev) {
 			var npc = GAS.game.npc;
+			var scene = GAS.lookup.plot[this.scene];
+			var chr = GAS.lookup.character;
 			var i, il;
 		
 			switch(ev) {
 			
 			case "startup":
 			
-				GAS.lookup.recipe.shuffle();
-				this.handle("nextphase");
+				this.handle("nextscene");
 			
 				break;
 			
-			case "nextphase":
+			case "nextscene":
 			
-				for (i = 0, il = this.npcCount[this.phase]; i < il; i++) {
-					npc.add();
+				for (i = 0, il = scene.length; i < il; i++) {
+					npc.add(chr[scene[i]]);
 				}
 				this.calmTarget = il;
 				this.calmCounter = 0;
@@ -90,8 +89,8 @@ GAS.game = {
 			
 				this.calmCounter++;
 				if (this.calmCounter === this.calmTarget) {
-					this.phase++;
-					this.handle("nextphase");
+					this.scene++;
+					this.handle("nextscene");
 				}
 				
 				break;
@@ -238,12 +237,15 @@ GAS.game = {
 			add an NPC to the collection and the map
 			
 			@method add
+			@param chr object, character record
 		**/
 		
-		add: function() {
+		add: function(chr) {
 
 			// create the paddler object
-			var o = GAS.paddler.create(GAS.lookup.character.pistwoob);
+			var o = GAS.paddler.create(chr.model);
+			o.name = chr.name;
+			o.lines = chr.lines;
 			
 			// paddler object already has an update method, so swap it out
 			o.update = this.update;
@@ -314,7 +316,7 @@ GAS.game = {
 				
 				// if the player is looking at the NPC, prompt them
 				if (this.playerDotProduct >= 0.8 && !npc.prompting) {
-					GAS.hud.prompt(this, behave.calmed ? "Question" : "Cook For");
+					GAS.hud.prompt(this, "Talk", this.name);
 					npc.prompting = true;
 				}
 				// if the player is looking away, remove the prompt

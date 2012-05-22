@@ -173,21 +173,6 @@ GAS.hud = {
 	**/
 	
 	update: function() {
-		// handle narrative fading
-/*		
-		var story = this.dom.story;
-		if (story.fade) {
-			story.alpha += story.fade * this.STORY_FADE_TIME * SOAR.interval;
-			story.box.css("opacity", story.alpha);
-			if (story.fade === 1 && story.alpha >= 1) {
-				story.fade = 0;
-			}
-			if (story.fade === -1 && story.alpha <= 0) {
-				story.fade = 1;
-				story.text.html(story.html);
-			}
-		}
-*/	
 	},
 	
 	/**
@@ -208,14 +193,14 @@ GAS.hud = {
 		@method prompt
 		@method object object, what the prompt applies to
 		@param verb string, what action is implied
+		@param name string, who action applies to
 	**/
 	
-	prompt: function(object, verb) {
+	prompt: function(object, verb, name) {
 		var pr = this.dom.prompts;
-		var subject = "Npc";
 		
 		if (object) {
-			pr.box.html("<p><span class=\"key\">E</span>&nbsp;" + verb + "</p><p>" + subject + "</p>");
+			pr.box.html("<p><span class=\"key\">E</span>&nbsp;" + verb + "</p><p>" + name + "</p>");
 			pr.resize();
 			pr.box.css("visibility", "visible");
 			pr.object = object;

@@ -62,25 +62,38 @@ GAS.lookup = {
 	
 	character: {
 	
-		player: {
-			coat: "rgb(255, 0, 0)",
-			spot: "rgb(0, 255, 0)",
-			seed: 12301969,
-			position: {x: 0, y: 0, z: 0}
+		"npc-foosh": {
+			name: "Foosh",
+			model: {
+				coat: "rgb(255, 255, 0)",
+				spot: "rgb(0, 0, 255)",
+				seed: 101,
+				position: {x: 0, y: 0, z: -5}
+			}
 		},
-		
-		pistwoob: {
-			coat: "rgb(255, 255, 0)",
-			spot: "rgb(0, 0, 255)",
-			seed: 101,
-			position: {x: 0, y: 0, z: -5}
+	
+		"npc-2": {
+			name: "foosh",
+			model: {
+				coat: "rgb(255, 255, 0)",
+				spot: "rgb(0, 0, 255)",
+				seed: 101,
+				position: {x: 0, y: 0, z: -5}
+			}
 		}
 	
 	},
 	
+	plot: [
+	
+		[ "npc-foosh" ]
+	
+	],
+	
 	story: {
 		title: "<div class=\"big\">sargasso</div><div>by Chris Gauthier</div><div><span class=\"key\">W</span> Paddle <span class=\"key\">M1</span> Steer (drag mouse) <span class=\"key\">E</span> Interact",
-		bolus: "Good! A food bolus. My ingredients are replenished."
+		bolus: "Good! A food bolus. My ingredients are replenished.",
+		end: "That seems to be everyone. (This is a placeholder narration.)"
 	},
 	
 	errors: {
