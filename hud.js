@@ -152,10 +152,11 @@ GAS.hud = {
 			}
 			break;
 		case SOAR.KEY.SPACE:
-			// if no dialog is being shown
-			if (!that.cancel) {
-				that.showStory();
-			} 
+			// if a story is displayed w/continue
+			if (that.continueStory) {
+				// continue the story (in some form)
+				GAS.game.control.continueStory();
+			}
 			break;
 		default:
 			//console.log(event.keyCode);
@@ -258,6 +259,8 @@ GAS.hud = {
 			delete GAS.hud.cancel;
 			// restore player control
 			GAS.player.unlock();
+			// and drop the first mouse move event
+			GAS.player.mouse.invalid = true;
 		};
 		
 		cook.dismiss = function() {
@@ -301,12 +304,11 @@ GAS.hud = {
 	},
 	
 	/**
-		display the specified story text with fade in
+		display the specified story text with fade in/out
 		
 		@method showStory
 		@param text string, the narrative to display or blank to hide
-		@param cont boolean, true if continue is to be displayed
-		@param next string, event to fire on exit (optional)
+		@param cont boooean, true if continue is displayed/signalled
 	**/
 	
 	showStory: function(text, cont) {
@@ -322,6 +324,7 @@ GAS.hud = {
 		} else {
 			story.box.fadeOut(this.STORY_FADE_TIME);
 		}
+		this.continueStory = cont;
 	}
 
 };

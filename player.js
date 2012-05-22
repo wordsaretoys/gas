@@ -8,13 +8,6 @@
 
 GAS.player = {
 
-	model: {
-		coat: "rgb(255, 0, 0)",
-		spot: "rgb(0, 255, 0)",
-		seed: 12301969,
-		position: {x: 0, y: 0, z: 0}
-	},
-
 	position: SOAR.vector.create(),
 	
 	stores: true,
@@ -58,6 +51,7 @@ GAS.player = {
 	**/
 
 	init: function() {
+		var chr = GAS.lookup.character.player;
 		var dom = this.dom = {
 			tracker: jQuery("#tracker"),
 			window: jQuery(window)
@@ -79,7 +73,8 @@ GAS.player = {
 		this.camera.offset.set(0, 0.5, 2);
 		
 		// create a player avatar
-		this.avatar = GAS.paddler.create(this.model);
+		this.avatar = GAS.paddler.create(chr.model);
+		this.story = chr.story;
 	},
 	
 	/**

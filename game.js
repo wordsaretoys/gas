@@ -48,56 +48,83 @@ GAS.game = {
 	
 	control: {
 	
+		firstTimeNpc: true,
+	
 		calmCounter: 0,
 		calmTarget: 0,
 		
 		scene: 0,
 		
 		/**
-			handle event, generate NPCs and adversaries,
-			advance the plot when needed based on state
+			start the game story
 			
-			@method handle
-			@param ev string, event type
+			@method start
 		**/
 		
-		handle: function(ev) {
-			var npc = GAS.game.npc;
-			var scene = GAS.lookup.plot[this.scene];
-			var chr = GAS.lookup.character;
-			var i, il;
+		start: function () {
+			var scene = GAS.lookup.plot[0];
+			var actor = GAS.lookup.character[scene];
+			// add the first character
+			GAS.game.npc.add(actor);
+		},
 		
-			switch(ev) {
+		/**
+			advance the plot to the next scene
 			
-			case "startup":
+			@method advancePlot
+		**/
+		
+		advancePlot: function () {
+			var plot = GAS.lookup.plot;
+			var actor = GAS.lookup.character;
+			var i, il, roster, c;
+
+			// advance the scene
+			this.scene++;
 			
-				this.handle("nextscene");
-			
-				break;
-			
-			case "nextscene":
-			
-				for (i = 0, il = scene.length; i < il; i++) {
-					npc.add(chr[scene[i]]);
+			// any scenes left?
+			if (plot.length < this.scene) {
+
+				// get the actor roster
+				roster = plot[this.scene];
+				
+				// add the new actors into the setting
+				for (i = 0, il = roster.length; i < il; i++) {
+					c = roster[i];
+					GAS.game.npc.add(GAS.lookup.character[c]);
 				}
 				this.calmTarget = il;
 				this.calmCounter = 0;
-				
-				break;
-				
-			case "calmed":
+			}
+		},
+
+		/**
+			handle the calming of an NPC
 			
-				this.calmCounter++;
-				if (this.calmCounter === this.calmTarget) {
-					this.scene++;
-					this.handle("nextscene");
-				}
-				
-				break;
-				
-			default:
-				console.log("game.control.handle intercepted unknown event: ", ev);
-				break;
+			@method calmedNpc
+		**/
+		
+		calmedNpc: function() {
+			this.calmCounter++;
+			if (this.calmCounter === this.calmTarget) {
+				this.advancePlot();
+			}
+		},
+		
+		/**
+			handle a story continuation signalled by the player
+			
+			@method continueStory
+		**/
+		
+		continueStory: function () {
+			// if there is an active NPC
+			if (this.activeNpc) {
+				// continue the interaction with the NPC
+				this.activeNpc.interact();
+			} else {
+				// hide whatever story is displayed
+				GAS.hud.showStory();
 			}
 		}
 		
@@ -185,9 +212,9 @@ GAS.game = {
 					if (!GAS.player.stores) {
 						GAS.player.stores = true;
 						this.hidden = true;
-						GAS.hud.showStory(GAS.lookup.story.bolus, true);
+						GAS.hud.showStory(GAS.player.story.foodgather, true);
 					} else {
-						GAS.hud.showStory(GAS.lookup.errors.noneedto, true);
+						GAS.hud.showStory(GAS.player.story.storesfull, true);
 					}
 				}
 			}
@@ -209,6 +236,10 @@ GAS.game = {
 		DRIFTING: 0,
 		WATCHING: 1,
 		EVADING: 2,
+		
+		UNKNOWN: 0,
+		RECIPE: 1,
+		CALMED: 2,
 		
 		list: [],
 
@@ -244,8 +275,11 @@ GAS.game = {
 
 			// create the paddler object
 			var o = GAS.paddler.create(chr.model);
+			
+			// set character data
 			o.name = chr.name;
-			o.lines = chr.lines;
+			o.story = chr.story;
+			o.solve = chr.solve;
 			
 			// paddler object already has an update method, so swap it out
 			o.update = this.update;
@@ -255,11 +289,11 @@ GAS.game = {
 			o.behavior = {
 				status: this.DRIFTING,
 				period: 0,
-				target: SOAR.vector.create(),
-				calmed: false
+				target: SOAR.vector.create()
 			};
 			o.haste = 2;
 			o.interact = this.interact;
+			o.interactPhase = this.UNKNOWN;
 			o.consume = this.consume;
 
 			GAS.map.add(o);
@@ -328,7 +362,7 @@ GAS.game = {
 				// player moves too far away, back to drifting
 				if (this.playerDistance > npc.WATCH_RADIUS) {
 					behave.status = npc.DRIFTING;
-					this.haste = behave.calmed ? 1 : 2;
+					this.haste = (this.interactPhase === npc.CALMED) ? 1 : 2;
 				}
 				// player moves too close, switch to evade
 				if (this.playerDistance < npc.EVADE_RADIUS) {
@@ -370,7 +404,7 @@ GAS.game = {
 			var mark = this.marker;
 			var n = this.list[mark.index];
 			// if the indexed NPC is in a markable state and the marker is running
-			if (n.behavior.status === npc.DRIFTING && !n.behavior.calmed && mark.phase <= 2) {
+			if (n.behavior.status === npc.DRIFTING && n.interactPhase !== npc.CALMED && mark.phase <= 2) {
 				// insure marker is visible
 				mark.hidden = false;
 				// update its phase
@@ -401,24 +435,60 @@ GAS.game = {
 		**/
 		
 		interact: function() {
-			// if this NPC hasn't yet been calmed
-			if (!this.behavior.calmed) {
-				// if the player has adequate stores
+			var npc = GAS.game.npc;
+
+			// set active NPC to me
+			GAS.game.control.activeNpc = this;
+
+			// handle according to interaction state
+			switch(this.interactPhase) {
+			
+			case npc.UNKNOWN:
+			
+				// show introduction
+				GAS.hud.showStory(this.story.intro, true);
+				// advance to next state
+				this.interactPhase = npc.RECIPE;
+				
+				break;
+				
+			case npc.RECIPE:
+			
+				// if the player has adequate food stores
 				if (GAS.player.stores) {
-					// no recipe? grab the next one on the stack
-					if (!this.recipe) {
-						this.recipe = GAS.lookup.recipe.pop();
+					// if this is player's first NPC encounter
+					if (GAS.game.control.firstTimeNpc) {
+						// show another introduction, with continue
+						GAS.hud.showStory(this.story.intro2, true);
+						GAS.game.control.firstTimeNpc = false;
+					} else {
+						// show the recipe without a continue and let's get cooking
+						GAS.hud.showStory(this.story.recipe);
+						GAS.hud.showCookingDialog();
 					}
-					GAS.game.control.activeNpc = this;
-					GAS.hud.showStory(this.recipe.text + "<br>" + this.recipe.part, false);
-					GAS.hud.showCookingDialog();
 				} else {
-					GAS.hud.showStory(GAS.lookup.errors.cantcook, true);
+					// tell the player they need stores
+					GAS.hud.showStory(GAS.player.story.needstores, true);
+					// remove me as active NPC
+					delete GAS.game.control.activeNpc;
+					// restore display of prompt
+					GAS.game.npc.prompting = false;
 				}
-			} else {
-				// restore display of prompt
-				GAS.game.npc.prompting = false;
+				
+				break;
+				
+			case npc.CALMED:
+			
+				// replay the "success" story from the cooking
+				GAS.hud.showStory(this.story.success, true);
+		
+				// remove me as active NPC
+				delete GAS.game.control.activeNpc;
+
+				break;
+				
 			}
+			
 		},
 		
 		/**
@@ -431,6 +501,7 @@ GAS.game = {
 		**/
 		
 		consume: function(dish) {
+			var npc = GAS.game.npc;
 			var c;
 			
 			// if a dish was supplied
@@ -440,25 +511,32 @@ GAS.game = {
 			
 				// enumerate through the ingredients that make up the recipe
 				// count down for each one that the player selected correctly
-				c = this.recipe.part.length;
-				this.recipe.part.enumerate(function(e) {
+				c = this.solve.length;
+				this.solve.enumerate(function(e) {
 					if (dish[e]) {
 						c--;
 					}
 				});
 				
-				// if player cleared them all, calm the NPC and advance the plot
+				// if player cleared them all
 				if (c === 0) {
-					this.behavior.calmed = true;
-					GAS.game.control.handle("calmed");
+					// tell the success story
+					GAS.hud.showStory(this.story.success, true);
+					// calm the NPC
+					this.interactPhase = npc.CALMED;
+					// let the game know
+					GAS.game.control.calmedNpc();
+				} else {
+					// tell the failure story
+					GAS.hud.showStory(this.story.failure, true);
 				}
-				
-				GAS.hud.showStory();
-				
 			} else {
 				// player cancelled dialog, just fade out the recipe
 				GAS.hud.showStory();
 			}
+			
+			// remove me as active NPC
+			delete GAS.game.control.activeNpc;
 			// restore display of prompt
 			GAS.game.npc.prompting = false;
 		}

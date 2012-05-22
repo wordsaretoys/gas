@@ -62,23 +62,49 @@ GAS.lookup = {
 	
 	character: {
 	
-		"npc-foosh": {
-			name: "Foosh",
+		"player": {
 			model: {
-				coat: "rgb(255, 255, 0)",
-				spot: "rgb(0, 0, 255)",
-				seed: 101,
-				position: {x: 0, y: 0, z: -5}
+				coat: "rgb(255, 0, 0)",
+				spot: "rgb(0, 255, 0)",
+				seed: 12301969,
+				position: {x: 0, y: 0, z: 0}
+			},
+			story: {
+				needstores: "I'm lacking some important ingredients. I should seek out a food bolus. They're the whitish clouds scattered throughout the weeds.",
+				storesfull: "My stores are already full. I'll just leave this food bolus for another time.",
+				foodgather: "Good! A food bolus. My ingredients are replenished."
 			}
 		},
 	
-		"npc-2": {
-			name: "foosh",
+		"npc-foosh": {
+			name: "Foosh",
+			type: "npc",
 			model: {
 				coat: "rgb(255, 255, 0)",
 				spot: "rgb(0, 0, 255)",
 				seed: 101,
 				position: {x: 0, y: 0, z: -5}
+			},
+			story: {
+				intro: "The first person I catch up to can't even speak, e's panicking so hard.<br>Well, every chef knows that food calms people down, gets them talking.<br>\"What's your favorite dish?\" I ask, and Frapp blurts it out.",
+				intro2: "\"Weeds reaching for light&mdash;&nbsp;Cast strange shadows&mdash;&nbsp;On the clouds.\"<br>That's the recipe. Every dish tells a story.<br>All I have to do is work out the ingredients.",
+				recipe: "Weeds reaching for light&mdash;<br>Cast strange shadows&mdash;<br>On the clouds.",
+				failure: "Foosh finishes the dish and mutters something kind.<br>E's too polite to tell me I blew it, but I can see em twitching.<br>I'll have to try again. First, I need to locate more ingredients.",
+				success: "\"Oh,\" says Foosh, \"that was excellent!\" I can already see em calming down.<br>E's been feeling a strange presence&mdash;in e's <i>mind</i>. Like something crawled inside to poke around.<br>I can't imagine what it might be, but I'm glad I could help."
+			},
+			solve: [ "bish", "jushu", "blapp", "foom" ]
+		},
+	
+		"npc-prapp": {
+			name: "Prapp",
+			type: "npc",
+			model: {
+				coat: "rgb(255, 255, 0)",
+				spot: "rgb(0, 0, 255)",
+				seed: 101,
+				position: {x: 0, y: 0, z: -5}
+			},
+			story: {
 			}
 		}
 	
@@ -90,15 +116,5 @@ GAS.lookup = {
 	
 	],
 	
-	story: {
-		title: "<div class=\"big\">sargasso</div><div>by Chris Gauthier</div><div><span class=\"key\">W</span> Paddle <span class=\"key\">M1</span> Steer (drag mouse) <span class=\"key\">E</span> Interact",
-		bolus: "Good! A food bolus. My ingredients are replenished.",
-		end: "That seems to be everyone. (This is a placeholder narration.)"
-	},
-	
-	errors: {
-		cantcook: "I'm lacking some important ingredients. I should seek out a food bolus. They're the whitish clouds scattered throughout the weeds.",
-		noneedto: "My stores are already full. I'll just leave this food bolus for another time."
-	}
-
+	title: "<div class=\"big\">sargasso</div><div>by Chris Gauthier</div><div><span class=\"key\">W</span> Paddle <span class=\"key\">M1</span> Steer (drag mouse) <span class=\"key\">E</span> Interact"
 };

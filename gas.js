@@ -117,7 +117,7 @@ var GAS = {
 			}, false);
 			
 			// start the game script 
-			GAS.game.control.handle("startup");
+			GAS.game.control.start();
 			
 			// start the message pump
 			SOAR.run();
@@ -135,7 +135,7 @@ var GAS = {
 		GAS.game.init();
 		GAS.player.init();
 		
-		GAS.hud.showStory(GAS.lookup.story.title, true);
+		GAS.hud.showStory(GAS.lookup.title, true);
 	},
 	
 	/**
