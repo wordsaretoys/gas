@@ -153,9 +153,9 @@ GAS.hud = {
 			break;
 		case SOAR.KEY.SPACE:
 			// if a story is displayed w/continue
-			if (that.continueStory) {
-				// continue the story (in some form)
-				GAS.game.control.continueStory();
+			if (that.continueEvent) {
+				// continue the speech
+				that.continueStory();
 			}
 			break;
 		default:
@@ -306,25 +306,72 @@ GAS.hud = {
 	/**
 		display the specified story text with fade in/out
 		
+		if text is a string, we display that string with an optional
+		continue. if text is an array, we display the first element,
+		force a continue, and iterate through the array on each call
+		of the method. if text is undefined or unspecified, hide the
+		story box completely.
+		
 		@method showStory
-		@param text string, the narrative to display or blank to hide
+		@param text string | array of strings | undefined, narrative
 		@param cont boooean, true if continue is displayed/signalled
 	**/
 	
 	showStory: function(text, cont) {
 		var story = this.dom.story;
 		if (text) {
-			story.text.html(text);
-			if (cont) {
-				story.cont.show();
-			} else {
-				story.cont.hide();
+		
+			if (text.isAString) {
+				story.text.html(text);
+				if (cont) {
+					story.cont.show();
+				} else {
+					story.cont.hide();
+				}
+				this.continueEvent = cont;
 			}
+			
+			if (text.isAnArray) {
+				story.text.html(text[0]);
+				story.cont.show();
+				this.continueEvent = true;
+				this.activeStory = text;
+				this.storyIndex = 1;
+			}
+				
 			story.box.fadeIn(this.STORY_FADE_TIME);
 		} else {
 			story.box.fadeOut(this.STORY_FADE_TIME);
+			this.continueEvent = false;
 		}
-		this.continueStory = cont;
-	}
+	},
+	
+	/**
+		handles a continue story event
+		
+		called by HUD, not for external use
+		
+		@method continueStory
+	**/
 
+	continueStory: function() {
+		// if there's an active extended story
+		if (this.activeStory) {
+			// and there are remaining entries in it
+			if (this.storyIndex < this.activeStory.length) {
+				// show the next entry and advance the counter
+				this.showStory(this.activeStory[this.storyIndex], true);
+				this.storyIndex++;
+			} else {
+				// no more entries? remove the properties
+				delete this.storyIndex;
+				delete this.activeStory;
+				// hand the event to the game controller
+				GAS.game.control.continueEvent();
+			}
+		} else {
+			// no extended story, let the game controller handle the event
+			GAS.game.control.continueEvent();
+		}
+	}
 };

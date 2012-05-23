@@ -86,8 +86,10 @@ GAS.lookup = {
 				position: {x: 0, y: 0, z: -5}
 			},
 			story: {
-				intro: "The first person I catch up to can't even speak, e's panicking so hard.<br>Well, every chef knows that food calms people down, gets them talking.<br>\"What's your favorite dish?\" I ask, and Frapp blurts it out.",
-				intro2: "\"Weeds reaching for light&mdash;&nbsp;Cast strange shadows&mdash;&nbsp;On the clouds.\"<br>That's the recipe. Every dish tells a story.<br>All I have to do is work out the ingredients.",
+				intro: [
+					"The first person I catch up to can't even speak, e's panicking so hard.<br>Well, every chef knows that food calms people down, gets them talking.<br>\"What's your favorite dish?\" I ask, and Frapp blurts it out.",
+					"\"Weeds reaching for light&mdash;&nbsp;Cast strange shadows&mdash;&nbsp;On the clouds.\"<br>That's the recipe. Every dish tells a story.<br>All I have to do is work out the ingredients."
+				],
 				recipe: "Weeds reaching for light&mdash;<br>Cast strange shadows&mdash;<br>On the clouds.",
 				failure: "Foosh finishes the dish and mutters something kind.<br>E's too polite to tell me I blew it, but I can see em twitching.<br>I'll have to try again. First, I need to locate more ingredients.",
 				success: "\"Oh,\" says Foosh, \"that was excellent!\" I can already see em calming down.<br>E's been feeling a strange presence&mdash;in e's <i>mind</i>. Like something crawled inside to poke around.<br>I can't imagine what it might be, but I'm glad I could help."

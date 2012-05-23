@@ -48,8 +48,6 @@ GAS.game = {
 	
 	control: {
 	
-		firstTimeNpc: true,
-	
 		calmCounter: 0,
 		calmTarget: 0,
 		
@@ -66,6 +64,8 @@ GAS.game = {
 			var actor = GAS.lookup.character[scene];
 			// add the first character
 			GAS.game.npc.add(actor);
+			// display the initial narration
+			GAS.hud.showStory(GAS.lookup.title, true);
 		},
 		
 		/**
@@ -117,7 +117,7 @@ GAS.game = {
 			@method continueStory
 		**/
 		
-		continueStory: function () {
+		continueEvent: function () {
 			// if there is an active NPC
 			if (this.activeNpc) {
 				// continue the interaction with the NPC
@@ -456,16 +456,9 @@ GAS.game = {
 			
 				// if the player has adequate food stores
 				if (GAS.player.stores) {
-					// if this is player's first NPC encounter
-					if (GAS.game.control.firstTimeNpc) {
-						// show another introduction, with continue
-						GAS.hud.showStory(this.story.intro2, true);
-						GAS.game.control.firstTimeNpc = false;
-					} else {
-						// show the recipe without a continue and let's get cooking
-						GAS.hud.showStory(this.story.recipe);
-						GAS.hud.showCookingDialog();
-					}
+					// show the recipe without a continue and let's get cooking
+					GAS.hud.showStory(this.story.recipe);
+					GAS.hud.showCookingDialog();
 				} else {
 					// tell the player they need stores
 					GAS.hud.showStory(GAS.player.story.needstores, true);
