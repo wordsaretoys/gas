@@ -15,7 +15,7 @@ GAS.game = {
 	
 	init: function() {
 		this.weed.init();
-		this.food.init();
+		//this.food.init();
 		this.npc.init();
 	},
 	
@@ -212,9 +212,6 @@ GAS.game = {
 					if (!GAS.player.stores) {
 						GAS.player.stores = true;
 						this.hidden = true;
-						GAS.hud.showStory(GAS.player.story.foodgather, true);
-					} else {
-						GAS.hud.showStory(GAS.player.story.storesfull, true);
 					}
 				}
 			}
@@ -455,7 +452,8 @@ GAS.game = {
 			case npc.RECIPE:
 			
 				// if the player has adequate food stores
-				if (GAS.player.stores) {
+//				if (GAS.player.stores) {
+				if (true) {
 					// show the recipe without a continue and let's get cooking
 					GAS.hud.showStory(this.story.recipe);
 					GAS.hud.showCookingDialog();

@@ -70,9 +70,7 @@ GAS.lookup = {
 				position: {x: 0, y: 0, z: 0}
 			},
 			story: {
-				needstores: "I'm lacking some important ingredients. I should seek out a food bolus. They're the whitish clouds scattered throughout the weeds.",
-				storesfull: "My stores are already full. I'll just leave this food bolus for another time.",
-				foodgather: "Good! A food bolus. My ingredients are replenished."
+				needstores: "I'm lacking some important ingredients. I should seek out a food bolus. They're the whitish clouds scattered throughout the weeds."
 			}
 		},
 	
