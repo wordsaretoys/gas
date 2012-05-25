@@ -95,15 +95,19 @@ GAS.paddler = {
 		var h = 256;
 		var hw = w * 0.5;
 		var hh = h * 0.5;
-		var i, x, y, s, hs;
+		var i, x, y, s, hs, lg;
 
 		// fill in the coat color
 		ctx.fillStyle = coat;
 		ctx.fillRect(0, 0, w, h);
 		
-		// top half is darker
-		ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-		ctx.fillRect(0, 0, hw, h);
+		// add a shade gradient
+		lg = ctx.createLinearGradient(0, 0, w, 0);
+		lg.addColorStop(0, "rgba(0, 0, 0, 1)");
+		lg.addColorStop(0.5, "rgba(0, 0, 0, 0)");
+		lg.addColorStop(1, "rgba(0, 0, 0, 1)");
+		ctx.fillStyle = lg;
+		ctx.fillRect(0, 0, w, h);
 
 		// add symmetric spots
 		ctx.fillStyle = spot;
@@ -123,7 +127,7 @@ GAS.paddler = {
 			
 			// bottom
 			ctx.beginPath();
-			ctx.arc(hw + x, y, hs, 0, SOAR.PIMUL2, false);
+			ctx.arc(w - x, y, hs, 0, SOAR.PIMUL2, false);
 			ctx.fill();
 			ctx.stroke();
 		}
@@ -190,11 +194,9 @@ GAS.paddler = {
 				x1 = 1.5 * x1 * r1;
 				x2 = 1.5 * x2 * r2;
 				
-				// cut x texture off at 0.49 to prevent
-				// top & bottom textures crossing over
-				tx0 = Math.min(0.5 - Math.abs(x0), 0.49);
-				tx1 = Math.min(0.5 - Math.abs(x1), 0.49);
-				tx2 = Math.min(0.5 - Math.abs(x2), 0.49);
+				tx0 = 0.5 - Math.abs(x0);
+				tx1 = 0.5 - Math.abs(x1);
+				tx2 = 0.5 - Math.abs(x2);
 
 				// paddler mouth should tuck inwards
 				if (tz0 < 0.001)
@@ -212,9 +214,9 @@ GAS.paddler = {
 				y1 = -0.5 * y1;
 				y2 = -0.5 * y2;
 
-				mesh.set(x0, y0, z0, tx0 + 0.5, tz0);
-				mesh.set(x2, y2, z2, tx2 + 0.5, tz2);
-				mesh.set(x1, y1, z1, tx1 + 0.5, tz1);
+				mesh.set(x0, y0, z0, 1 - tx0, tz0);
+				mesh.set(x2, y2, z2, 1 - tx2, tz2);
+				mesh.set(x1, y1, z1, 1 - tx1, tz1);
 			}
 		);
 	
