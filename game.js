@@ -284,13 +284,13 @@ GAS.game = {
 
 			// set up remaining NPC-specific stuff
 			o.behavior = {
-				status: this.DRIFTING,
+				motion: this.DRIFTING,
 				period: 0,
-				target: SOAR.vector.create()
+				target: SOAR.vector.create(),
+				relate: this.UNKNOWN
 			};
 			o.haste = 2;
 			o.interact = this.interact;
-			o.interactPhase = this.UNKNOWN;
 			o.consume = this.consume;
 
 			GAS.map.add(o);
@@ -312,7 +312,7 @@ GAS.game = {
 			var behave = this.behavior;
 			var npc = GAS.game.npc;
 
-			switch (behave.status) {
+			switch (behave.motion) {
 			
 			case npc.DRIFTING:
 			
@@ -331,10 +331,25 @@ GAS.game = {
 				this.pointTo(behave.target, 0.05);
 				behave.period -= SOAR.interval * 0.001;
 
-				// if the player is nearby
-				if (this.playerDistance < npc.WATCH_RADIUS) {
-					behave.status = npc.WATCHING;
-					this.haste = 0;
+				// if npc is not yet calmed
+				if (behave.relate !== npc.CALMED) {
+				
+					// if the player is nearby
+					if (this.playerDistance < npc.WATCH_RADIUS) {
+						// stop and flip to player-watching behavior
+						behave.motion = npc.WATCHING;
+						this.haste = 0;
+					}
+					
+				} else {
+				
+					// if the player is too close
+					if (this.playerDistance < npc.EVADE_RADIUS) {
+						// kick up the speed and flip to evasion behavior
+						behave.motion = npc.EVADING;
+						this.haste = 2;
+					}
+				
 				}
 
 				break;
@@ -358,12 +373,12 @@ GAS.game = {
 				
 				// player moves too far away, back to drifting
 				if (this.playerDistance > npc.WATCH_RADIUS) {
-					behave.status = npc.DRIFTING;
-					this.haste = (this.interactPhase === npc.CALMED) ? 1 : 2;
+					behave.motion = npc.DRIFTING;
+					this.haste = 2;
 				}
 				// player moves too close, switch to evade
 				if (this.playerDistance < npc.EVADE_RADIUS) {
-					behave.status = npc.EVADING;
+					behave.motion = npc.EVADING;
 					this.haste = 2;
 				}
 				
@@ -375,9 +390,23 @@ GAS.game = {
 				behave.target.copy(this.position).sub(player.position).norm();
 				this.pointTo(behave.target, 0.5);
 				
-				if (this.playerDistance > npc.EVADE_RADIUS) {
-					behave.status = npc.WATCHING;
-					this.haste = 0;
+				// if npc is not yet calmed
+				if (behave.relate !== npc.CALMED) {
+				
+					// if the player moves out of evasion range
+					if (this.playerDistance > npc.EVADE_RADIUS) {
+						// back to watching state
+						behave.motion = npc.WATCHING;
+						this.haste = 0;
+					}
+				} else {
+				
+					// if the player moves out of evasion range
+					if (this.playerDistance > npc.EVADE_RADIUS) {
+						// back to slowly drifting
+						behave.motion = npc.DRIFTING;
+						this.haste = 1;
+					}
 				}
 				
 				break;
@@ -401,7 +430,7 @@ GAS.game = {
 			var mark = this.marker;
 			var n = this.list[mark.index];
 			// if the indexed NPC is in a markable state and the marker is running
-			if (n.behavior.status === npc.DRIFTING && n.interactPhase !== npc.CALMED && mark.phase <= 2) {
+			if (n.behavior.motion === npc.DRIFTING && n.behavior.relate !== npc.CALMED && mark.phase <= 2) {
 				// insure marker is visible
 				mark.hidden = false;
 				// update its phase
@@ -433,19 +462,20 @@ GAS.game = {
 		
 		interact: function() {
 			var npc = GAS.game.npc;
+			var behave = this.behavior;
 
 			// set active NPC to me
 			GAS.game.control.activeNpc = this;
 
 			// handle according to interaction state
-			switch(this.interactPhase) {
+			switch(behave.relate) {
 			
 			case npc.UNKNOWN:
 			
 				// show introduction
 				GAS.hud.showStory(this.story.intro, true);
 				// advance to next state
-				this.interactPhase = npc.RECIPE;
+				behave.relate = npc.RECIPE;
 				
 				break;
 				
@@ -470,12 +500,8 @@ GAS.game = {
 				
 			case npc.CALMED:
 			
-				// replay the "success" story from the cooking
-				GAS.hud.showStory(this.story.success, true);
-		
-				// remove me as active NPC
-				delete GAS.game.control.activeNpc;
-
+				// player cannot interact with calmed NPCs
+			
 				break;
 				
 			}
@@ -513,8 +539,10 @@ GAS.game = {
 				if (c === 0) {
 					// tell the success story
 					GAS.hud.showStory(this.story.success, true);
-					// calm the NPC
-					this.interactPhase = npc.CALMED;
+					// calm the NPC and set them slowly drifting
+					this.behavior.relate = npc.CALMED;
+					this.behavior.motion = npc.DRIFTING;
+					this.haste = 1;
 					// let the game know
 					GAS.game.control.calmedNpc();
 				} else {
