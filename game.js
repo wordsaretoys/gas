@@ -361,7 +361,7 @@ GAS.game = {
 				this.pointTo(p, 0.1);
 				
 				// if the player is looking at the NPC, prompt them
-				if (this.playerDotProduct >= 0.8 && !npc.prompting) {
+				if (this.playerDotProduct >= 0.8 && !npc.prompting && !GAS.game.control.activeNpc) {
 					GAS.hud.prompt(this, "Talk", this.name);
 					npc.prompting = true;
 				}
@@ -476,6 +476,8 @@ GAS.game = {
 				GAS.hud.showStory(this.story.intro, true);
 				// advance to next state
 				behave.relate = npc.RECIPE;
+				// lock out player controls
+				GAS.player.lock();
 				
 				break;
 				
@@ -494,6 +496,8 @@ GAS.game = {
 					delete GAS.game.control.activeNpc;
 					// restore display of prompt
 					GAS.game.npc.prompting = false;
+					// restore player control
+					GAS.player.unlock();
 				}
 				
 				break;
@@ -558,6 +562,8 @@ GAS.game = {
 			delete GAS.game.control.activeNpc;
 			// restore display of prompt
 			GAS.game.npc.prompting = false;
+			// restore player control
+			GAS.player.unlock();
 		}
 
 	}
