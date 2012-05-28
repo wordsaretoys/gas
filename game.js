@@ -7,6 +7,8 @@
 
 GAS.game = {
 
+	scene: 0,
+
 	/**
 		initialize game objects
 		
@@ -27,7 +29,9 @@ GAS.game = {
 	**/
 	
 	update: function() {
-		this.npc.updateMarker();
+		if (this.trackNpc) {
+			this.npc.tracking();
+		}
 	},
 	
 	/**
@@ -40,91 +44,86 @@ GAS.game = {
 	nudge: function() {
 	},
 	
-	/**
-	
-		control script
 		
+	/**
+		stage the current scene in the plot
+		
+		@method stage
 	**/
 	
-	control: {
+	stage: function() {
+		var scene = GAS.lookup.plot[this.scene];
+		var cast = GAS.lookup.cast;
 	
-		calmCounter: 0,
-		calmTarget: 0,
+		// set up the new scene
+		switch(scene.goal) {
 		
-		scene: 0,
+		case "talk":
 		
-		/**
-			start the game story
+			GAS.hud.showStory(scene.speech, true);
+			break;
 			
-			@method start
-		**/
+		case "seek":
 		
-		start: function () {
-			var scene = GAS.lookup.plot[0];
-		},
-		
-		/**
-			advance the plot to the next scene
+			this.trackNpc = cast[scene.actor].model;
+			this.trackNpc.behavior.calmed = false;
+			break;
 			
-			@method advancePlot
-		**/
+		case "cook":
 		
-		advancePlot: function () {
-			var plot = GAS.lookup.plot;
-			var actor = GAS.lookup.character;
-			var i, il, roster, c;
-
-			// advance the scene
-			this.scene++;
-			
-			// any scenes left?
-			if (plot.length < this.scene) {
-
-				// get the actor roster
-				roster = plot[this.scene];
-				
-				// add the new actors into the setting
-				for (i = 0, il = roster.length; i < il; i++) {
-					c = roster[i];
-					GAS.game.npc.add(GAS.lookup.character[c]);
-				}
-				this.calmTarget = il;
-				this.calmCounter = 0;
-			}
-		},
-
-		/**
-			handle the calming of an NPC
-			
-			@method calmedNpc
-		**/
+			GAS.hud.showStory(scene.story);
+			GAS.hud.showCookingDialog();
+			this.solution = scene.solution;
+			break;
 		
-		calmedNpc: function() {
-			this.calmCounter++;
-			if (this.calmCounter === this.calmTarget) {
-				this.advancePlot();
-			}
-		},
-		
-		/**
-			handle a story continuation signalled by the player
-			
-			@method continueStory
-		**/
-		
-		continueEvent: function () {
-			// if there is an active NPC
-			if (this.activeNpc) {
-				// continue the interaction with the NPC
-				this.activeNpc.interact();
-			} else {
-				// hide whatever story is displayed
-				GAS.hud.showStory();
-			}
 		}
-		
 	},
 	
+	/**
+		cleanup after the last scene
+		
+		@method clean
+	**/
+	
+	clean: function() {
+		var scene = GAS.lookup.plot[this.scene];
+	
+		switch(scene.goal) {
+		
+		case "talk":
+		
+			GAS.hud.showStory();
+			break;
+			
+		case "seek":
+		
+			this.trackNpc.behavior.calmed = true;
+			delete this.trackNpc;
+			break;
+			
+		case "cook":
+		
+			GAS.hud.showStory();
+			break;
+		
+		}
+	},
+	
+	/**
+		advance to the next part of the plot
+		
+		@method advance
+	**/
+	
+	advance: function() {
+		// tear down the last scene
+		this.clean();
+		// advance to the next scene
+		this.scene++;
+		// set up the next scene
+		this.stage();
+	},
+		
 	/**
 	
 		weed collection
@@ -229,10 +228,6 @@ GAS.game = {
 		WATCHING: 1,
 		EVADING: 2,
 		
-		UNKNOWN: 0,
-		RECIPE: 1,
-		CALMED: 2,
-		
 		prompting: false,
 		
 		/**
@@ -269,9 +264,8 @@ GAS.game = {
 					motion: this.DRIFTING,
 					period: 0,
 					target: SOAR.vector.create(),
-					relate: this.CALMED
+					calmed: true
 				};
-				o.haste = 1;
 				o.interact = this.interact;
 				o.consume = this.consume;
 				
@@ -320,37 +314,42 @@ GAS.game = {
 				this.pointTo(behave.target, 0.05);
 				behave.period -= SOAR.interval * 0.001;
 
-				// if npc is not yet calmed
-				if (behave.relate !== npc.CALMED) {
+				// if npc is calm
+				if (behave.calmed) {
 				
-					// if the player is nearby
-					if (this.playerDistance < npc.WATCH_RADIUS) {
-						// stop and flip to player-watching behavior
-						behave.motion = npc.WATCHING;
-						this.haste = 0;
-					}
-					
-				} else {
+					this.haste = 1;
 				
 					// if the player is too close
 					if (this.playerDistance < npc.EVADE_RADIUS) {
 						// kick up the speed and flip to evasion behavior
 						behave.motion = npc.EVADING;
-						this.haste = 2;
 					}
+					
+				} else {
 				
+					this.haste = 2;
+				
+					// if the player is nearby
+					if (this.playerDistance < npc.WATCH_RADIUS) {
+						// stop and flip to player-watching behavior
+						behave.motion = npc.WATCHING;
+					}
+					
 				}
 
 				break;
 				
 			case npc.WATCHING:
 			
+				// don't move, just stare
+				this.haste = 0;
+				
 				// point the NPC at the player
 				behave.target.copy(player.position).sub(this.position).norm();
 				this.pointTo(behave.target, 0.1);
 				
 				// if the player is looking at the NPC, prompt them
-				if (this.playerDotProduct >= 0.8 && !npc.prompting && !GAS.game.control.activeNpc) {
+				if (this.playerDotProduct >= 0.8 && !npc.prompting && !GAS.game.activeNpc) {
 					GAS.hud.prompt(this, "Talk", this.name);
 					npc.prompting = true;
 				}
@@ -364,38 +363,33 @@ GAS.game = {
 				if (this.playerDistance > npc.WATCH_RADIUS) {
 					behave.period = 0;
 					behave.motion = npc.DRIFTING;
-					this.haste = 2;
 				}
 				// player moves too close, switch to evade
 				if (this.playerDistance < npc.EVADE_RADIUS) {
 					behave.motion = npc.EVADING;
-					this.haste = 2;
 				}
 				
 				break;
 				
 			case npc.EVADING:
 
+				// move quickly
+				this.haste = 2;
+				
 				// point npc away from player
 				behave.target.copy(this.position).sub(player.position).norm();
 				this.pointTo(behave.target, 0.5);
 				
-				// if npc is not yet calmed
-				if (behave.relate !== npc.CALMED) {
+				// if the player moves out of evasion range
+				if (this.playerDistance > npc.EVADE_RADIUS) {
 				
-					// if the player moves out of evasion range
-					if (this.playerDistance > npc.EVADE_RADIUS) {
+					// if npc is calm
+					if (behave.calmed) {
+						// back to drifting
+						behave.motion = npc.DRIFTING;
+					} else {
 						// back to watching state
 						behave.motion = npc.WATCHING;
-						this.haste = 0;
-					}
-				} else {
-				
-					// if the player moves out of evasion range
-					if (this.playerDistance > npc.EVADE_RADIUS) {
-						// back to slowly drifting
-						behave.motion = npc.DRIFTING;
-						this.haste = 1;
 					}
 				}
 				
@@ -407,37 +401,32 @@ GAS.game = {
 		},
 		
 		/**
-			used to update the NPC marker
+			handles the NPC tracking marker
 			
-			called in object context on EVERY frame
+			called on each frame
 			
-			@method updateMarker
+			@method tracking
 		**/
 		
-		updateMarker: function() {
+		tracking: function() {
 			var player = GAS.player.avatar;
-			var cast = GAS.lookup.cast;
-			var mark = this.marker;
-			var npc = GAS.game.npc;
-			var n;
+			var npc = GAS.game.trackNpc;
+			var marker = this.marker;
 			
-			// if the marker is tracking an NPC
-			if (mark.track) {
-				n = cast[mark.track].model;
-				// if the tracked NPC is in a markable state and the marker is running
-				if (n.behavior.motion === npc.DRIFTING && n.behavior.relate !== npc.CALMED) {
-					// insure marker is visible
-					mark.hidden = false;
-					// update its phase
-					mark.phase += SOAR.interval * 0.001;
-					if (mark.phase > 2) {
-						mark.phase = -1;
-					}
-					// move it to a position between player and NPC
-					mark.position.copy(n.position).sub(player.position).norm().mul(100).add(player.position);
+			// if the active npc is drifting and not calm
+			if (npc.behavior.motion === this.DRIFTING && !npc.behavior.calmed) {
+				// make sure the tracking marker is visible
+				marker.hidden = false;
+				// update the display
+				marker.phase += SOAR.interval * 0.001;
+				if (marker.phase > 2) {
+					marker.phase = -1;
 				}
+				// move it to a position between player and NPC
+				marker.position.copy(npc.position).sub(player.position).norm().mul(100).add(player.position);
+			} else {
+				marker.hidden = true;
 			}
-		
 		},
 		
 		/**
@@ -449,55 +438,12 @@ GAS.game = {
 		**/
 		
 		interact: function() {
-			var npc = GAS.game.npc;
-			var behave = this.behavior;
-
 			// set active NPC to me
-			GAS.game.control.activeNpc = this;
-
-			// handle according to interaction state
-			switch(behave.relate) {
-			
-			case npc.UNKNOWN:
-			
-				// show introduction
-				GAS.hud.showStory(this.story.intro, true);
-				// advance to next state
-				behave.relate = npc.RECIPE;
-				// lock out player controls
-				GAS.player.lock();
-				
-				break;
-				
-			case npc.RECIPE:
-			
-				// if the player has adequate food stores
-//				if (GAS.player.stores) {
-				if (true) {
-					// show the recipe without a continue and let's get cooking
-					GAS.hud.showStory(this.story.recipe);
-					GAS.hud.showCookingDialog();
-				} else {
-					// tell the player they need stores
-					GAS.hud.showStory(GAS.player.story.needstores, true);
-					// remove me as active NPC
-					delete GAS.game.control.activeNpc;
-					// restore display of prompt
-					GAS.game.npc.prompting = false;
-					// restore player control
-					GAS.player.unlock();
-				}
-				
-				break;
-				
-			case npc.CALMED:
-			
-				// player cannot interact with calmed NPCs
-			
-				break;
-				
-			}
-			
+			GAS.game.activeNpc = this;
+			// lock out player controls
+			GAS.player.lock();
+			// advance the plot
+			GAS.game.advance();
 		},
 		
 		/**
@@ -513,45 +459,28 @@ GAS.game = {
 			var npc = GAS.game.npc;
 			var c;
 			
-			// if a dish was supplied
-			if (dish) {
-				// deplete player stores
-				GAS.player.stores = false;
-			
-				// enumerate through the ingredients that make up the recipe
-				// count down for each one that the player selected correctly
-				c = this.solve.length;
-				this.solve.enumerate(function(e) {
-					if (dish[e]) {
-						c--;
-					}
-				});
-				
-				// if player cleared them all
-				if (c === 0) {
-					// tell the success story
-					GAS.hud.showStory(this.story.success, true);
-					// calm the NPC and set them slowly drifting
-					this.behavior.relate = npc.CALMED;
-					this.behavior.motion = npc.DRIFTING;
-					this.haste = 1;
-					// let the game know
-					GAS.game.control.calmedNpc();
-				} else {
-					// tell the failure story
-					GAS.hud.showStory(this.story.failure, true);
+			// enumerate through the ingredients that make up the recipe
+			// count down for each one that the player selected correctly
+			c = this.solve.length;
+			this.solve.enumerate(function(e) {
+				if (dish[e]) {
+					c--;
 				}
-			} else {
-				// player cancelled dialog, just fade out the recipe
-				GAS.hud.showStory();
-			}
+			});
 			
+			// adjust score based on c (not yet implemented)
+			
+			// calm the NPC and set them back to drifting
+			this.behavior.calmed = true;
+			this.behavior.motion = npc.DRIFTING;
 			// remove me as active NPC
-			delete GAS.game.control.activeNpc;
+			delete GAS.game.activeNpc;
 			// restore display of prompt
 			GAS.game.npc.prompting = false;
 			// restore player control
 			GAS.player.unlock();
+			// hand control back to the game
+			GAS.game.advance();
 		}
 
 	}

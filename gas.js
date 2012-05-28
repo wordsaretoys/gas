@@ -117,11 +117,10 @@ var GAS = {
 				);
 				GAS.player.camera.projector();
 				GAS.draw();
-				//GAS.hud.debug(GAS.display.width + ", " + GAS.display.height);
 			}, false);
 			
 			// start the game script 
-			GAS.game.control.start();
+			GAS.game.stage();
 			
 			// start the message pump
 			SOAR.run();

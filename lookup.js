@@ -19,8 +19,6 @@ GAS.lookup = {
 		{ name: "flab",		desc: "sky, world, infinite" }
 	],
 	
-	/** NOTE: ADD HINTS TO EACH **/
-	
 	recipe: [
 		{ 
 			text: "Weeds reaching for light\nCast strange shadows\nOn the clouds.",
@@ -78,7 +76,7 @@ GAS.lookup = {
 			skin: {
 				coat: "rgb(255, 127, 0)",
 				spot: "rgb(127, 0, 255)",
-				seed: 101
+				seed: 101992382
 			}
 		},
 	
@@ -88,7 +86,7 @@ GAS.lookup = {
 			skin: {
 				coat: "rgb(192, 255, 64)",
 				spot: "rgb(255, 64, 192)",
-				seed: 101
+				seed: 101992382
 			}
 		},
 
@@ -116,13 +114,37 @@ GAS.lookup = {
 	
 	plot: [
 	
-		[ "npc-foosh" ]
-	
+		{
+			goal: "talk",
+			speech: [
+				"<div class=\"big\">sargasso</div><div>by Chris Gauthier</div><div><span class=\"key\">W</span> Paddle <span class=\"key\">M1</span> Steer (drag mouse) <span class=\"key\">E</span> Interact",
+				"A test, nothing more."
+			]
+		},
+		
+		{
+			goal: "seek",
+			actor: "young-foosh"
+		},
+		
+		{
+			goal: "talk",
+			speech: "speech go here"
+		},
+		
+		{
+			goal: "cook",
+			recipe: "stuff",
+			solution: []
+		},
+		
+		{
+			goal: "talk",
+			speech: "more talk"
+		}
 	],
 
 	player: "hishe",
-	npc: [ "old-foosh", "young-foosh", "prapp", "joom" ],
+	npc: [ "old-foosh", "young-foosh", "prapp", "joom" ]
 	
-	
-	title: "<div class=\"big\">sargasso</div><div>by Chris Gauthier</div><div><span class=\"key\">W</span> Paddle <span class=\"key\">M1</span> Steer (drag mouse) <span class=\"key\">E</span> Interact"
 };

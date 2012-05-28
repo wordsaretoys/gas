@@ -264,7 +264,7 @@ GAS.hud = {
 		};
 		
 		cook.dismiss = function() {
-			GAS.game.control.activeNpc.consume();
+			GAS.game.activeNpc.consume();
 			cook.hideDialog();
 		};
 		
@@ -273,7 +273,7 @@ GAS.hud = {
 		cook.ok.bind("click", function() {
 			cook.hideDialog();
 			// submit dish to npc
-			GAS.game.control.activeNpc.consume(cook.dish);
+			GAS.game.activeNpc.consume(cook.dish);
 		});
 		
 		// prevent mouse highlight of elements
@@ -366,12 +366,12 @@ GAS.hud = {
 				// no more entries? remove the properties
 				delete this.storyIndex;
 				delete this.activeStory;
-				// hand the event to the game controller
-				GAS.game.control.continueEvent();
+				// hand the event to the game script
+				GAS.game.advance();
 			}
 		} else {
-			// no extended story, let the game controller handle the event
-			GAS.game.control.continueEvent();
+			// no extended story, hand the event to the game script
+			GAS.game.advance();
 		}
 	}
 };
