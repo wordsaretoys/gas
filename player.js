@@ -51,7 +51,7 @@ GAS.player = {
 	**/
 
 	init: function() {
-		var chr = GAS.lookup.character.player;
+		var chr = GAS.lookup.cast[GAS.lookup.player];
 		var dom = this.dom = {
 			tracker: jQuery("#tracker"),
 			window: jQuery(window)
@@ -73,8 +73,8 @@ GAS.player = {
 		this.camera.offset.set(0, 0.5, 2);
 		
 		// create a player avatar
-		this.avatar = GAS.paddler.create(chr.model);
-		this.story = chr.story;
+		this.avatar = GAS.paddler.create(chr.skin);
+		this.avatar.position.copy(chr.start);
 	},
 	
 	/**

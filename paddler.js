@@ -53,22 +53,21 @@ GAS.paddler = {
 		generate and return a new paddler object
 		
 		@method create
-		@param info object, describes appearance and position
+		@param skin object, describes appearance
 		@return object, the new paddler
 	**/
 	
-	create: function(info) {
+	create: function(skin) {
 		var o = Object.create(GAS.paddler);
-		var p = info.position;
 		
-		o.position = SOAR.vector.create(p.x, p.y, p.z);
+		o.position = SOAR.vector.create();
 		o.velocity = SOAR.vector.create();
 		o.rotator = SOAR.rotator.create();
 		
 		o.speed = 0;
 		o.haste = 0;
 		
-		o.skin = this.makeSkin(info.coat, info.spot, info.seed);
+		o.skin = this.makeSkin(skin.coat, skin.spot, skin.seed);
 
 		o.wing = Math.random();
 		o.mouth = 0.25 * Math.PI;

@@ -32,6 +32,8 @@ var GAS = {
 	random: function(l, u) {
 		return l + (u - l) * Math.random();
 	},
+	
+	rng: SOAR.random.create(),
 
 	/**
 		create GL context, set up game objects, load resources

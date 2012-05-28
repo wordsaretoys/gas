@@ -61,11 +61,6 @@ GAS.game = {
 		
 		start: function () {
 			var scene = GAS.lookup.plot[0];
-			var actor = GAS.lookup.character[scene];
-			// add the first character
-			GAS.game.npc.add(actor);
-			// display the initial narration
-			GAS.hud.showStory(GAS.lookup.title, true);
 		},
 		
 		/**
@@ -238,12 +233,6 @@ GAS.game = {
 		RECIPE: 1,
 		CALMED: 2,
 		
-		list: [],
-
-		scratch: {
-			p: SOAR.vector.create()
-		},
-		
 		prompting: false,
 		
 		/**
@@ -253,52 +242,53 @@ GAS.game = {
 		**/
 
 		init: function() {
+			var cast = GAS.lookup.cast;
+			var npcl = GAS.lookup.npc;
+			var i, il, n, o;
+			
+			// for each NPC in the cast list
+			for (i = 0, il = npcl.length; i < il; i++) {
+				n = cast[ npcl[i] ];
+				
+				// create a paddler model
+				o = GAS.paddler.create(n.skin);
+				
+				// start where directed
+				o.position.copy(n.start);
+				
+				// TEMP: place in random position
+				o.position.set(GAS.rng.get(-1, 1), GAS.rng.get(-1, 1), GAS.rng.get(-1, 1)).norm().mul(10);
+				
+				// paddler object already has an update method, so swap it out
+				o.update = this.update;
+				o.updateMotion = GAS.paddler.update;
+
+				// set up remaining NPC-specific stuff
+				o.name = n.name;
+				o.behavior = {
+					motion: this.DRIFTING,
+					period: 0,
+					target: SOAR.vector.create(),
+					relate: this.CALMED
+				};
+				o.haste = 1;
+				o.interact = this.interact;
+				o.consume = this.consume;
+				
+				// add model to map and character object
+				GAS.map.add(o);
+				n.model = o;
+			}
+		
 			// create a marker for the NPCs
 			this.marker = GAS.card.create("sound");
 			this.marker.scale = 10;
 			this.marker.hidden = true;
-			this.marker.index = 0;
 			GAS.map.always.push(this.marker);
 		},
 		
 		/**
-			add an NPC to the collection and the map
-			
-			@method add
-			@param chr object, character record
-		**/
-		
-		add: function(chr) {
-
-			// create the paddler object
-			var o = GAS.paddler.create(chr.model);
-			
-			// set character data
-			o.name = chr.name;
-			o.story = chr.story;
-			o.solve = chr.solve;
-			
-			// paddler object already has an update method, so swap it out
-			o.update = this.update;
-			o.updateMotion = GAS.paddler.update;
-
-			// set up remaining NPC-specific stuff
-			o.behavior = {
-				motion: this.DRIFTING,
-				period: 0,
-				target: SOAR.vector.create(),
-				relate: this.UNKNOWN
-			};
-			o.haste = 2;
-			o.interact = this.interact;
-			o.consume = this.consume;
-
-			GAS.map.add(o);
-			this.list.push(o);
-		},
-		
-		/**
-			update an NPC's behavior
+			update an NPC's motion
 			
 			called for every NPC on every frame
 			"this" refers to the NPC object
@@ -307,7 +297,6 @@ GAS.game = {
 		**/
 		
 		update: function() {
-			var p = this.scratch.p;
 			var player = GAS.player.avatar;
 			var behave = this.behavior;
 			var npc = GAS.game.npc;
@@ -357,8 +346,8 @@ GAS.game = {
 			case npc.WATCHING:
 			
 				// point the NPC at the player
-				p.copy(player.position).sub(this.position).norm();
-				this.pointTo(p, 0.1);
+				behave.target.copy(player.position).sub(this.position).norm();
+				this.pointTo(behave.target, 0.1);
 				
 				// if the player is looking at the NPC, prompt them
 				if (this.playerDotProduct >= 0.8 && !npc.prompting && !GAS.game.control.activeNpc) {
@@ -373,6 +362,7 @@ GAS.game = {
 				
 				// player moves too far away, back to drifting
 				if (this.playerDistance > npc.WATCH_RADIUS) {
+					behave.period = 0;
 					behave.motion = npc.DRIFTING;
 					this.haste = 2;
 				}
@@ -426,28 +416,26 @@ GAS.game = {
 		
 		updateMarker: function() {
 			var player = GAS.player.avatar;
-			var npc = GAS.game.npc;
+			var cast = GAS.lookup.cast;
 			var mark = this.marker;
-			var n = this.list[mark.index];
-			// if the indexed NPC is in a markable state and the marker is running
-			if (n.behavior.motion === npc.DRIFTING && n.behavior.relate !== npc.CALMED && mark.phase <= 2) {
-				// insure marker is visible
-				mark.hidden = false;
-				// update its phase
-				mark.phase += SOAR.interval * 0.001;
-				// move it to a position between player and NPC
-				mark.position.copy(n.position).sub(player.position).norm().mul(100).add(player.position);
-			} else {
-				// make sure the marker is hidden
-				mark.hidden = true;
-				// go to the next NPC
-				mark.index++;
-				// wrap around if we've reached the list's end
-				if (mark.index >= npc.list.length) {
-					mark.index = 0;
+			var npc = GAS.game.npc;
+			var n;
+			
+			// if the marker is tracking an NPC
+			if (mark.track) {
+				n = cast[mark.track].model;
+				// if the tracked NPC is in a markable state and the marker is running
+				if (n.behavior.motion === npc.DRIFTING && n.behavior.relate !== npc.CALMED) {
+					// insure marker is visible
+					mark.hidden = false;
+					// update its phase
+					mark.phase += SOAR.interval * 0.001;
+					if (mark.phase > 2) {
+						mark.phase = -1;
+					}
+					// move it to a position between player and NPC
+					mark.position.copy(n.position).sub(player.position).norm().mul(100).add(player.position);
 				}
-				// reset marker phase
-				mark.phase = -1;
 			}
 		
 		},
