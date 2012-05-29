@@ -31,8 +31,7 @@ GAS.hud = {
 				box: jQuery("#cook"),
 				itemsLeft: jQuery("#cook-items-left"),
 				itemsRight: jQuery("#cook-items-right"),
-				ok: jQuery("#cook-ok"),
-				cancel: jQuery("#cook-cancel")
+				ok: jQuery("#cook-ok")
 			},
 			
 			story: {
@@ -122,10 +121,6 @@ GAS.hud = {
 	
 		switch(event.keyCode) {
 		case SOAR.KEY.ESCAPE:
-			// cancel any active dialog
-			if (that.cancel) {
-				that.cancel();
-			}
 			break;
 		case SOAR.KEY.PAUSE:
 			// toggle pause (dark screen/no updates)
@@ -250,30 +245,28 @@ GAS.hud = {
 		});
 		
 		
-		cook.hideDialog = function() {
+		cook.ok.bind("click", function() {
+			var c;
+			
 			// remove all selections
 			jQuery(".cook-item").removeClass("cook-item-selected");
 			// hide the dialog box
 			cook.box.hide();
-			// remove HUD dismissal flag
-			delete GAS.hud.cancel;
-			// restore player control
-			GAS.player.unlock();
-			// and drop the first mouse move event
-			GAS.player.mouse.invalid = true;
-		};
-		
-		cook.dismiss = function() {
-			GAS.game.activeNpc.consume();
-			cook.hideDialog();
-		};
-		
-		cook.cancel.bind("click", cook.dismiss);
-		
-		cook.ok.bind("click", function() {
-			cook.hideDialog();
-			// submit dish to npc
-			GAS.game.activeNpc.consume(cook.dish);
+
+			// enumerate through the ingredients that make up the recipe
+			// count down for each one that the player selected correctly
+			c = cook.recipe.length;
+			cook.recipe.enumerate(function(e) {
+				if (cook.dish[e]) {
+					c--;
+				}
+			});
+			
+			// score the dish (not yet implemented)
+			
+			// advance the plot
+			GAS.game.advance();
+			
 		});
 		
 		// prevent mouse highlight of elements
@@ -287,16 +280,15 @@ GAS.hud = {
 		display the cooking dialog
 		
 		@method showCookingDialog
+		@param recipe array, the array of actual ingredients
 	**/
 	
-	showCookingDialog: function() {
+	showCookingDialog: function(recipe) {
 		var cook = GAS.hud.dom.cooking;
 		// serve up a blank dish object
 		cook.dish = {};
-		// allow ESC dismissal of dialog
-		GAS.hud.cancel = cook.dismiss;
-		// prevent player from moving while dialog is displayed
-		GAS.player.lock();
+		// store off the actual recipe
+		cook.recipe = recipe;
 		// show the dialog box
 		cook.box.show();
 		// make sure it's in the right place

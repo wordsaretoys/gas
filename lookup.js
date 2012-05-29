@@ -134,13 +134,13 @@ GAS.lookup = {
 		
 		{
 			goal: "cook",
-			recipe: "stuff",
-			solution: []
+			recipe: "Weeds basking in the sun<br>Cast strange shadows<br>On the clouds.",
+			solution: ["foom", "jushu", "bish"]
 		},
 		
 		{
 			goal: "talk",
-			speech: "more talk"
+			speech: "more speech go here"
 		}
 	],
 

@@ -60,6 +60,7 @@ GAS.game = {
 		
 		case "talk":
 		
+			GAS.player.lock();
 			GAS.hud.showStory(scene.speech, true);
 			break;
 			
@@ -71,9 +72,9 @@ GAS.game = {
 			
 		case "cook":
 		
+			GAS.player.lock();
 			GAS.hud.showStory(scene.story);
-			GAS.hud.showCookingDialog();
-			this.solution = scene.solution;
+			GAS.hud.showCookingDialog(scene.solution);
 			break;
 		
 		}
@@ -92,18 +93,22 @@ GAS.game = {
 		
 		case "talk":
 		
+			GAS.player.unlock();
 			GAS.hud.showStory();
 			break;
 			
 		case "seek":
 		
-			this.trackNpc.behavior.calmed = true;
 			delete this.trackNpc;
 			break;
 			
 		case "cook":
 		
+			GAS.player.unlock();
 			GAS.hud.showStory();
+			this.activeNpc.behavior.calmed = true;
+			this.activeNpc.behavior.motion = GAS.game.npc.DRIFTING;
+			delete this.activeNpc;
 			break;
 		
 		}
@@ -425,6 +430,7 @@ GAS.game = {
 				// move it to a position between player and NPC
 				marker.position.copy(npc.position).sub(player.position).norm().mul(100).add(player.position);
 			} else {
+				// hide the marker
 				marker.hidden = true;
 			}
 		},
@@ -440,49 +446,10 @@ GAS.game = {
 		interact: function() {
 			// set active NPC to me
 			GAS.game.activeNpc = this;
-			// lock out player controls
-			GAS.player.lock();
 			// advance the plot
 			GAS.game.advance();
-		},
-		
-		/**
-			called when the NPC "eats" the player's dish
-			decides if the ingredients are correct, and
-			calms the NPC if they are
-		
-			@method consume
-			@param dish object, collection of player-selected ingredients
-		**/
-		
-		consume: function(dish) {
-			var npc = GAS.game.npc;
-			var c;
-			
-			// enumerate through the ingredients that make up the recipe
-			// count down for each one that the player selected correctly
-			c = this.solve.length;
-			this.solve.enumerate(function(e) {
-				if (dish[e]) {
-					c--;
-				}
-			});
-			
-			// adjust score based on c (not yet implemented)
-			
-			// calm the NPC and set them back to drifting
-			this.behavior.calmed = true;
-			this.behavior.motion = npc.DRIFTING;
-			// remove me as active NPC
-			delete GAS.game.activeNpc;
-			// restore display of prompt
-			GAS.game.npc.prompting = false;
-			// restore player control
-			GAS.player.unlock();
-			// hand control back to the game
-			GAS.game.advance();
 		}
-
+		
 	}
 
 };
