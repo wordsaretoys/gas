@@ -40,6 +40,11 @@ GAS.hud = {
 				cont: jQuery("#story-cont")
 			},
 			
+			progress: {
+				box: jQuery("#progress"),
+				bar: jQuery("#progress-bar")
+			},
+			
 			debug: jQuery("#debug")
 		};
 
@@ -58,12 +63,22 @@ GAS.hud = {
 				left: (GAS.display.width - p.width()) * 0.5
 			});
 		};
+		
+		this.dom.progress.resize = function() {
+			var p = GAS.hud.dom.progress.box;
+			p.offset({
+				top: (GAS.display.height - p.height()) * 0.5,
+				left: (GAS.display.width - p.width()) * 0.85
+			});
+		};
 
 		this.dom.window.bind("keydown", this.onKeyDown);
 		this.dom.window.bind("resize", this.resize);			
 		this.resize();
 		
 		this.makeCookingDialog();
+		
+		this.temp = 100;
 	},
 	
 	/**
@@ -103,6 +118,7 @@ GAS.hud = {
 		
 		that.dom.prompts.resize();
 		that.dom.cooking.resize();
+		that.dom.progress.resize();
 	},
 	
 	/**
@@ -365,5 +381,37 @@ GAS.hud = {
 			// no extended story, hand the event to the game script
 			GAS.game.advance();
 		}
+	},
+	
+	/**
+		show/hide/update progress bar
+		
+		if value is non-negative and the bar isn't visible,
+		it will be displayed. if value is negative, and the
+		bar is visible, it will be hidden.
+		
+		@method showProgress
+		@param value number, value to display, range {0..1}
+	**/
+	
+	showProgress: function(value) {
+		var prog = this.dom.progress;
+	
+		// if value is non-negative
+		if (value >= 0) {
+			// if the bar isn't visible
+			if (!prog.visible) {
+				// show it
+				prog.box.show();
+				prog.visible = true;
+			}
+			// update the bar's width (as a percentage of parent)
+			prog.bar.css("width", Math.floor(100 * value) + "%");
+		} else {
+			// negative, hide the bar
+			prog.box.hide();
+			prog.visible = false;
+		}
+	
 	}
 };

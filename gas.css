@@ -143,6 +143,38 @@ div {
 	text-align: right;
 }
 
+/* HUD progress bar */
+
+#progress {
+	position: absolute;
+
+	width: 240px;
+	height: 25px;
+	padding: 2px;
+	
+	background: rgba(0, 0, 0, 0.75);
+	
+	display: none;
+	
+	z-index: 5;
+}
+
+#progress-bar {
+	width: 100%;
+	height: 25px;
+	padding: 0px;
+	background: transparent;
+	overflow: hidden;
+}
+
+#progress-back {
+	width: 240px;
+	height: 25px;
+	background: #0f0;
+	background: -webkit-gradient(linear, left top, right bottom, from(#f00), to(#0f0));
+	background: -moz-linear-gradient(0, #f00, #0f0);
+}
+
 /* mouse tracking surface */
 
 #tracker {
