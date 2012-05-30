@@ -11,13 +11,6 @@
 
 var GAS = {
 
-	resources: {
-		noise1: {
-			type: "image",
-			path: "res/noise1.jpg"
-		}
-	},
-	
 	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
 	
 	/**
@@ -43,7 +36,7 @@ var GAS = {
 
 	start: function() {
 
-		var gl;
+		var gl, init, total, id;
 
 		// create the GL display
 		try {
@@ -98,45 +91,61 @@ var GAS = {
 		GAS.texture.canvas.height = 512;
 		GAS.texture.context = GAS.texture.canvas.getContext("2d");
 
-		// begin async loading of resources from the server
-		SOAR.loadResources(GAS.resources, function() {
-
-			// this function is called when resource load is complete
-			
-			// allow game objects to process loaded resources
-			
-			// schedule animation frame functions
-			SOAR.schedule(GAS.update, 0, true);
-			SOAR.schedule(GAS.draw, 0, true);
-
-			// resize display & redraw if window size changes
-			window.addEventListener("resize", function() {
-				GAS.display.setSize(
-					document.body.clientWidth, 
-					document.body.clientHeight
-				);
-				GAS.player.camera.projector();
-				GAS.draw();
-			}, false);
-			
-			// start the game script 
-			GAS.game.stage();
-			
-			// start the message pump
-			SOAR.run();
-			
-		});
+		// set up an array of all objects to be initialized
+		init = [];
+		init.push(GAS.hud);
+		init.push(GAS.skybox);
+		init.push(GAS.card);
+		init.push(GAS.ejecta);
+		init.push(GAS.bolus);
+		init.push(GAS.weeds);
+		init.push(GAS.paddler);
+		init.push(GAS.game);
+		init.push(GAS.player);
+		total = init.length;
 		
-		// while waiting for resource load, initialize game objects
-		GAS.hud.init();
-		GAS.skybox.init();
-		GAS.card.init();
-		GAS.ejecta.init();
-		GAS.bolus.init();
-		GAS.weeds.init();
-		GAS.paddler.init();
-		GAS.game.init();
-		GAS.player.init();
+		// set up a function to call for the next several animation frames
+		// this will perform initialization, with progress bar animations
+		id = SOAR.schedule(function() {
+			var il = init.length;
+			var np = total - il;
+			// as long as there are objects to init
+			if (il > 0) {
+				// init the next one
+				init.shift().init();
+				// update the progress bar
+				GAS.hud.showProgress( np / total );
+				// update the story display
+				GAS.hud.showStory("please wait (" + np + " of " + total + " objects initialized<br><br><br>", false);
+			} else {
+				// unschedule the init function
+				SOAR.unschedule(id);
+				
+				// hide the progress bar
+				GAS.hud.showProgress( -1 );
+				
+				// schedule animation frame functions
+				SOAR.schedule(GAS.update, 0, true);
+				SOAR.schedule(GAS.draw, 0, true);
+
+				// resize display & redraw if window size changes
+				window.addEventListener("resize", function() {
+					GAS.display.setSize(
+						document.body.clientWidth, 
+						document.body.clientHeight
+					);
+					GAS.player.camera.projector();
+					GAS.draw();
+				}, false);
+		
+				// start the game script 
+				GAS.game.stage();
+			}
+		
+		}, 0, true);
+
+		// start the message pump
+		SOAR.run();
 	},
 	
 	/**
