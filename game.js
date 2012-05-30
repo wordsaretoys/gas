@@ -58,6 +58,11 @@ GAS.game = {
 		// set up the new scene
 		switch(scene.goal) {
 		
+		case "mono":
+		
+			GAS.hud.showStory(scene.speech, true);
+			break;
+			
 		case "talk":
 		
 			GAS.player.setControlLock(true, true);
@@ -90,6 +95,11 @@ GAS.game = {
 		var scene = GAS.lookup.plot[this.scene];
 	
 		switch(scene.goal) {
+		
+		case "mono":
+		
+			GAS.hud.showStory();
+			break;
 		
 		case "talk":
 		

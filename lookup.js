@@ -115,7 +115,7 @@ GAS.lookup = {
 	plot: [
 	
 		{
-			goal: "talk",
+			goal: "mono",
 			speech: [
 				"<div class=\"big\">sargasso</div><div>by Chris Gauthier</div><div><span class=\"key\">W</span> Paddle <span class=\"key\">M1</span> Steer (drag mouse) <span class=\"key\">E</span> Interact",
 				"A test, nothing more."
