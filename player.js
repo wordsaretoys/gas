@@ -35,9 +35,8 @@ GAS.player = {
 		d: SOAR.vector.create()
 	},
 	
-	lockout: false,
-	
-	debug: false,
+	lockKeys: false,
+	lockMouse: false,
 	
 	/**
 		establish jQuery shells around player DOM objects &
@@ -161,7 +160,7 @@ GAS.player = {
 
 		var that = GAS.player;
 		
-		if (that.lockout) {
+		if (that.lockKeys) {
 			return true;
 		}
 		
@@ -197,7 +196,7 @@ GAS.player = {
 
 		var that = GAS.player;
 
-		if (that.lockout) {
+		if (that.lockKeys) {
 			return true;
 		}
 		
@@ -264,7 +263,7 @@ GAS.player = {
 	onMouseMove: function(event) {
 		var that = GAS.player;
 
-		if (that.lockout) {
+		if (that.lockMouse) {
 			return true;
 		}
 		
@@ -277,23 +276,18 @@ GAS.player = {
 	},
 	
 	/**
-		lock the player's controls and cease all motion
+		set lock state for the player
 		
-		@method lock
+		@method setControlLock
+		@param kb boolean, true if movement keys are locked out
+		@param ms boolean, true if mouse movement is locked out
 	**/
 	
-	lock: function() {
-		this.lockout = true;
-		this.motion.movefore = false;
-	},
-	
-	/**
-		unlock the player's controls
-		
-		@method unlock
-	**/
-	
-	unlock: function() {
-		this.lockout = false;
+	setControlLock: function(kb, ms) {
+		this.lockKeys = kb || false;
+		this.lockMouse = ms || false;
+		if (this.lockKeys) {
+			this.motion.movefore = false;
+		}
 	}
 };

@@ -116,7 +116,7 @@ var GAS = {
 				// update the progress bar
 				GAS.hud.showProgress( np / total );
 				// update the story display
-				GAS.hud.showStory("please wait (" + np + " of " + total + " objects initialized<br><br><br>", false);
+				GAS.hud.showStory("please wait (" + np + " of " + total + " objects initialized)<br><br><br>", false);
 			} else {
 				// unschedule the init function
 				SOAR.unschedule(id);

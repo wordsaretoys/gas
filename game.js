@@ -60,7 +60,7 @@ GAS.game = {
 		
 		case "talk":
 		
-			GAS.player.lock();
+			GAS.player.setControlLock(true, true);
 			GAS.hud.showStory(scene.speech, true);
 			break;
 			
@@ -72,7 +72,7 @@ GAS.game = {
 			
 		case "cook":
 		
-			GAS.player.lock();
+			GAS.player.setControlLock(true, true);
 			GAS.hud.showStory(scene.story);
 			GAS.hud.showCookingDialog(scene.solution);
 			break;
@@ -93,7 +93,7 @@ GAS.game = {
 		
 		case "talk":
 		
-			GAS.player.unlock();
+			GAS.player.setControlLock();
 			GAS.hud.showStory();
 			break;
 			
@@ -104,7 +104,7 @@ GAS.game = {
 			
 		case "cook":
 		
-			GAS.player.unlock();
+			GAS.player.setControlLock();
 			GAS.hud.showStory();
 			this.activeNpc.behavior.calmed = true;
 			this.activeNpc.behavior.motion = GAS.game.npc.DRIFTING;
