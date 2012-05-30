@@ -20,18 +20,12 @@ GAS.hud = {
 
 		this.dom = {
 			window: jQuery(window),
+			body: jQuery(document.body),
 			
 			tracker: jQuery("#tracker"),
 			
 			prompts: {
 				box: jQuery("#prompts")
-			},
-			
-			cooking: {
-				box: jQuery("#cook"),
-				itemsLeft: jQuery("#cook-items-left"),
-				itemsRight: jQuery("#cook-items-right"),
-				ok: jQuery("#cook-ok")
 			},
 			
 			story: {
@@ -56,14 +50,6 @@ GAS.hud = {
 			});
 		};
 		
-		this.dom.cooking.resize = function() {
-			var p = GAS.hud.dom.cooking.box;
-			p.offset({
-				top: (GAS.display.height - p.height()) * 0.5,
-				left: (GAS.display.width - p.width()) * 0.5
-			});
-		};
-		
 		this.dom.progress.resize = function() {
 			var p = GAS.hud.dom.progress.box;
 			p.offset({
@@ -75,10 +61,6 @@ GAS.hud = {
 		this.dom.window.bind("keydown", this.onKeyDown);
 		this.dom.window.bind("resize", this.resize);			
 		this.resize();
-		
-		this.makeCookingDialog();
-		
-		this.temp = 100;
 	},
 	
 	/**
@@ -117,7 +99,6 @@ GAS.hud = {
 		that.dom.tracker.height(GAS.display.height);
 		
 		that.dom.prompts.resize();
-		that.dom.cooking.resize();
 		that.dom.progress.resize();
 	},
 	
@@ -223,95 +204,6 @@ GAS.hud = {
 	},
 	
 	/**
-		generate the cooking dialog
-		
-		convenience method for slapping in all 
-		the event handlers and helper methods
-		
-		@method makeCookingDialog
-	**/
-	
-	makeCookingDialog: function() {
-		var ingr = GAS.lookup.ingredient;
-		var cook = GAS.hud.dom.cooking;
-
-		// populate the ingredients list
-		var side = false;
-		GAS.lookup.ingredient.enumerate(function(e) {
-			var div = jQuery(document.createElement("div"));
-			div.html("<span class=\"big left\">" + e.name + "</span><span class=\"right\">" + e.desc + "</span>");
-			div.addClass("cook-back cook-item");
-			div.ingredient = e.name;
-			div.bind("click", function() {
-				var nm = div.ingredient;
-				if (cook.dish[nm]) {
-					cook.dish[nm] = false;
-					div.removeClass("cook-item-selected");
-				} else {
-					cook.dish[nm] = true;
-					div.addClass("cook-item-selected");
-				}
-			});
-			if (side) {
-				cook.itemsLeft.append(div);
-			} else {
-				cook.itemsRight.append(div);
-			}
-			side = !side;
-		});
-		
-		
-		cook.ok.bind("click", function() {
-			var c;
-			
-			// remove all selections
-			jQuery(".cook-item").removeClass("cook-item-selected");
-			// hide the dialog box
-			cook.box.hide();
-
-			// enumerate through the ingredients that make up the recipe
-			// count down for each one that the player selected correctly
-			c = cook.recipe.length;
-			cook.recipe.enumerate(function(e) {
-				if (cook.dish[e]) {
-					c--;
-				}
-			});
-			
-			// score the dish (not yet implemented)
-			
-			// advance the plot
-			GAS.game.advance();
-			
-		});
-		
-		// prevent mouse highlight of elements
-		jQuery("#cook > *").bind("mousedown", function() {
-			return false;
-		});
-		
-	},
-	
-	/**
-		display the cooking dialog
-		
-		@method showCookingDialog
-		@param recipe array, the array of actual ingredients
-	**/
-	
-	showCookingDialog: function(recipe) {
-		var cook = GAS.hud.dom.cooking;
-		// serve up a blank dish object
-		cook.dish = {};
-		// store off the actual recipe
-		cook.recipe = recipe;
-		// show the dialog box
-		cook.box.show();
-		// make sure it's in the right place
-		cook.resize();
-	},
-	
-	/**
 		display the specified story text with fade in/out
 		
 		if text is a string, we display that string with an optional
@@ -414,4 +306,5 @@ GAS.hud = {
 		}
 	
 	}
+	
 };

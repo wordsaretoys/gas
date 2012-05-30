@@ -98,39 +98,20 @@ GAS.player = {
 			mouse.last.x = mouse.next.x;
 			mouse.last.y = mouse.next.y;
 		}
-		
-		if (this.debug) {
-			s.d.set();
-			if (this.motion.movefore) {
-				s.d.add(camera.front);
-			}
-			if (this.motion.moveback) {
-				s.d.sub(camera.front);
-			}
-			if (this.motion.moveleft) {
-				s.d.sub(camera.right);
-			}
-			if (this.motion.moveright) {
-				s.d.add(camera.right);
-			}
-			s.d.norm().mul(2 * dt);
-			this.position.add(s.d);
-			camera.offset.set();
-			camera.position.copy(this.position);
-		} else {
-			
-			if (this.motion.movefore) {
-				this.avatar.haste = this.motion.movefast ? 2 : 1;
-				this.avatar.rotator.track(camera, 0.1);
-			} else {
-				this.avatar.haste = 0;
-			}
-			
-			this.avatar.update();
 
-			this.position.copy(this.avatar.position);
-			camera.position.copy(this.avatar.position);
+		if (this.motion.movefore) {
+			this.avatar.haste = this.motion.movefast ? 2 : 1;
+			this.avatar.rotator.track(camera, 0.1);
+		} else if (this.lockKeys) {
+			this.avatar.rotator.track(camera, 0.1);
+		} else {
+			this.avatar.haste = 0;
 		}
+		
+		this.avatar.update();
+
+		this.position.copy(this.avatar.position);
+		camera.position.copy(this.avatar.position);
 		
 		// generate camera matrixes
 		// (will be cached in the camera object)

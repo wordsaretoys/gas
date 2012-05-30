@@ -77,9 +77,8 @@ GAS.game = {
 			
 		case "cook":
 		
-			GAS.player.setControlLock(true, true);
-			GAS.hud.showStory(scene.story);
-			GAS.hud.showCookingDialog(scene.solution);
+			GAS.player.setControlLock(true);
+			GAS.hud.showStory(scene.speech, true);
 			break;
 		
 		}
