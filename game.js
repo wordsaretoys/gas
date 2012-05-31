@@ -72,7 +72,7 @@ GAS.game = {
 		case "seek":
 		
 			this.trackNpc = cast[scene.actor].model;
-			this.trackNpc.behavior.calmed = false;
+			this.trackNpc.update = GAS.game.npc.shout;
 			break;
 			
 		case "cook":
@@ -115,8 +115,7 @@ GAS.game = {
 		
 			GAS.player.setControlLock();
 			GAS.hud.showStory();
-			this.activeNpc.behavior.calmed = true;
-			this.activeNpc.behavior.motion = GAS.game.npc.DRIFTING;
+			this.activeNpc.update = GAS.game.npc.wander;
 			delete this.activeNpc;
 			break;
 		
@@ -238,10 +237,6 @@ GAS.game = {
 		WATCH_RADIUS: 10,
 		EVADE_RADIUS: 3,
 		
-		DRIFTING: 0,
-		WATCHING: 1,
-		EVADING: 2,
-		
 		prompting: false,
 		
 		/**
@@ -268,20 +263,18 @@ GAS.game = {
 				// TEMP: place in random position
 				o.position.set(GAS.rng.get(-1, 1), GAS.rng.get(-1, 1), GAS.rng.get(-1, 1)).norm().mul(10);
 				
-				// paddler object already has an update method, so swap it out
-				o.update = this.update;
+				// store off the paddler's update method
 				o.updateMotion = GAS.paddler.update;
+				// and set to wandering behavior
+				o.update = this.wander;
 
 				// set up remaining NPC-specific stuff
 				o.name = n.name;
 				o.behavior = {
-					motion: this.DRIFTING,
 					period: 0,
 					target: SOAR.vector.create(),
-					calmed: true
 				};
 				o.interact = this.interact;
-				o.consume = this.consume;
 				
 				// add model to map and character object
 				GAS.map.add(o);
@@ -296,121 +289,173 @@ GAS.game = {
 		},
 		
 		/**
-			update an NPC's motion
+			implements wandering behavior - a slow, random
+			drift through the weed cluster. this is pretty
+			much the default behavior for a paddler.
 			
-			called for every NPC on every frame
-			"this" refers to the NPC object
+			called in the context of the NPC
 			
-			@method update
+			@method wander
 		**/
 		
-		update: function() {
-			var player = GAS.player.avatar;
+		wander: function() {
 			var behave = this.behavior;
 			var npc = GAS.game.npc;
+			
+			// maintain slow speed
+			this.haste = 1;
 
-			switch (behave.motion) {
-			
-			case npc.DRIFTING:
-			
-				// if npc is about to exit the reef, pull em back
-				if (this.position.length() > GAS.map.RADIUS) {
-					p.copy(this.position).neg().norm().mul(0.01);
-					behave.target.add(p).norm();
-				}
-				// if it's been too long since e changed direction, pick a new target
+			// if npc is about to exit the weed cluster
+			if (this.position.length() >= GAS.map.RADIUS) {
+				// point them back toward its center
+				behave.target.copy(this.position).neg().norm();
+			} else {
+				// if it's been too long since e changed direction
 				if (behave.period <= 0) {
-					behave.period = GAS.random(2, 5);
+					// set new target and new period between 10-20 s
+					behave.period = GAS.random(10, 20);
 					behave.target.set( GAS.random(-1, 1), GAS.random(-0.5, 0.5), GAS.random(-1, 1) ).norm();
 				}
-				
-				// keep em pointed at the target and counting down the seconds to the next target
-				this.pointTo(behave.target, 0.05);
-				behave.period -= SOAR.interval * 0.001;
-
-				// if npc is calm
-				if (behave.calmed) {
-				
-					this.haste = 1;
-				
-					// if the player is too close
-					if (this.playerDistance < npc.EVADE_RADIUS) {
-						// kick up the speed and flip to evasion behavior
-						behave.motion = npc.EVADING;
-					}
-					
-				} else {
-				
-					this.haste = 2;
-				
-					// if the player is nearby
-					if (this.playerDistance < npc.WATCH_RADIUS) {
-						// stop and flip to player-watching behavior
-						behave.motion = npc.WATCHING;
-					}
-					
-				}
-
-				break;
-				
-			case npc.WATCHING:
-			
-				// don't move, just stare
-				this.haste = 0;
-				
-				// point the NPC at the player
-				behave.target.copy(player.position).sub(this.position).norm();
-				this.pointTo(behave.target, 0.1);
-				
-				// if the player is looking at the NPC, prompt them
-				if (this.playerDotProduct >= 0.8 && !npc.prompting && !GAS.game.activeNpc) {
-					GAS.hud.prompt(this, "Talk", this.name);
-					npc.prompting = true;
-				}
-				// if the player is looking away, remove the prompt
-				if (this.playerDotProduct < 0.8 && npc.prompting) {
-					GAS.hud.prompt();
-					npc.prompting = false;
-				}
-				
-				// player moves too far away, back to drifting
-				if (this.playerDistance > npc.WATCH_RADIUS) {
-					behave.period = 0;
-					behave.motion = npc.DRIFTING;
-				}
-				// player moves too close, switch to evade
-				if (this.playerDistance < npc.EVADE_RADIUS) {
-					behave.motion = npc.EVADING;
-				}
-				
-				break;
-				
-			case npc.EVADING:
-
-				// move quickly
-				this.haste = 2;
-				
-				// point npc away from player
-				behave.target.copy(this.position).sub(player.position).norm();
-				this.pointTo(behave.target, 0.5);
-				
-				// if the player moves out of evasion range
-				if (this.playerDistance > npc.EVADE_RADIUS) {
-				
-					// if npc is calm
-					if (behave.calmed) {
-						// back to drifting
-						behave.motion = npc.DRIFTING;
-					} else {
-						// back to watching state
-						behave.motion = npc.WATCHING;
-					}
-				}
-				
-				break;
-			
 			}
 			
+			// keep em pointed at the target and counting down the seconds to the next target
+			this.pointTo(behave.target, 0.05);
+			behave.period -= SOAR.interval * 0.001;
+
+			// if the player is too close
+			if (this.playerDistance < npc.EVADE_RADIUS) {
+				// store off a restore reference
+				behave.restore = npc.wander;
+				// flip to evasion behavior
+				this.update = npc.evade;
+			}
+			
+			// update the paddler model itself
+			this.updateMotion();
+		},
+		
+		/**
+			implements shouting behavior - the npc hurries
+			around the weed cluster, demanding attention!
+			
+			called in the context of the npc
+			
+			@method shout
+		**/
+		
+		shout: function() {
+			var behave = this.behavior;
+			var npc = GAS.game.npc;
+			
+			// maintain fast speed
+			this.haste = 2;
+
+			// if npc is about to exit the weed cluster
+			if (this.position.length() >= GAS.map.RADIUS) {
+				// point them back toward its center
+				behave.target.copy(this.position).neg().norm();
+			} else {
+				// if it's been too long since e changed direction
+				if (behave.period <= 0) {
+					// set new target and new period between 2.5-5 s
+					behave.period = GAS.random(2.5, 5);
+					behave.target.set( GAS.random(-1, 1), GAS.random(-0.5, 0.5), GAS.random(-1, 1) ).norm();
+				}
+			}
+			
+			// keep em pointed at the target and counting down the seconds to the next target
+			this.pointTo(behave.target, 0.05);
+			behave.period -= SOAR.interval * 0.001;
+
+			// if the player is nearby
+			if (this.playerDistance < npc.WATCH_RADIUS) {
+				// flip to player-watching behavior
+				this.update = npc.watch;
+			}
+			
+			// update the paddler model itself
+			this.updateMotion();
+		},
+		
+		/**
+			implements watching behavior - immobile, the npc
+			sits and watches the player
+			
+			called in the context of the npc
+			
+			@method watch
+		**/
+		
+		watch: function() {
+			var player = GAS.player;
+			var behave = this.behavior;
+			var npc = GAS.game.npc;
+		
+			// don't move, just stare
+			this.haste = 0;
+			
+			// point the NPC at the player
+			behave.target.copy(player.position).sub(this.position).norm();
+			this.pointTo(behave.target, 0.1);
+			
+			// if the player is looking at the NPC, prompt them
+			if (this.playerDotProduct >= 0.8 && !npc.prompting && !GAS.game.activeNpc) {
+				GAS.hud.prompt(this, "Talk", this.name);
+				npc.prompting = true;
+			}
+			// if the player is looking away, remove the prompt
+			if (this.playerDotProduct < 0.8 && npc.prompting) {
+				GAS.hud.prompt();
+				npc.prompting = false;
+			}
+			
+			// player moves too far away, flip back to shouting
+			if (this.playerDistance > npc.WATCH_RADIUS) {
+				behave.period = 0;
+				this.update = npc.shout;
+			}
+			// player moves too close
+			if (this.playerDistance < npc.EVADE_RADIUS) {
+				// store off a restore reference
+				behave.restore = npc.watch;
+				// flip to evasion behavior
+				this.update = npc.evade;
+			}
+			
+			// update the paddler model itself
+			this.updateMotion();
+		},
+		
+		/**
+			implements evasion behavior - the npc scrambles
+			to get out of the way of the player. my suspect
+			alternative to having a proper collision detect
+			routine!
+			
+			called in the context of the npc.
+			
+			@method evade
+		**/
+		
+		evade: function() {
+			var player = GAS.player;
+			var behave = this.behavior;
+			var npc = GAS.game.npc;
+		
+			// maintain fast speed
+			this.haste = 2;
+			
+			// point npc away from player
+			behave.target.copy(this.position).sub(player.position).norm();
+			this.pointTo(behave.target, 0.5);
+			
+			// if the player moves out of evasion range
+			if (this.playerDistance > npc.EVADE_RADIUS) {
+				// restore the previous behavior
+				this.update = behave.restore;
+			}
+			
+			// update the paddler model itself
 			this.updateMotion();
 		},
 		
@@ -427,8 +472,8 @@ GAS.game = {
 			var npc = GAS.game.trackNpc;
 			var marker = this.marker;
 			
-			// if the active npc is drifting and not calm
-			if (npc.behavior.motion === this.DRIFTING && !npc.behavior.calmed) {
+			// if the active npc is shouting
+			if (npc.update === GAS.game.npc.shout) {
 				// make sure the tracking marker is visible
 				marker.hidden = false;
 				// update the display
