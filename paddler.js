@@ -64,6 +64,8 @@ GAS.paddler = {
 		o.velocity = SOAR.vector.create();
 		o.rotator = SOAR.rotator.create();
 		
+		o.normal = SOAR.vector.create();
+		
 		o.speed = 0;
 		o.haste = 0;
 		
@@ -278,7 +280,7 @@ GAS.paddler = {
 
 		this.wing = this.wing % SOAR.PIMUL2;
 		
-		this.velocity.copy(this.rotator.front).mul(this.speed * dt);
+		this.velocity.copy(this.rotator.front).add(this.normal).mul(this.speed * dt);
 		this.position.add(this.velocity);
 	},
 	

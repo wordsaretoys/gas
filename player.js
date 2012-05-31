@@ -88,8 +88,9 @@ GAS.player = {
 		var dt = SOAR.interval * 0.001;
 		var camera = this.camera;
 		var mouse = this.mouse;
+		var avatar = this.avatar;
 		var s = this.scratch;
-		var dx, dy;
+		var dx, dy, dd;
 
 		dx = 0.25 * dt * (mouse.next.x - mouse.last.x);
 		dy = 0.25 * dt * (mouse.next.y - mouse.last.y);
@@ -100,33 +101,32 @@ GAS.player = {
 		}
 
 		if (this.motion.movefore) {
-			this.avatar.haste = this.motion.movefast ? 2 : 1;
-			this.avatar.rotator.track(camera, 0.1);
+			avatar.haste = this.motion.movefast ? 2 : 1;
+			avatar.rotator.track(camera, 0.1);
 		} else if (this.lockKeys) {
-			this.avatar.rotator.track(camera, 0.1);
+			avatar.rotator.track(camera, 0.1);
 		} else {
-			this.avatar.haste = 0;
+			avatar.haste = 0;
 		}
 		
-		this.avatar.update();
+		avatar.update();
 
-		this.position.copy(this.avatar.position);
-		camera.position.copy(this.avatar.position);
+		this.position.copy(avatar.position);
+		camera.position.copy(avatar.position);
 		
 		// generate camera matrixes
 		// (will be cached in the camera object)
 		camera.modelview();
 		camera.projector();
 		
-	},
-	
-	/**
-		adjust velocity and position to conform to environment
+		// constrain player to map interior
+		dd = avatar.position.length() - GAS.map.RADIUS;
+		if (dd >= 0) {
+			avatar.normal.copy(avatar.position).neg().norm().mul(dd);
+		} else {
+			avatar.normal.set();
+		}
 		
-		@method constrain
-	**/
-	
-	constrain: function() {
 	},
 	
 	/**
