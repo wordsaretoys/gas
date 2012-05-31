@@ -8,6 +8,7 @@
 GAS.hud = {
 
 	STORY_FADE_TIME: 1 / 250,
+	CONTINUE_TIMEOUT: 5000,
 
 	/**
 		establish jQuery shells around UI DOM objects &
@@ -31,7 +32,8 @@ GAS.hud = {
 			story: {
 				box: jQuery("#story"),
 				text: jQuery("#story-text"),
-				cont: jQuery("#story-cont")
+				cont: jQuery("#story-cont"),
+				time: 0
 			},
 			
 			progress: {
@@ -166,6 +168,25 @@ GAS.hud = {
 	**/
 	
 	update: function() {
+		var story = this.dom.story;
+		
+		// if the continue indicator is visible
+		if (this.continueEvent) {
+			// update the timeout value
+			story.time -= SOAR.interval;
+			// if timeout is under a second
+			if (story.time < 1000) {
+				// blink the continue indicator at half-second intervals
+				if (story.time > 500) {
+					story.cont.show();
+				} else {
+					story.cont.hide();
+					if (story.time < 0) {
+						story.time = 1000;
+					}
+				}
+			}
+		}
 	},
 	
 	/**
@@ -238,7 +259,9 @@ GAS.hud = {
 				this.activeStory = text;
 				this.storyIndex = 1;
 			}
-				
+			if (this.continueEvent) {
+				story.time = this.CONTINUE_TIMEOUT;
+			}
 			story.box.fadeIn(this.STORY_FADE_TIME);
 		} else {
 			story.box.fadeOut(this.STORY_FADE_TIME);

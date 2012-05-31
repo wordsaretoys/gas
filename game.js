@@ -460,6 +460,35 @@ GAS.game = {
 		},
 		
 		/**
+			implements dancing behavior - npc moves in a
+			randomly selected rhythm and measures if the
+			player is keeping up, adjusting score.
+			
+			called in the context of the npc.
+			
+			@method dance
+		**/
+		
+		dance: function() {
+		
+			// if we've reached end of rhythm track
+			
+			// generate new rhythm
+			
+			// if target matches npc front
+			
+			// select new npc target
+			
+			// calculate dot prod of npc and baseline
+			
+			// compare to player dot prod, closer to 0
+			// the better the cumulative score, add to
+			// score and update progress bar (adding a
+			// negative value for accumulated time)
+		
+		},
+		
+		/**
 			handles the NPC tracking marker
 			
 			called on each frame
