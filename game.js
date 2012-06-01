@@ -88,6 +88,11 @@ GAS.game = {
 			this.activeNpc.update = this.npc.dance;
 			this.score = 0.5;
 			break;
+			
+		case "end":
+		
+			GAS.hud.showStory(scene.speech);
+			break;
 
 		}
 	},

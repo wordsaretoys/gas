@@ -89,6 +89,11 @@ GAS.lookup = {
 		{
 			goal: "talk",
 			speech: "more speech go here"
+		},
+		
+		{
+			goal: "end",
+			speech: "the end"
 		}
 	],
 
