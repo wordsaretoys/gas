@@ -32,6 +32,11 @@ GAS.game = {
 		if (this.trackNpc) {
 			this.npc.tracking();
 		}
+		if (this.activeNpc) {
+			if (this.activeNpc.update === this.npc.dance) {
+				this.manageDance();
+			}
+		}
 	},
 	
 	/**
@@ -157,7 +162,34 @@ GAS.game = {
 		// set up the next scene
 		this.stage();
 	},
+	
+	/**
+		manage sequencing and scoring for the dance minigame
 		
+		@method manageDance
+	**/
+	
+	manageDance: function() {
+		var player = GAS.player;
+		var npc = this.activeNpc;
+		var r = npc.scratch.r;
+		var dp, score;
+	
+		// score based on difference between player and npc alignments
+		// to an imaginary line drawn between them--a rough measure of
+		// whether or not they are moving in sync at any point in time
+		r.copy(player.position).sub(npc.position).norm();
+		dp = r.dot(npc.rotator.front);
+		score = Math.pow(1 - Math.abs(dp - npc.playerDotProduct), 4);
+		GAS.game.score += (score * 0.003 - SOAR.interval * 0.0001);
+		if (GAS.game.score < 0 || GAS.game.score > 1) {
+			GAS.hud.showProgress(-1);
+			GAS.game.advance();
+		} else {
+			GAS.hud.showProgress(GAS.game.score);
+		}
+	},
+	
 	/**
 	
 		weed collection
@@ -481,9 +513,7 @@ GAS.game = {
 		},
 		
 		/**
-			implements dancing behavior - npc moves in a
-			randomly selected rhythm and measures if the
-			player is keeping up, adjusting score.
+			implements dancing behavior
 			
 			called in the context of the npc.
 			
@@ -491,32 +521,6 @@ GAS.game = {
 		**/
 		
 		dance: function() {
-			var scratch = this.scratch;
-			var player = GAS.player;
-			var score, dp, ddp;
-		
-			// if we've reached end of rhythm track
-			
-			// generate new rhythm
-			
-			// if target matches npc front
-			
-			// select new npc target
-			
-			// score based on difference between player and npc alignments
-			// to an imaginary line drawn between them--a rough measure of
-			// whether or not they are moving in sync at any point in time
-			scratch.r.copy(player.position).sub(this.position).norm();
-			dp = scratch.r.dot(this.rotator.front);
-			score = Math.pow(1 - Math.abs(dp - this.playerDotProduct), 4);
-			GAS.game.score += (score * 0.003 - SOAR.interval * 0.0001);
-			if (GAS.game.score < 0 || GAS.game.score > 1) {
-				GAS.hud.showProgress(-1);
-				GAS.game.advance();
-			} else {
-				GAS.hud.showProgress(GAS.game.score);
-			}
-		
 			this.updateMotion();
 		},
 		
