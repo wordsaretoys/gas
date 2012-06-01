@@ -82,7 +82,7 @@ GAS.lookup = {
 		},
 		
 		{
-			goal: "cook",
+			goal: "dance",
 			speech: "move around a lot"
 		},
 		

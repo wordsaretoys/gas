@@ -81,6 +81,14 @@ GAS.game = {
 			GAS.hud.showStory(scene.speech, true);
 			break;
 		
+		case "dance":
+		
+			GAS.player.setControlLock(true);
+			GAS.hud.showStory(scene.speech);
+			this.activeNpc.update = this.npc.dance;
+			this.score = 0.5;
+			break;
+
 		}
 	},
 	
@@ -115,7 +123,15 @@ GAS.game = {
 		
 			GAS.player.setControlLock();
 			GAS.hud.showStory();
-			this.activeNpc.update = GAS.game.npc.wander;
+			this.activeNpc.update = this.npc.wander;
+			delete this.activeNpc;
+			break;
+		
+		case "dance":
+		
+			GAS.player.setControlLock();
+			GAS.hud.showStory();
+			this.activeNpc.update = this.npc.wander;
 			delete this.activeNpc;
 			break;
 		
@@ -470,6 +486,9 @@ GAS.game = {
 		**/
 		
 		dance: function() {
+			var scratch = this.scratch;
+			var player = GAS.player;
+			var score, dp, ddp;
 		
 			// if we've reached end of rhythm track
 			
@@ -479,13 +498,21 @@ GAS.game = {
 			
 			// select new npc target
 			
-			// calculate dot prod of npc and baseline
-			
-			// compare to player dot prod, closer to 0
-			// the better the cumulative score, add to
-			// score and update progress bar (adding a
-			// negative value for accumulated time)
+			// score based on difference between player and npc alignments
+			// to an imaginary line drawn between them--a rough measure of
+			// whether or not they are moving in sync at any point in time
+			scratch.r.copy(player.position).sub(this.position).norm();
+			dp = scratch.r.dot(this.rotator.front);
+			score = Math.pow(1 - Math.abs(dp - this.playerDotProduct), 4);
+			GAS.game.score += (score * 0.003 - SOAR.interval * 0.0001);
+			if (GAS.game.score < 0 || GAS.game.score > 1) {
+				GAS.hud.showProgress(-1);
+				GAS.game.advance();
+			} else {
+				GAS.hud.showProgress(GAS.game.score);
+			}
 		
+			this.updateMotion();
 		},
 		
 		/**
