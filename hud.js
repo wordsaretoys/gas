@@ -9,6 +9,7 @@ GAS.hud = {
 
 	SPEECH_FADE_TIME: 250,
 	CONTINUE_TIMEOUT: 5000,
+	RATING_TIMEOUT: 5000,
 
 	/**
 		establish jQuery shells around UI DOM objects &
@@ -42,6 +43,12 @@ GAS.hud = {
 				bar: jQuery("#progress-bar")
 			},
 			
+			rating: {
+				box: jQuery("#rating"),
+				bar: jQuery("#rating-bar"),
+				time: 0
+			},
+
 			debug: jQuery("#debug")
 		};
 
@@ -161,6 +168,7 @@ GAS.hud = {
 	
 	update: function() {
 		var speech = this.dom.speech;
+		var rating = this.dom.rating;
 		
 		// if a speech is active
 		if (speech.active) {
@@ -177,6 +185,14 @@ GAS.hud = {
 						speech.time = 1000;
 					}
 				}
+			}
+		}
+		
+		// if a rating is displayed
+		if (rating.time > 0) {
+			rating.time -= SOAR.interval;
+			if (rating.time <= 0) {
+				rating.box.fadeTo(250, 0);
 			}
 		}
 	},
@@ -325,5 +341,25 @@ GAS.hud = {
 			prog.box.hide();
 			prog.visible = false;
 		}
+	},
+	
+	/**
+		show rating
+
+		displays the rating and starts the fade timer.
+		
+		@method showRating
+		@param value number, value to display, range {0..1}
+	**/
+	
+	showRating: function(value) {
+		var rating = this.dom.rating;
+		// update the bar's width (as a percentage of parent)
+		rating.bar.css("width", Math.floor(100 * value) + "%");
+		// set timeout
+		rating.time = this.RATING_TIMEOUT;
+		// and display rating
+		rating.box.fadeTo(250, 1);
 	}
+	
 };
