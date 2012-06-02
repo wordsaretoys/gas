@@ -71,33 +71,9 @@ GAS.lookup = {
 			]
 		},
 		
-		{
-			goal: "seek",
-			actor: "young-foosh"
-		},
-		
-		{
-			goal: "talk",
-			speech: "speech go here"
-		},
-		
-		{
-			goal: "dance",
-			speech: "move around a lot"
-		},
-		
-		{
-			goal: "talk",
-			speech: "more speech go here"
-		},
-		
-		{
-			goal: "end",
-			speech: "the end"
-		}
 	],
 
 	player: "hishe",
-	npc: [ "old-foosh", "young-foosh", "prapp", "joom" ]
+	npc: [ "young-foosh" ]
 	
 };

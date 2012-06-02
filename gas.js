@@ -50,8 +50,6 @@ var GAS = {
 		Array.prototype.pick = function() {
 			return this[Math.floor(Math.random() * this.length)];
 		};
-		Array.prototype.isAnArray = true;
-		String.prototype.isAString = true;
 		
 		// array random shuffle, taken from
 		// http://sroucheray.org/blog/2009/11/array-sort-should-not-be-used-to-shuffle-an-array/

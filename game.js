@@ -32,11 +32,6 @@ GAS.game = {
 		if (this.trackNpc) {
 			this.npc.tracking();
 		}
-		if (this.activeNpc) {
-			if (this.activeNpc.update === this.npc.dance) {
-				this.dancing.update();
-			}
-		}
 	},
 	
 	/**
@@ -86,14 +81,6 @@ GAS.game = {
 			GAS.hud.showStory(scene.speech, true);
 			break;
 		
-		case "dance":
-		
-			GAS.player.setControlLock(true);
-			GAS.hud.showStory(scene.speech);
-			this.activeNpc.update = this.npc.dance;
-			this.dancing.setup();
-			break;
-			
 		case "end":
 		
 			GAS.hud.showStory(scene.speech);
@@ -130,14 +117,6 @@ GAS.game = {
 			break;
 			
 		case "cook":
-		
-			GAS.player.setControlLock();
-			GAS.hud.showStory();
-			this.activeNpc.update = this.npc.wander;
-			delete this.activeNpc;
-			break;
-		
-		case "dance":
 		
 			GAS.player.setControlLock();
 			GAS.hud.showStory();
@@ -540,52 +519,6 @@ GAS.game = {
 			GAS.game.activeNpc = this;
 			// advance the plot
 			GAS.game.advance();
-		}
-		
-	},
-	
-	/**
-	
-		implements the dancing minigame
-		
-	**/
-	
-	dancing: {
-	
-		score: 0,
-		time: 0,
-	
-		/**
-			set up the dance minigame
-			
-			@method setup
-		**/
-	
-		setup: function() {
-			this.score = 0.5;
-			this.time = 0;
-			GAS.hud.showStrobe(0);
-		},
-		
-		/**
-			manages updates to the minigame
-			
-			@method update
-		**/
-		
-		update: function() {
-		
-			this.time += SOAR.interval * 0.001;
-			var beat = Math.pow(SOAR.clamp(Math.sin(2 * Math.PI * this.time), 0, 1), 4);
-			GAS.hud.showStrobe(beat);
-		
-			this.score += SOAR.interval * 0.00001;
-			if (this.score < 0 || this.score > 1) {
-				GAS.hud.showProgress(-1);
-				GAS.game.advance();
-			} else {
-				GAS.hud.showProgress(this.score);
-			}
 		}
 	}
 
