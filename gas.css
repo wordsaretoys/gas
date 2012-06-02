@@ -11,7 +11,7 @@ html, body {
 	overflow: hidden;
 	margin: 0;
 	padding: 0;
-	background-color: rgb(128, 128, 128);
+	background-color: black;
 	font-family: "Nunito", sans-serif;
 }
 
@@ -49,6 +49,14 @@ div {
 
 .big {
 	font-size: 150%;
+}
+
+.topbor {
+	border-top: solid 1px white;
+}
+
+.botbor {
+	border-bottom: solid 1px white;
 }
 
 /* WebGL canvas */
@@ -105,50 +113,54 @@ div {
 	margin-bottom: 4px;
 }
 
-/* HUD speech area */
+/* HUD panel area */
 
-#speech {
+#panel {
 	position: absolute;
-	bottom: 0px;
-	left: 0px;
-	
-	width: 100%;
-	padding: 5px;
+	bottom: 20px;
+	left: 20px;
 
-	background: rgba(0, 0, 0, 0.75);
-	color: white;
-
-	font-size: 14pt;
+	width: 40%;
+	padding: 0;
 	
-	display: none;
+	background: transparent;
 	
 	z-index: 5;
 }
 
+/* HUD speech box */
+
+#speech {
+	width: 100%;
+	padding: 5px;
+	border-radius: 5px;
+
+	background: rgba(0, 0, 0, 0.75);
+	color: white;
+
+	font-size: 16pt;
+}
+
+#speech-name {
+	text-align: left;
+	font-size: 20pt;
+}
+
 #speech-text {
-	text-align: center;
+	text-align: left;
 	line-height: 150%;
 	margin-bottom: 20px;
 }
 
 #speech-cont {
-	position: absolute;
-	bottom: 5px;
-	right: 15px;
-	
-	background: transparent;
-	color: white;
-
-	display: none;
-	
 	text-align: right;
+	font-size: 12pt;
+	visibility: hidden;
 }
 
 /* HUD progress bar */
 
 #progress {
-	position: absolute;
-
 	width: 240px;
 	height: 25px;
 	padding: 2px;
@@ -156,8 +168,6 @@ div {
 	background: rgba(0, 0, 0, 0.75);
 	
 	display: none;
-	
-	z-index: 5;
 }
 
 #progress-bar {

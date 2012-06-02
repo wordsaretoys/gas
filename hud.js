@@ -31,6 +31,7 @@ GAS.hud = {
 			
 			speech: {
 				box: jQuery("#speech"),
+				name: jQuery("#speech-name"),
 				text: jQuery("#speech-text"),
 				cont: jQuery("#speech-cont"),
 				time: 0
@@ -49,14 +50,6 @@ GAS.hud = {
 			p.offset({
 				top: (GAS.display.height - p.height()) * 0.85,
 				left: (GAS.display.width - p.width()) * 0.5
-			});
-		};
-		
-		this.dom.progress.resize = function() {
-			var p = GAS.hud.dom.progress.box;
-			p.offset({
-				top: (GAS.display.height - p.height()) * 0.5,
-				left: (GAS.display.width - p.width()) * 0.85
 			});
 		};
 
@@ -101,7 +94,6 @@ GAS.hud = {
 		that.dom.tracker.height(GAS.display.height);
 		
 		that.dom.prompts.resize();
-		that.dom.progress.resize();
 	},
 	
 	/**
@@ -170,17 +162,17 @@ GAS.hud = {
 	update: function() {
 		var speech = this.dom.speech;
 		
-		// if the continue indicator is visible
-		if (this.continueEvent) {
+		// if a speech is active
+		if (speech.active) {
 			// update the timeout value
 			speech.time -= SOAR.interval;
 			// if timeout is under a second
 			if (speech.time < 1000) {
 				// blink the continue indicator at half-second intervals
 				if (speech.time > 500) {
-					speech.cont.show();
+					speech.cont.css("visibility", "visible");
 				} else {
-					speech.cont.hide();
+					speech.cont.css("visibility", "hidden");
 					if (speech.time < 0) {
 						speech.time = 1000;
 					}
@@ -240,12 +232,17 @@ GAS.hud = {
 	
 	showSpeech: function(text, cont) {
 		var speech = this.dom.speech;
-		speech.text.html(text);
-		if (cont) {
-			speech.cont.show();
+		var index = text.indexOf(":");
+		if (index !== -1) {
+			speech.name.show();
+			speech.name.html(text.slice(0, index));
+			text = text.slice(index + 1);
+			speech.text.css("border-top", "solid 1px white");
 		} else {
-			speech.cont.hide();
+			speech.text.css("border-top", "none");
 		}
+		speech.text.html(text);
+		speech.cont.css("visibility", cont ? "visible" : "hidden");
 	},
 	
 	/**
@@ -278,6 +275,7 @@ GAS.hud = {
 			// show the next entry and advance the counter
 			this.showSpeech(speech.active[speech.index], true);
 			speech.index++;
+			speech.time = this.CONTINUE_TIMEOUT;
 		} else {
 			// no more entries? remove the properties
 			delete speech.index;
