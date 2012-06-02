@@ -43,103 +43,54 @@ GAS.game = {
 	
 	nudge: function() {
 	},
-	
 		
 	/**
 		stage the current scene in the plot
-		
-		@method stage
-	**/
-	
-	stage: function() {
-		var scene = GAS.lookup.plot[this.scene];
-		var cast = GAS.lookup.cast;
-	
-		// set up the new scene
-		switch(scene.goal) {
-		
-		case "mono":
-		
-			GAS.hud.showStory(scene.speech, true);
-			break;
-			
-		case "talk":
-		
-			GAS.player.setControlLock(true, true);
-			GAS.hud.showStory(scene.speech, true);
-			break;
-			
-		case "seek":
-		
-			this.trackNpc = cast[scene.actor].model;
-			this.trackNpc.update = GAS.game.npc.shout;
-			break;
-			
-		case "cook":
-		
-			GAS.player.setControlLock(true);
-			GAS.hud.showStory(scene.speech, true);
-			break;
-		
-		case "end":
-		
-			GAS.hud.showStory(scene.speech);
-			break;
-
-		}
-	},
-	
-	/**
-		cleanup after the last scene
-		
-		@method clean
-	**/
-	
-	clean: function() {
-		var scene = GAS.lookup.plot[this.scene];
-	
-		switch(scene.goal) {
-		
-		case "mono":
-		
-			GAS.hud.showStory();
-			break;
-		
-		case "talk":
-		
-			GAS.player.setControlLock();
-			GAS.hud.showStory();
-			break;
-			
-		case "seek":
-		
-			delete this.trackNpc;
-			break;
-			
-		case "cook":
-		
-			GAS.player.setControlLock();
-			GAS.hud.showStory();
-			this.activeNpc.update = this.npc.wander;
-			delete this.activeNpc;
-			break;
-		
-		}
-	},
-	
-	/**
-		advance to the next part of the plot
+		and advance to the next scene
 		
 		@method advance
 	**/
 	
 	advance: function() {
-		// tear down the last scene
-		this.clean();
-		// advance to the next scene
+		var scene = GAS.lookup.plot[this.scene];
+		var cast = GAS.lookup.cast;
+		
+		// if there's a speech in the scene
+		if (scene.speech) {
+			// set it up
+			GAS.hud.beginDialogue(scene.speech);
+		} else {
+			// nope, clean up after the last one
+			GAS.hud.endDialogue();
+		}
+		
+		// if a character is supposed to be upset
+		if (scene.upset) {
+			// store off the character object for tracking
+			this.trackNpc = cast[scene.upset].model;
+			// and set their behavior to shouting
+			this.trackNpc.update = GAS.game.npc.shout;
+		} else {
+			// if we have an upset NPC
+			if (this.trackNpc) {
+				// drop the character reference (stops tracking)
+				delete this.trackNpc;
+			}
+		}
+		
+		// if a character has calmed down
+		if (scene.calmed) {
+			// reset their behavior
+			this.activeNpc.update = this.npc.wander;
+			// remove the object reference
+			delete this.activeNpc;
+		}
+		
+		// set any control lockouts
+		GAS.player.setControlLock(scene.lockkeys || false, scene.lockmouse || false);
+		
+		// next scene
 		this.scene++;
-		// set up the next scene
-		this.stage();
 	},
 	
 	/**

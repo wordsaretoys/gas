@@ -113,8 +113,8 @@ var GAS = {
 				init.shift().init();
 				// update the progress bar
 				GAS.hud.showProgress( np / total );
-				// update the story display
-				GAS.hud.showStory("please wait (" + np + " of " + total + " objects initialized)<br><br><br>", false);
+				// update the textual progress
+				GAS.hud.showSpeech("please wait (" + np + " of " + total + " objects initialized)<br><br><br>");
 			} else {
 				// unschedule the init function
 				SOAR.unschedule(id);
@@ -136,8 +136,8 @@ var GAS = {
 					GAS.draw();
 				}, false);
 		
-				// start the game script 
-				GAS.game.stage();
+				// advance to the start of the game script 
+				GAS.game.advance();
 			}
 		
 		}, 0, true);

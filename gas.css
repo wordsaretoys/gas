@@ -105,9 +105,9 @@ div {
 	margin-bottom: 4px;
 }
 
-/* HUD story area */
+/* HUD speech area */
 
-#story {
+#speech {
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
@@ -125,13 +125,13 @@ div {
 	z-index: 5;
 }
 
-#story-text {
+#speech-text {
 	text-align: center;
 	line-height: 150%;
 	margin-bottom: 20px;
 }
 
-#story-cont {
+#speech-cont {
 	position: absolute;
 	bottom: 5px;
 	right: 15px;

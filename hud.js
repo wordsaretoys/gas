@@ -7,7 +7,7 @@
 
 GAS.hud = {
 
-	STORY_FADE_TIME: 1 / 250,
+	SPEECH_FADE_TIME: 1 / 250,
 	CONTINUE_TIMEOUT: 5000,
 
 	/**
@@ -29,10 +29,10 @@ GAS.hud = {
 				box: jQuery("#prompts")
 			},
 			
-			story: {
-				box: jQuery("#story"),
-				text: jQuery("#story-text"),
-				cont: jQuery("#story-cont"),
+			speech: {
+				box: jQuery("#speech"),
+				text: jQuery("#speech-text"),
+				cont: jQuery("#speech-cont"),
 				time: 0
 			},
 			
@@ -146,10 +146,10 @@ GAS.hud = {
 			}
 			break;
 		case SOAR.KEY.SPACE:
-			// if a story is displayed w/continue
-			if (that.continueEvent) {
-				// continue the speech
-				that.continueStory();
+			// if a dialogue is active
+			if (that.dom.speech.active) {
+				// continue it
+				that.continueDialogue();
 			}
 			break;
 		default:
@@ -168,21 +168,21 @@ GAS.hud = {
 	**/
 	
 	update: function() {
-		var story = this.dom.story;
+		var speech = this.dom.speech;
 		
 		// if the continue indicator is visible
 		if (this.continueEvent) {
 			// update the timeout value
-			story.time -= SOAR.interval;
+			speech.time -= SOAR.interval;
 			// if timeout is under a second
-			if (story.time < 1000) {
+			if (speech.time < 1000) {
 				// blink the continue indicator at half-second intervals
-				if (story.time > 500) {
-					story.cont.show();
+				if (speech.time > 500) {
+					speech.cont.show();
 				} else {
-					story.cont.hide();
-					if (story.time < 0) {
-						story.time = 1000;
+					speech.cont.hide();
+					if (speech.time < 0) {
+						speech.time = 1000;
 					}
 				}
 			}
@@ -225,79 +225,79 @@ GAS.hud = {
 	},
 	
 	/**
-		display the specified story text with fade in/out
+		display a line in the speech box with optional continue
 		
-		if text is a string, we display that string with an optional
-		continue. if text is an array, we display the first element,
-		force a continue, and iterate through the array on each call
-		of the method. if text is undefined or unspecified, hide the
-		story box completely.
+		assumes the speech box is already displayed. 
 		
-		@method showStory
-		@param text string | array of strings | undefined, narrative
-		@param cont boooean, true if continue is displayed/signalled
+		if text begins with a name followed by a colon, the
+		name will be displayed in the name box above the line.
+		ex: "BOB:line goes here"
+		
+		@method showSpeech
+		@param text string, the line to display
+		@param cont boolean, true if continue prompt is to be shown
 	**/
 	
-	showStory: function(text, cont) {
-		var story = this.dom.story;
-		if (text) {
-		
-			if (typeof(text) === "string") {
-				story.text.html(text);
-				if (cont) {
-					story.cont.show();
-				} else {
-					story.cont.hide();
-				}
-				this.continueEvent = cont;
-			}
-			
-			if (typeof(text) === "object") {
-				story.text.html(text[0]);
-				story.cont.show();
-				this.continueEvent = true;
-				this.activeStory = text;
-				this.storyIndex = 1;
-			}
-			if (this.continueEvent) {
-				story.time = this.CONTINUE_TIMEOUT;
-			}
-			story.box.fadeIn(this.STORY_FADE_TIME);
+	showSpeech: function(text, cont) {
+		var speech = this.dom.speech;
+		speech.text.html(text);
+		if (cont) {
+			speech.cont.show();
 		} else {
-			story.box.fadeOut(this.STORY_FADE_TIME);
-			this.continueEvent = false;
+			speech.cont.hide();
 		}
 	},
 	
 	/**
-		handles a continue story event
+		begins a dialogue (or monologue) by displaying the
+		speech box and setting up for an extended speech.
 		
-		called by HUD, not for external use
-		
-		@method continueStory
+		@method beginDialogue
+		@param list array, collection of speeches
 	**/
-
-	continueStory: function() {
-		// if there's an active extended story
-		if (this.activeStory) {
-			// and there are remaining entries in it
-			if (this.storyIndex < this.activeStory.length) {
-				// show the next entry and advance the counter
-				this.showStory(this.activeStory[this.storyIndex], true);
-				this.storyIndex++;
-			} else {
-				// no more entries? remove the properties
-				delete this.storyIndex;
-				delete this.activeStory;
-				// hand the event to the game script
-				GAS.game.advance();
-			}
+	
+	beginDialogue: function(list) {
+		var speech = this.dom.speech;
+		speech.box.fadeIn(this.SPEECH_FADE_TIME);
+		speech.active = list;
+		speech.index = 0;
+		this.continueDialogue();
+	},
+	
+	/**
+		continues a dialogue by displaying the current line
+		must have been proceeded by call to beginDialogue
+		
+		@method continueDialogue
+	**/
+	
+	continueDialogue: function() {
+		var speech = this.dom.speech;
+		// if there are still speeches in the active dialogue
+		if (speech.index < speech.active.length) {
+			// show the next entry and advance the counter
+			this.showSpeech(speech.active[speech.index], true);
+			speech.index++;
 		} else {
-			// no extended story, hand the event to the game script
+			// no more entries? remove the properties
+			delete speech.index;
+			delete speech.active;
+			// hand the event to the game script
 			GAS.game.advance();
 		}
 	},
 	
+	/**
+		ends a dialogue by hiding the speech box
+		
+		@method endDialogue
+	**/
+	
+	endDialogue: function() {
+		var speech = this.dom.speech;
+		speech.box.fadeOut(this.SPEECH_FADE_TIME);
+	},
+		
 	/**
 		show/hide/update progress bar
 		
