@@ -7,7 +7,7 @@
 
 GAS.hud = {
 
-	SPEECH_FADE_TIME: 1 / 250,
+	SPEECH_FADE_TIME: 250,
 	CONTINUE_TIMEOUT: 5000,
 
 	/**
@@ -222,7 +222,7 @@ GAS.hud = {
 		assumes the speech box is already displayed. 
 		
 		if text begins with a name followed by a colon, the
-		name will be displayed in the name box above the line.
+		name will be displayed in the name box above the text.
 		ex: "BOB:line goes here"
 		
 		@method showSpeech
@@ -255,7 +255,7 @@ GAS.hud = {
 	
 	beginDialogue: function(list) {
 		var speech = this.dom.speech;
-		speech.box.fadeIn(this.SPEECH_FADE_TIME);
+		speech.box.fadeTo(this.SPEECH_FADE_TIME, 0.75);
 		speech.active = list;
 		speech.index = 0;
 		this.continueDialogue();
@@ -293,7 +293,7 @@ GAS.hud = {
 	
 	endDialogue: function() {
 		var speech = this.dom.speech;
-		speech.box.fadeOut(this.SPEECH_FADE_TIME);
+		speech.box.fadeTo(this.SPEECH_FADE_TIME, 0);
 	},
 		
 	/**
