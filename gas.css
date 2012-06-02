@@ -176,6 +176,18 @@ div {
 	background: -moz-linear-gradient(0, #f00, #0f0);
 }
 
+/* HUD strobe/beat indicator */
+
+#strobe {
+	position: absolute;
+	width: 64px;
+	height: 64px;
+	top: 50%;
+	left: 25%;
+	background: rgba(255, 255, 255, 1);
+	opacity: 0;
+}
+
 /* mouse tracking surface */
 
 #tracker {

@@ -34,7 +34,7 @@ GAS.game = {
 		}
 		if (this.activeNpc) {
 			if (this.activeNpc.update === this.npc.dance) {
-				this.manageDance();
+				this.dancing.update();
 			}
 		}
 	},
@@ -91,7 +91,7 @@ GAS.game = {
 			GAS.player.setControlLock(true);
 			GAS.hud.showStory(scene.speech);
 			this.activeNpc.update = this.npc.dance;
-			this.score = 0.5;
+			this.dancing.setup();
 			break;
 			
 		case "end":
@@ -161,33 +161,6 @@ GAS.game = {
 		this.scene++;
 		// set up the next scene
 		this.stage();
-	},
-	
-	/**
-		manage sequencing and scoring for the dance minigame
-		
-		@method manageDance
-	**/
-	
-	manageDance: function() {
-		var player = GAS.player;
-		var npc = this.activeNpc;
-		var r = npc.scratch.r;
-		var dp, score;
-	
-		// score based on difference between player and npc alignments
-		// to an imaginary line drawn between them--a rough measure of
-		// whether or not they are moving in sync at any point in time
-		r.copy(player.position).sub(npc.position).norm();
-		dp = r.dot(npc.rotator.front);
-		score = Math.pow(1 - Math.abs(dp - npc.playerDotProduct), 4);
-		GAS.game.score += (score * 0.003 - SOAR.interval * 0.0001);
-		if (GAS.game.score < 0 || GAS.game.score > 1) {
-			GAS.hud.showProgress(-1);
-			GAS.game.advance();
-		} else {
-			GAS.hud.showProgress(GAS.game.score);
-		}
 	},
 	
 	/**
@@ -569,6 +542,51 @@ GAS.game = {
 			GAS.game.advance();
 		}
 		
+	},
+	
+	/**
+	
+		implements the dancing minigame
+		
+	**/
+	
+	dancing: {
+	
+		score: 0,
+		time: 0,
+	
+		/**
+			set up the dance minigame
+			
+			@method setup
+		**/
+	
+		setup: function() {
+			this.score = 0.5;
+			this.time = 0;
+			GAS.hud.showStrobe(0);
+		},
+		
+		/**
+			manages updates to the minigame
+			
+			@method update
+		**/
+		
+		update: function() {
+		
+			this.time += SOAR.interval * 0.001;
+			var beat = Math.pow(SOAR.clamp(Math.sin(2 * Math.PI * this.time), 0, 1), 4);
+			GAS.hud.showStrobe(beat);
+		
+			this.score += SOAR.interval * 0.00001;
+			if (this.score < 0 || this.score > 1) {
+				GAS.hud.showProgress(-1);
+				GAS.game.advance();
+			} else {
+				GAS.hud.showProgress(this.score);
+			}
+		}
 	}
 
 };

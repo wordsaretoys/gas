@@ -41,6 +41,10 @@ GAS.hud = {
 				bar: jQuery("#progress-bar")
 			},
 			
+			strobe: {
+				box: jQuery("#strobe")
+			},
+			
 			debug: jQuery("#debug")
 		};
 
@@ -327,7 +331,33 @@ GAS.hud = {
 			prog.box.hide();
 			prog.visible = false;
 		}
+	},
 	
+	/**
+		show/hide/update beat strobe
+		
+		@method showStrobe
+		@param value number, beat amplitude
+	**/
+	
+	showStrobe: function(value) {
+		var strobe = this.dom.strobe;
+	
+		// if value is non-negative
+		if (value >= 0) {
+			// if the strobe isn't visible
+			if (!strobe.visible) {
+				// show it
+				strobe.box.show();
+				strobe.visible = true;
+			}
+			// update the strobe intensity
+			strobe.box.css("opacity", value);
+		} else {
+			// negative, hide the strobe
+			strobe.box.hide();
+			strobe.visible = false;
+		}
 	}
 	
 };
