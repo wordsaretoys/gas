@@ -512,8 +512,8 @@ GAS.game = {
 		**/
 		
 		start: function(game) {
-			// align the rotor to the player's rotator
-			this.rotor.track(GAS.player.avatar.rotator, 1);
+			// align the rotor to the camera's rotator
+			this.rotor.track(GAS.player.camera, 1);
 			// show the marker
 			this.marker.hidden = false;
 			// set up the scoring
@@ -534,6 +534,7 @@ GAS.game = {
 			var marker = this.marker;
 			var rotor  = this.rotor;
 			var dt = SOAR.interval * 0.001;
+			var ang;
 			
 			// if a game is active
 			if (this.game) {
@@ -547,7 +548,8 @@ GAS.game = {
 				// time wears down the score
 				this.score -= dt * 0.01;
 				// player staying aligned with the rotor brings it up
-				this.score += dt * 0.05 * Math.pow(SOAR.clamp(player.rotator.front.dot(rotor.front), 0, 1), 8);
+				ang = Math.acos(player.rotator.front.dot(rotor.front)) * SOAR.RADDEG;
+				this.score += (ang < 5) ? dt * 0.1 : 0;
 				
 				if (this.score > 0 && this.score < 1) {
 					GAS.hud.showProgress(this.score);

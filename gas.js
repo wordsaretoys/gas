@@ -70,12 +70,15 @@ var GAS = {
 			}
 		};
 		
-		// set initial display dimensions
+		// resize display & redraw if window size changes
+		window.addEventListener("resize", this.resize, false);
+		
+		// set initial display size
 		GAS.display.setSize(
 			document.body.clientWidth, 
 			document.body.clientHeight
 		);
-
+		
 		// set up any webgl stuff that's not likely to change
 		gl = GAS.display.gl;
 		gl.clearDepth(1.0);
@@ -125,17 +128,10 @@ var GAS = {
 				// schedule animation frame functions
 				SOAR.schedule(GAS.update, 0, true);
 				SOAR.schedule(GAS.draw, 0, true);
+				
+				// set display parameters
+				GAS.resize();
 
-				// resize display & redraw if window size changes
-				window.addEventListener("resize", function() {
-					GAS.display.setSize(
-						document.body.clientWidth, 
-						document.body.clientHeight
-					);
-					GAS.player.camera.projector();
-					GAS.draw();
-				}, false);
-		
 				// advance to the start of the game script 
 				GAS.game.advance();
 			}
@@ -144,6 +140,21 @@ var GAS = {
 
 		// start the message pump
 		SOAR.run();
+	},
+	
+	/**
+		handle browser resizing
+		
+		@method resize
+	**/
+	
+	resize: function() {
+		GAS.display.setSize(
+			document.body.clientWidth, 
+			document.body.clientHeight
+		);
+		GAS.player.camera.projector();
+		GAS.draw();
 	},
 	
 	/**
