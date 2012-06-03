@@ -405,8 +405,9 @@ GAS.game = {
 			this.haste = 2;
 			
 			// point npc away from player
-			behave.target.copy(this.position).sub(player.position).norm();
-			this.pointTo(behave.target, 0.5);
+			behave.target.set(-this.position.y, this.position.x, this.position.z)
+				.sub(player.position).norm();
+			this.pointTo(behave.target, 0.25);
 			
 			// if the player moves out of evasion range
 			if (this.playerDistance > npc.EVADE_RADIUS) {
