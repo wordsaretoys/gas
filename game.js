@@ -56,6 +56,8 @@ GAS.game = {
 		var scene = GAS.lookup.plot[this.scene];
 		var cast = GAS.lookup.cast;
 		
+		console.log(JSON.stringify(scene));
+		
 		// if there's a speech in the scene
 		if (scene.speech) {
 			// set it up
@@ -71,12 +73,6 @@ GAS.game = {
 			this.trackNpc = cast[scene.upset].model;
 			// and set their behavior to shouting
 			this.trackNpc.update = GAS.game.npc.shout;
-		} else {
-			// if we have an upset NPC
-			if (this.trackNpc) {
-				// drop the character reference (stops tracking)
-				delete this.trackNpc;
-			}
 		}
 		
 		// if a character has calmed down
@@ -88,8 +84,11 @@ GAS.game = {
 		}
 		
 		// set any control lockouts
-		if (scene.lock) {
-			GAS.player.setControlLock(scene.lock.keys || false, scene.lock.mouse || false);
+		GAS.player.setControlLock(scene.lockkeys || false, scene.lockmouse || false);
+		
+		// if a minigame needs setting up
+		if (scene.mini) {
+			this.mini.start(scene.mini);
 		}
 		
 		// next scene
@@ -219,8 +218,9 @@ GAS.game = {
 				// start where directed
 				o.position.copy(n.start);
 				
-				// TEMP: place in random position
-				o.position.set(GAS.rng.get(-1, 1), GAS.rng.get(-1, 1), GAS.rng.get(-1, 1)).norm().mul(10);
+				// TEMP: place in test position
+//				o.position.set(GAS.rng.get(-1, 1), GAS.rng.get(-1, 1), GAS.rng.get(-1, 1)).norm().mul(10);
+				o.position.set(0, 0, -2);
 				
 				// store off the paddler's update method
 				o.updateMotion = GAS.paddler.update;
@@ -443,8 +443,8 @@ GAS.game = {
 			var npc = GAS.game.trackNpc;
 			var marker = this.marker;
 			
-			// if the active npc is shouting
-			if (npc.update === GAS.game.npc.shout) {
+			// if there a tracked npc and it's shouting
+			if (npc && npc.update === GAS.game.npc.shout) {
 				// make sure the tracking marker is visible
 				marker.hidden = false;
 				// update the display
@@ -471,6 +471,8 @@ GAS.game = {
 		interact: function() {
 			// set active NPC to me
 			GAS.game.activeNpc = this;
+			// stop tracking the NPC
+			delete GAS.game.trackNpc;
 			// advance the plot
 			GAS.game.advance();
 		}
@@ -503,20 +505,60 @@ GAS.game = {
 		},
 		
 		/**
+			start a minigame
+			
+			@method start
+			@param game object, contains game parameters
+		**/
+		
+		start: function(game) {
+			// align the rotor to the player's rotator
+			this.rotor.track(GAS.player.avatar.rotator, 1);
+			// show the marker
+			this.marker.hidden = false;
+			// set up the scoring
+			this.score = 0.5;
+			this.elapsed = 0;
+			// store off game parameters
+			this.game = game;
+		},
+		
+		/**
 			update running minigame
 			
 			@method update
 		**/
 		
 		update: function() {
-			var player = GAS.player;
+			var player = GAS.player.avatar;
 			var marker = this.marker;
 			var rotor  = this.rotor;
-			var dt = SOAR.elapsedTime * 0.001;
+			var dt = SOAR.interval * 0.001;
 			
-			marker.position.copy(rotor.front).mul(this.MARKER_DISTANCE).add(player.avatar.position);
+			// if a game is active
+			if (this.game) {
 			
-			//rotor.turn(0, Math.sin(dt * 0.01), 0);
+				this.elapsed += dt;
+			
+				marker.position.copy(rotor.front).mul(this.MARKER_DISTANCE).add(player.position);
+			
+				rotor.turn(0.005 * Math.cos(this.elapsed * 0.65), 0.005 * Math.cos(this.elapsed * 0.44), 0);
+				
+				// time wears down the score
+				this.score -= dt * 0.01;
+				// player staying aligned with the rotor brings it up
+				this.score += dt * 0.05 * Math.pow(SOAR.clamp(player.rotator.front.dot(rotor.front), 0, 1), 8);
+				
+				if (this.score > 0 && this.score < 1) {
+					GAS.hud.showProgress(this.score);
+				} else {
+					GAS.hud.showProgress(-1);
+					this.marker.hidden = true;
+					GAS.game.advance();
+					delete this.game;
+				}
+				
+			}
 		}
 	
 	}

@@ -71,7 +71,16 @@ GAS.lookup = {
 		},
 */
 		{
-			game: true
+			upset: "young-foosh"
+		},
+
+		{
+			mini: true,
+			lockkeys: true
+		},
+		
+		{
+			calmed: true,
 		},
 		
 		{
