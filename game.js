@@ -17,8 +17,8 @@ GAS.game = {
 	
 	init: function() {
 		this.weed.init();
-		//this.food.init();
 		this.npc.init();
+		this.mini.init();
 	},
 	
 	/**
@@ -32,6 +32,7 @@ GAS.game = {
 		if (this.trackNpc) {
 			this.npc.tracking();
 		}
+		this.mini.update();
 	},
 	
 	/**
@@ -87,7 +88,9 @@ GAS.game = {
 		}
 		
 		// set any control lockouts
-		GAS.player.setControlLock(scene.lockkeys || false, scene.lockmouse || false);
+		if (scene.lock) {
+			GAS.player.setControlLock(scene.lock.keys || false, scene.lock.mouse || false);
+		}
 		
 		// next scene
 		this.scene++;
@@ -471,6 +474,51 @@ GAS.game = {
 			// advance the plot
 			GAS.game.advance();
 		}
+	},
+	
+	/**
+	
+		minigame module
+		
+	**/
+	
+	mini: {
+	
+		MARKER_DISTANCE: 5,
+	
+		rotor: SOAR.rotator.create(),
+	
+		/**
+			initialize necessary objects
+			
+			@method init
+		**/
+	
+		init: function() {
+
+			// create a marker for target following games
+			this.marker = GAS.card.create("point");
+			this.marker.hidden = true;
+			GAS.map.add(this.marker);
+		},
+		
+		/**
+			update running minigame
+			
+			@method update
+		**/
+		
+		update: function() {
+			var player = GAS.player;
+			var marker = this.marker;
+			var rotor  = this.rotor;
+			var dt = SOAR.elapsedTime * 0.001;
+			
+			marker.position.copy(rotor.front).mul(this.MARKER_DISTANCE).add(player.avatar.position);
+			
+			//rotor.turn(0, Math.sin(dt * 0.01), 0);
+		}
+	
 	}
 
 };

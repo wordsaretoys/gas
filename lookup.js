@@ -62,13 +62,18 @@ GAS.lookup = {
 	},
 	
 	plot: [
-	
+/*	
 		{
 			speech: [
 				"<div class=\"big\">gas food lodging</div><div>by Chris Gauthier</div><br><div class=\"center\"><span class=\"key\">W</span> Paddle <span class=\"key\">M1</span> Steer (drag mouse) <span class=\"key\">E</span> Interact",
 				"HISCHE:A test, nothing more."
 			]
 		},
+*/
+		{
+			game: true
+		},
+		
 		{
 		}
 		

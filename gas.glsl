@@ -119,13 +119,6 @@ varying vec4 pos;
 
 void main(void) {
 	pos = modelview * rotations * vec4(position, 1.0);
-	
-	// push plants aside if too close to player avatar
-//	float f = max(4.0 - length(pos.xyz), 0.0);
-//	vec3 dir = normalize(pos.xyz);
-//	dir.z = 0.0;
-//	pos = pos + vec4(dir * pow(f, 4.0), 0.0);
-	
 	gl_Position = projector * pos;
 	uv = texturec;
 }
@@ -375,6 +368,25 @@ void main(void) {
 		if (radius > l && radius < u)
 			alpha = 1.0 - radius;
 	}
+	gl_FragColor = vec4(1.0, 0.0, 0.0, alpha);
+}
+
+</script>
+
+<script id="fs-card-point" type="x-shader/x-fragment">
+
+/**
+	card pointer fragment shader
+
+**/
+
+precision mediump float;
+
+varying vec2 uv;
+
+void main(void) {
+	float radius = 1.0 - clamp(length(uv), 0.0, 1.0);
+	float alpha = pow(radius, 0.25);
 	gl_FragColor = vec4(1.0, 0.0, 0.0, alpha);
 }
 

@@ -28,6 +28,12 @@ GAS.card = {
 			["position"], 
 			["projector", "modelview", "rotations", "center", "scale", "time"]
 		);
+		this.shader.point = SOAR.shader.create(
+			GAS.display,
+			SOAR.textOf("vs-card"), SOAR.textOf("fs-card-point"),
+			["position"], 
+			["projector", "modelview", "rotations", "center", "scale"]
+		);
 	
 		// create the mesh
 		this.mesh = SOAR.mesh.create(GAS.display);
@@ -81,13 +87,14 @@ GAS.card = {
 		
 		// type-specific settings
 		switch(this.type) {
-		
 		case "sound":
+			gl.uniform1f(shader.time, this.phase);
+			break;
+		case "point":
 			break;
 		}
 		gl.uniform3f(shader.center, this.position.x, this.position.y, this.position.z);
 		gl.uniform1f(shader.scale, this.scale);
-		gl.uniform1f(shader.time, this.phase);
 		this.mesh.draw();
 	}
 

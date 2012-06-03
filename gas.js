@@ -184,7 +184,6 @@ var GAS = {
 		GAS.ejecta.draw();
 
 		GAS.map.draw();
-		GAS.player.avatar.draw();
 	}
 
 };
