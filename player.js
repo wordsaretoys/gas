@@ -8,6 +8,8 @@
 
 GAS.player = {
 
+	PROFILE_COUNT: 60,
+
 	position: SOAR.vector.create(),
 	
 	stores: true,
@@ -29,6 +31,11 @@ GAS.player = {
 			y: 0
 		},
 		invalid: true
+	},
+	
+	profile: {
+		count: 0,
+		stats: [0, 0, 0, 0, 0]
 	},
 	
 	scratch: {
@@ -100,7 +107,9 @@ GAS.player = {
 			mouse.last.x = mouse.next.x;
 			mouse.last.y = mouse.next.y;
 		}
-
+		
+		this.profileRotation(dx, dy);
+		
 		if (this.motion.movefore) {
 			avatar.haste = this.motion.movefast ? 2 : 1;
 			avatar.rotator.track(camera, 0.1);
@@ -270,6 +279,46 @@ GAS.player = {
 		this.lockMouse = ms || false;
 		if (this.lockKeys) {
 			this.motion.movefore = false;
+		}
+	},
+	
+	/**
+		accumulate the histogram of the player's rotations
+		
+		@method profileRotation
+		@param x number, rotation in x
+		@param y number, rotation in y
+	**/
+	
+	profileRotation: function(x, y) {
+		 var p = this.profile;
+		 var r, i, il, s;
+			
+		if (p.count) {
+			r = Math.sqrt(x * x + y * y);
+			if (r < 0.001) {
+				p.stats[0]++;
+			}
+			if (r >= 0.001 && r < 0.01) {
+				p.stats[1]++;
+			}
+			if (r >= 0.01 && r < 0.1) {
+				p.stats[2]++;
+			}
+			if (r >= 0.1 && r < 1) {
+				p.stats[3]++;
+			}
+			if (r >= 1) {
+				p.stats[4]++;
+			}
+			p.count--;
+		} else {
+			p.count = this.PROFILE_COUNT;
+			for (i = 0, il = p.stats.length, s = ""; i < il; i++) {
+				s += Math.round(100 * p.stats[i] / p.count) + " ";
+				p.stats[i] = 0;
+			}
+			GAS.hud.debug(s);
 		}
 	}
 };
