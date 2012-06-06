@@ -18,7 +18,6 @@ GAS.game = {
 	init: function() {
 		this.weed.init();
 		this.npc.init();
-		this.mini.init();
 	},
 	
 	/**
@@ -56,7 +55,7 @@ GAS.game = {
 		var scene = GAS.lookup.plot[this.scene];
 		var cast = GAS.lookup.cast;
 		
-		console.log(JSON.stringify(scene));
+		//console.log(JSON.stringify(scene));
 		
 		// if there's a speech in the scene
 		if (scene.speech) {
@@ -220,7 +219,7 @@ GAS.game = {
 			
 			// keep em pointed at the target and counting down the seconds to the next target
 			this.pointTo(behave.target, 0.05);
-			behave.period -= SOAR.interval * 0.001;
+			behave.period -= SOAR.sinterval;
 
 			// if the player is too close
 			if (this.playerDistance < npc.EVADE_RADIUS) {
@@ -265,7 +264,7 @@ GAS.game = {
 			
 			// keep em pointed at the target and counting down the seconds to the next target
 			this.pointTo(behave.target, 0.05);
-			behave.period -= SOAR.interval * 0.001;
+			behave.period -= SOAR.sinterval;
 
 			// if the player is nearby
 			if (this.playerDistance < npc.WATCH_RADIUS) {
@@ -390,7 +389,7 @@ GAS.game = {
 				// make sure the tracking marker is visible
 				marker.hidden = false;
 				// update the display
-				marker.phase += SOAR.interval * 0.001;
+				marker.phase += SOAR.sinterval;
 				if (marker.phase > 2) {
 					marker.phase = -1;
 				}
@@ -429,15 +428,6 @@ GAS.game = {
 	mini: {
 	
 		/**
-			initialize necessary objects
-			
-			@method init
-		**/
-	
-		init: function() {
-		},
-		
-		/**
 			start a minigame
 			
 			@method start
@@ -445,39 +435,67 @@ GAS.game = {
 		**/
 		
 		start: function(game) {
-			// set up the scoring
-			this.score = 0.5;
-			// store off game parameters
 			this.game = game;
+			this.time = 0;
+			this.score = 0;
+			this.count = 0;
 		},
 		
 		/**
-			update running minigame
+			update mini game progress
 			
 			@method update
 		**/
 		
-		update: function() {
-			var player = GAS.player.avatar;
-			var dt = SOAR.interval * 0.001;
-			
+		update: function(stats) {
 			// if a game is active
 			if (this.game) {
 			
-				// time wears down the score
-				this.score -= dt * 0.01;
+				// advance the progress bar
+				this.time += SOAR.sinterval;
+				GAS.hud.showProgress(this.time / this.game.period);
 				
-				if (this.score > 0 && this.score < 1) {
-					GAS.hud.showProgress(this.score);
-				} else {
+				// if we've exceeded the game time
+				if (this.time >= this.game.period) {
+					// hide progress
 					GAS.hud.showProgress(-1);
-					GAS.game.advance();
+					
+					// show final score
+					GAS.hud.showRating(Math.ceil(5 * this.score / this.count));
+
+					// disable minigame and advance the plot
 					delete this.game;
+					GAS.game.advance();
 				}
-				
+			}
+		},
+		
+		/**
+			analyze player movements, calc scores
+			
+			called by player object whenever it's
+			gathered statistics on player motions
+			
+			@method process
+			@param stats array, the rotation distribution
+		**/
+		
+		process: function(stats) {
+			var game = this.game;
+			var i, il, score = 0;
+			// if a game is active
+			if (game) {
+				// for each rotation speed, check against bounds and add up score
+				for (i = 0, il = stats.length; i < il; i++) {
+					if (stats[i] >= game.lbound[i] && stats[i] <= game.ubound[i]) {
+						score++;
+					}
+				}
+				// add to total score
+				this.score += (score / stats.length);
+				this.count++;
 			}
 		}
-	
 	}
 
 };

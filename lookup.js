@@ -69,26 +69,30 @@ GAS.lookup = {
 				"HISCHE:A test, nothing more."
 			]
 		},
-*/
+
 		{
 			upset: "young-foosh"
 		},
-/*
+*/
 		{
-			mini: true,
+			mini: {
+				period: 10,
+				lbound: [0, 0, 0, 0, 0, 0],
+				ubound: [100, 100, 100, 100, 100, 100]
+			},
 			lockkeys: true
 		},
-*/		
+/*		
 		{
 			calmed: true,
 		},
-		
+*/		
 		{
 		}
 		
 	],
 
 	player: "hishe",
-	npc: [ "young-foosh" ]
+	npc: [ ]
 	
 };

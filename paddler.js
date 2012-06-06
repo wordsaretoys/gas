@@ -235,7 +235,7 @@ GAS.paddler = {
 	update: function() {
 		var s = this.scratch;
 		var m = this.model;
-		var dt = SOAR.interval * 0.001;
+		var dt = SOAR.sinterval;
 		var ds;
 
 		// haste tells us how we're supposed to be moving

@@ -45,7 +45,6 @@ GAS.hud = {
 			
 			rating: {
 				box: jQuery("#rating"),
-				bar: jQuery("#rating-bar"),
 				time: 0
 			},
 
@@ -349,13 +348,18 @@ GAS.hud = {
 		displays the rating and starts the fade timer.
 		
 		@method showRating
-		@param value number, value to display, range {0..1}
+		@param score number, how many stars to display (1-5)
 	**/
 	
-	showRating: function(value) {
+	showRating: function(score) {
 		var rating = this.dom.rating;
-		// update the bar's width (as a percentage of parent)
-		rating.bar.css("width", Math.floor(100 * value) + "%");
+		var i, s = "";
+
+		// generate the star string
+		for (i = 0; i < score; i++) {
+			s = s + "&#9733;&nbsp;"
+		}
+		rating.box.html(s);
 		// set timeout
 		rating.time = this.RATING_TIMEOUT;
 		// and display rating

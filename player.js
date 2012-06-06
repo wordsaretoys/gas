@@ -93,15 +93,14 @@ GAS.player = {
 	**/
 
 	update: function() {
-		var dt = SOAR.interval * 0.001;
 		var camera = this.camera;
 		var mouse = this.mouse;
 		var avatar = this.avatar;
 		var s = this.scratch;
 		var dx, dy, dd;
 
-		dx = 0.25 * dt * (mouse.next.x - mouse.last.x);
-		dy = 0.25 * dt * (mouse.next.y - mouse.last.y);
+		dx = 0.25 * SOAR.sinterval * (mouse.next.x - mouse.last.x);
+		dy = 0.25 * SOAR.sinterval * (mouse.next.y - mouse.last.y);
 		if (dx || dy) {
 			this.camera.turn(dy, dx, 0);
 			mouse.last.x = mouse.next.x;
@@ -283,7 +282,8 @@ GAS.player = {
 	},
 	
 	/**
-		accumulate the histogram of the player's rotations
+		accumulate the histogram of the player's rotations,
+		and pass it to the minigame handler when it's ready
 		
 		@method profileRotation
 		@param x number, rotation in x
@@ -292,7 +292,7 @@ GAS.player = {
 	
 	profileRotation: function(x, y) {
 		 var p = this.profile;
-		 var r, i, il, s;
+		 var r, i, il;
 			
 		if (p.count) {
 			r = Math.sqrt(x * x + y * y);
@@ -317,11 +317,13 @@ GAS.player = {
 			p.count--;
 		} else {
 			p.count = this.PROFILE_COUNT;
-			for (i = 0, il = p.stats.length, s = ""; i < il; i++) {
-				s += Math.round(100 * p.stats[i] / p.count) + " - ";
+			for (i = 0, il = p.stats.length; i < il; i++) {
+				p.stats[i] = Math.round(100 * p.stats[i] / p.count);
+			}
+			GAS.game.mini.process(p.stats);
+			for (i = 0; i < il; i++) {
 				p.stats[i] = 0;
 			}
-			GAS.hud.debug(s);
 		}
 	}
 };
