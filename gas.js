@@ -98,7 +98,6 @@ var GAS = {
 		init.push(GAS.skybox);
 		init.push(GAS.card);
 		init.push(GAS.ejecta);
-		init.push(GAS.bolus);
 		init.push(GAS.weeds);
 		init.push(GAS.paddler);
 		init.push(GAS.game);

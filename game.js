@@ -105,8 +105,6 @@ GAS.game = {
 	
 		COUNT: 750,
 		
-		list: [],
-		
 		/**
 			initialize the weed collection
 			
@@ -120,69 +118,12 @@ GAS.game = {
 			for (i = 0, il = this.COUNT; i < il; i++) {
 				o = GAS.weeds.create(
 					GAS.random(-r, r), GAS.random(-r, r), GAS.random(-r, r)	);
-				this.list.push(o);
 				GAS.map.add(o);
 			}
 		}
 	
 	},
 	
-	/**
-	
-		food bolus collection
-		
-	**/
-	
-	food: {
-	
-		list: [],
-		
-		/**
-			initialize the bolus collection
-			
-			@method init
-		**/
-
-		init: function() {
-			var weed = GAS.game.weed;
-			var i, il, c, o;
-			
-			for (i = 0, il = weed.list.length; i < il; i++) {
-				if (Math.random() < 0.25) {
-					c = weed.list[i].position;
-					o = GAS.bolus.create(c.x, c.y, c.z);
-					o.update = this.update;
-					this.list.push(o);
-					GAS.map.add(o);
-				}
-			}
-		
-		},
-		
-		/**
-			update a food bolus
-			
-			called on EVERY frame for EVERY active bolus
-			note that "this" refers to bolus object, not
-			the GAS.game.food object
-			
-			@method update
-		**/
-		
-		update: function() {
-			// if player slips inside a food bolus, hide it
-			// and replenish player stores if necessary
-			if (!this.hidden) {
-				if (this.playerDistance < GAS.bolus.DRAW_RADIUS) {
-					if (!GAS.player.stores) {
-						GAS.player.stores = true;
-						this.hidden = true;
-					}
-				}
-			}
-		}
-
-	},
 	
 	/**
 	
@@ -487,10 +428,6 @@ GAS.game = {
 	
 	mini: {
 	
-		MARKER_DISTANCE: 5,
-	
-		rotor: SOAR.rotator.create(),
-	
 		/**
 			initialize necessary objects
 			
@@ -498,11 +435,6 @@ GAS.game = {
 		**/
 	
 		init: function() {
-
-			// create a marker for target following games
-			this.marker = GAS.card.create("point");
-			this.marker.hidden = true;
-			GAS.map.add(this.marker);
 		},
 		
 		/**
@@ -513,13 +445,8 @@ GAS.game = {
 		**/
 		
 		start: function(game) {
-			// align the rotor to the camera's rotator
-			this.rotor.track(GAS.player.camera, 1);
-			// show the marker
-			this.marker.hidden = false;
 			// set up the scoring
 			this.score = 0.5;
-			this.elapsed = 0;
 			// store off game parameters
 			this.game = game;
 		},
@@ -532,31 +459,18 @@ GAS.game = {
 		
 		update: function() {
 			var player = GAS.player.avatar;
-			var marker = this.marker;
-			var rotor  = this.rotor;
 			var dt = SOAR.interval * 0.001;
-			var ang;
 			
 			// if a game is active
 			if (this.game) {
 			
-				this.elapsed += dt;
-			
-				marker.position.copy(rotor.front).mul(this.MARKER_DISTANCE).add(player.position);
-			
-				rotor.turn(0.005 * Math.cos(this.elapsed * 0.65), 0.005 * Math.cos(this.elapsed * 0.44), 0);
-				
 				// time wears down the score
 				this.score -= dt * 0.01;
-				// player staying aligned with the rotor brings it up
-				ang = Math.acos(player.rotator.front.dot(rotor.front)) * SOAR.RADDEG;
-				this.score += (ang < 5) ? dt * 0.1 : 0;
 				
 				if (this.score > 0 && this.score < 1) {
 					GAS.hud.showProgress(this.score);
 				} else {
 					GAS.hud.showProgress(-1);
-					this.marker.hidden = true;
 					GAS.game.advance();
 					delete this.game;
 				}
