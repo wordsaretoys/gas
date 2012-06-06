@@ -35,7 +35,7 @@ GAS.player = {
 	
 	profile: {
 		count: 0,
-		stats: [0, 0, 0, 0, 0]
+		stats: [0, 0, 0, 0, 0, 0]
 	},
 	
 	scratch: {
@@ -299,23 +299,26 @@ GAS.player = {
 			if (r < 0.001) {
 				p.stats[0]++;
 			}
-			if (r >= 0.001 && r < 0.01) {
+			if (r >= 0.001 && r < 0.005) {
 				p.stats[1]++;
 			}
-			if (r >= 0.01 && r < 0.1) {
+			if (r >= 0.005 && r < 0.01) {
 				p.stats[2]++;
 			}
-			if (r >= 0.1 && r < 1) {
+			if (r >= 0.01 && r < 0.05) {
 				p.stats[3]++;
 			}
-			if (r >= 1) {
+			if (r >= 0.05 && r < 0.1) {
 				p.stats[4]++;
+			}
+			if (r >= 0.1) {
+				p.stats[5]++;
 			}
 			p.count--;
 		} else {
 			p.count = this.PROFILE_COUNT;
 			for (i = 0, il = p.stats.length, s = ""; i < il; i++) {
-				s += Math.round(100 * p.stats[i] / p.count) + " ";
+				s += Math.round(100 * p.stats[i] / p.count) + " - ";
 				p.stats[i] = 0;
 			}
 			GAS.hud.debug(s);
