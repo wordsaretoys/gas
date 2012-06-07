@@ -35,7 +35,8 @@ GAS.player = {
 	
 	profile: {
 		count: 0,
-		stats: [0, 0, 0, 0, 0, 0]
+		stats: [0, 0, 0, 0, 0, 0],
+		active: false
 	},
 	
 	scratch: {
@@ -107,7 +108,9 @@ GAS.player = {
 			mouse.last.y = mouse.next.y;
 		}
 		
-		this.profileRotation(dx, dy);
+		if (this.profile.active) {
+			this.profileRotation(dx, dy);
+		}
 		
 		if (this.motion.movefore) {
 			avatar.haste = this.motion.movefast ? 2 : 1;
@@ -279,6 +282,27 @@ GAS.player = {
 		if (this.lockKeys) {
 			this.motion.movefore = false;
 		}
+	},
+	
+	/**
+		start profiling player rotations
+		
+		@method startProfiler
+	**/
+	
+	startProfiler: function() {
+		this.profile.active = true;
+		this.profile.count = this.PROFILE_COUNT;
+	},
+	
+	/**
+		stop profiling player rotations
+		
+		@method stopProfiler
+	**/
+	
+	stopProfiler: function() {
+		this.profile.active = false;
 	},
 	
 	/**

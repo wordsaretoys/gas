@@ -114,7 +114,7 @@ var GAS = {
 				// init the next one
 				init.shift().init();
 				// update the progress bar
-				GAS.hud.showProgress( np / total );
+				GAS.hud.showProgress(np / total);
 				// update the textual progress
 				GAS.hud.showSpeech("please wait (" + np + " of " + total + " objects initialized)");
 			} else {

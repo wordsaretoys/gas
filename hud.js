@@ -254,6 +254,7 @@ GAS.hud = {
 			text = text.slice(index + 1);
 			speech.text.css("border-top", "solid 1px white");
 		} else {
+			speech.name.hide();
 			speech.text.css("border-top", "none");
 		}
 		speech.text.html(text);
@@ -310,7 +311,30 @@ GAS.hud = {
 		var speech = this.dom.speech;
 		speech.box.fadeTo(this.SPEECH_FADE_TIME, 0);
 	},
+
+	/**
+		displays minigame instructions in the speech box
 		
+		@method showInstructions
+		@param text string, the instructions
+		@param help string, any feedback or help info
+	**/
+	
+	showInstructions: function(text, help) {
+		var speech = this.dom.speech;
+		var str;
+		
+		// make sure the speech box is visible
+		speech.box.fadeTo(this.SPEECH_FADE_TIME, 0.75);
+		// set up the string
+		str = text;
+		if (help) {
+			str += "<br><div class=\"big center shiny\">" + help + "</div>";
+		}
+		// display without continue
+		this.showSpeech(str, false);
+	},		
+	
 	/**
 		show/hide/update progress bar
 		

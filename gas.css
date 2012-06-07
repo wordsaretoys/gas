@@ -51,12 +51,8 @@ div {
 	font-size: 32pt;
 }
 
-.topbor {
-	border-top: solid 1px white;
-}
-
-.botbor {
-	border-bottom: solid 1px white;
+.shiny {
+	text-shadow: 0px 0px 5px white, 0px 0px 5px white, 0px 0px 5px white;
 }
 
 /* WebGL canvas */

@@ -31,7 +31,9 @@ GAS.game = {
 		if (this.trackNpc) {
 			this.npc.tracking();
 		}
-		this.mini.update();
+		if (this.mini.game) {
+			this.mini.update();
+		}
 	},
 	
 	/**
@@ -54,6 +56,14 @@ GAS.game = {
 	advance: function() {
 		var scene = GAS.lookup.plot[this.scene];
 		var cast = GAS.lookup.cast;
+		
+		// if a minigame has been set up
+		if (this.mini.game) {
+			// start it
+			this.mini.start();
+			// and bug out
+			return;
+		}
 		
 		//console.log(JSON.stringify(scene));
 		
@@ -87,7 +97,7 @@ GAS.game = {
 		
 		// if a minigame needs setting up
 		if (scene.mini) {
-			this.mini.start(scene.mini);
+			this.mini.setup(scene.mini, scene.speech[0]);
 		}
 		
 		// next scene
@@ -428,17 +438,32 @@ GAS.game = {
 	mini: {
 	
 		/**
-			start a minigame
+			setup a minigame
 			
-			@method start
-			@param game object, contains game parameters
+			@method setup
+			@param game object, game parameters
+			@param text string, game instructions
 		**/
 		
-		start: function(game) {
+		setup: function(game, text) {
 			this.game = game;
-			this.time = 0;
+			this.time = this.game.period;
 			this.score = 0;
 			this.count = 0;
+			this.howto = text;
+			this.active = false;
+		},
+		
+		/**
+			start the minigame
+			
+			@method start
+		**/
+		
+		start: function() {
+			this.active = true;
+			GAS.hud.showInstructions(this.howto, "go!");
+			GAS.player.startProfiler();
 		},
 		
 		/**
@@ -449,14 +474,14 @@ GAS.game = {
 		
 		update: function(stats) {
 			// if a game is active
-			if (this.game) {
+			if (this.active) {
 			
 				// advance the progress bar
-				this.time += SOAR.sinterval;
+				this.time -= SOAR.sinterval;
 				GAS.hud.showProgress(this.time / this.game.period);
 				
 				// if we've exceeded the game time
-				if (this.time >= this.game.period) {
+				if (this.time <= 0) {
 					// hide progress
 					GAS.hud.showProgress(-1);
 					
@@ -465,6 +490,8 @@ GAS.game = {
 
 					// disable minigame and advance the plot
 					delete this.game;
+					this.active = false;
+					GAS.player.stopProfiler();
 					GAS.game.advance();
 				}
 			}
@@ -482,7 +509,7 @@ GAS.game = {
 		
 		process: function(stats) {
 			var game = this.game;
-			var i, il, score = 0;
+			var i, il, score = 0, blah;
 			// if a game is active
 			if (game) {
 				// for each rotation speed, check against bounds and add up score
@@ -492,8 +519,12 @@ GAS.game = {
 					}
 				}
 				// add to total score
-				this.score += (score / stats.length);
+				score = score / stats.length;
+				this.score += score;
 				this.count++;
+				// display some helpful feedback
+				blah = game.rating[ Math.round(score * 4) ];
+				GAS.hud.showInstructions(this.howto, blah);
 			}
 		}
 	}
