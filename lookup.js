@@ -69,11 +69,14 @@ GAS.lookup = {
 				"HISCHE:A test, nothing more."
 			]
 		},
-/*
+
 		{
-			upset: "young-foosh"
+			leave: {
+				npc: "young-foosh",
+				target: { x: 0, y: 1, z: 0 }
+			}
 		},
-*/
+/*
 		{
 			speech: [ "Drop and give me twenty." ],
 			mini: {
@@ -95,6 +98,6 @@ GAS.lookup = {
 	],
 
 	player: "hishe",
-	npc: [ ]
+	npc: [ "young-foosh" ]
 	
 };

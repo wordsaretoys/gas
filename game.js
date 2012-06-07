@@ -56,6 +56,7 @@ GAS.game = {
 	advance: function() {
 		var scene = GAS.lookup.plot[this.scene];
 		var cast = GAS.lookup.cast;
+		var actor;
 		
 		// if a minigame has been set up
 		if (this.mini.game) {
@@ -82,6 +83,14 @@ GAS.game = {
 			this.trackNpc = cast[scene.upset].model;
 			// and set their behavior to shouting
 			this.trackNpc.update = GAS.game.npc.shout;
+		}
+		
+		// if a character is supposed to leave
+		if (scene.leave) {
+			actor = cast[scene.leave.npc].model;
+			// set leaving target and behavior
+			actor.behavior.target.copy(scene.leave.target);
+			actor.update = GAS.game.npc.leave;
 		}
 		
 		// if a character has calmed down
@@ -378,6 +387,41 @@ GAS.game = {
 		**/
 		
 		dance: function() {
+			this.updateMotion();
+		},
+		
+		/**
+			implements leaving behavior - the npc leaves
+			the game area, ending their part in the story.
+			
+			@method leave
+		**/
+		
+		leave: function() {
+			var behave = this.behavior;
+			var npc = GAS.game.npc;
+			
+			// maintain fast speed
+			this.haste = 2;
+
+			// if npc has passed way outside the game area
+			if (this.position.length() >= GAS.map.RADIUS + GAS.map.EYE_RADIUS) {
+				// no more updates
+				this.update = function() {};
+			}
+			
+			// keep em pointed at the target
+			this.pointTo(behave.target, 0.05);
+
+			// if the player is too close
+			if (this.playerDistance < npc.EVADE_RADIUS) {
+				// store off a restore reference
+				behave.restore = npc.leave;
+				// flip to evasion behavior
+				this.update = npc.evade;
+			}
+			
+			// update the paddler model itself
 			this.updateMotion();
 		},
 		
