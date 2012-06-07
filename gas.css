@@ -127,6 +127,7 @@ div {
 /* HUD speech box */
 
 #speech {
+	height: 8em;
 	width: 100%;
 	padding: 5px;
 	border-radius: 5px;
@@ -149,6 +150,9 @@ div {
 }
 
 #speech-cont {
+	position: absolute;
+	bottom: 5px;
+	right: 0px;
 	text-align: right;
 	font-size: 12pt;
 	visibility: hidden;

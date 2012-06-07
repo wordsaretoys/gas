@@ -35,7 +35,8 @@ GAS.hud = {
 				name: jQuery("#speech-name"),
 				text: jQuery("#speech-text"),
 				cont: jQuery("#speech-cont"),
-				time: 0
+				time: 0,
+				size: 0
 			},
 			
 			progress: {
@@ -271,7 +272,8 @@ GAS.hud = {
 	
 	beginDialogue: function(list) {
 		var speech = this.dom.speech;
-		speech.box.fadeTo(this.SPEECH_FADE_TIME, 0.75);
+//		speech.box.fadeTo(this.SPEECH_FADE_TIME, 0.75);
+		speech.box.slideDown(this.SPEECH_FADE_TIME);
 		speech.active = list;
 		speech.index = 0;
 		this.continueDialogue();
@@ -309,7 +311,8 @@ GAS.hud = {
 	
 	endDialogue: function() {
 		var speech = this.dom.speech;
-		speech.box.fadeTo(this.SPEECH_FADE_TIME, 0);
+		//speech.box.fadeTo(this.SPEECH_FADE_TIME, 0);
+		speech.box.slideUp(this.SPEECH_FADE_TIME);
 	},
 
 	/**
@@ -322,14 +325,9 @@ GAS.hud = {
 	
 	showInstructions: function(text, help) {
 		var speech = this.dom.speech;
-		var str;
-		
-		// make sure the speech box is visible
-		speech.box.fadeTo(this.SPEECH_FADE_TIME, 0.75);
-		// set up the string
-		str = text;
+		var str = text;
 		if (help) {
-			str += "<br><div class=\"big center shiny\">" + help + "</div>";
+			str += "<br><br><div class=\"big center shiny\">" + help + "</div>";
 		}
 		// display without continue
 		this.showSpeech(str, false);

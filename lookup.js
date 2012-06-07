@@ -71,12 +71,9 @@ GAS.lookup = {
 		},
 
 		{
-			leave: {
-				npc: "young-foosh",
-				target: { x: 0, y: 1, z: 0 }
-			}
+			upset: "young-foosh"
 		},
-/*
+
 		{
 			speech: [ "Drop and give me twenty." ],
 			mini: {
@@ -87,11 +84,12 @@ GAS.lookup = {
 			},
 			lockkeys: true
 		},
-/*		
+		
 		{
+			speech: [ "HISCHE: cool" ],
 			calmed: true,
 		},
-*/		
+		
 		{
 		}
 		
