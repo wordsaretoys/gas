@@ -68,13 +68,13 @@ GAS.game = {
 		
 		//console.log(JSON.stringify(scene));
 		
-		// if there's a speech in the scene
-		if (scene.speech) {
-			// set it up
-			GAS.hud.beginDialogue(scene.speech);
+		// if there's prose in the scene
+		if (scene.prose) {
+			// display it
+			GAS.hud.showProse(scene.prose, true);
 		} else {
 			// nope, clean up after the last one
-			GAS.hud.endDialogue();
+			GAS.hud.showProse();
 		}
 		
 		// if a character is supposed to be upset
@@ -106,7 +106,7 @@ GAS.game = {
 		
 		// if a minigame needs setting up
 		if (scene.mini) {
-			this.mini.setup(scene.mini, scene.speech[0]);
+			this.mini.setup(scene.mini, scene.prose);
 		}
 		
 		// next scene

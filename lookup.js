@@ -62,20 +62,18 @@ GAS.lookup = {
 	},
 	
 	plot: [
-/*
+
 		{
-			speech: [
-				"<div class=\"small\"><span class=\"key\">W</span> Paddle&nbsp;&nbsp;&nbsp;<span class=\"key\">M1</span> Steer (drag mouse)&nbsp;&nbsp;&nbsp;<span class=\"key\">E</span> Interact</div><br><div class=\"center\"><div class=\"big shiny\">gas food lodging</div><br><div>by Chris Gauthier</div></div><br>",
-				"HISCHE:A test, nothing more."
-			]
+			prose: "<div class=\"small\"><span class=\"key\">W</span> Paddle&nbsp;&nbsp;&nbsp;<span class=\"key\">M1</span> Steer (drag mouse)&nbsp;&nbsp;&nbsp;<span class=\"key\">E</span> Interact</div><br><div class=\"center\"><div class=\"big shiny\">gas food lodging</div><br><div>by Chris Gauthier</div></div><br>"
+	
 		},
-*/
+
 		{
 			upset: "young-foosh"
 		},
-/*
+
 		{
-			speech: [ "Drop and give me twenty." ],
+			prose: "Drop and give me twenty.",
 			mini: {
 				period: 10,
 				lbound: [0, 0, 0, 0, 0, 0],
@@ -86,10 +84,10 @@ GAS.lookup = {
 		},
 		
 		{
-			speech: [ "HISCHE: cool" ],
+			prose: "can't imagine what that was all about",
 			calmed: true,
 		},
-*/		
+		
 		{
 		}
 		

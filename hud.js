@@ -7,7 +7,7 @@
 
 GAS.hud = {
 
-	SPEECH_FADE_TIME: 250,
+	PROSE_EFFECT_TIME: 250,
 	CONTINUE_TIMEOUT: 5000,
 	RATING_TIMEOUT: 5000,
 
@@ -30,13 +30,11 @@ GAS.hud = {
 				box: jQuery("#prompts")
 			},
 			
-			speech: {
-				box: jQuery("#speech"),
-				name: jQuery("#speech-name"),
-				text: jQuery("#speech-text"),
-				cont: jQuery("#speech-cont"),
-				time: 0,
-				size: 0
+			prose: {
+				box: jQuery("#prose"),
+				text: jQuery("#prose-text"),
+				cont: jQuery("#prose-cont"),
+				warn: false
 			},
 			
 			progress: {
@@ -145,10 +143,10 @@ GAS.hud = {
 			}
 			break;
 		case SOAR.KEY.SPACE:
-			// if a dialogue is active
-			if (that.dom.speech.active) {
-				// continue it
-				that.continueDialogue();
+			// if prose box is active
+			if (that.dom.prose.warn) {
+				// continue the plot
+				GAS.game.advance();
 			}
 			break;
 		default:
@@ -167,22 +165,22 @@ GAS.hud = {
 	**/
 	
 	update: function() {
-		var speech = this.dom.speech;
+		var prose = this.dom.prose;
 		var rating = this.dom.rating;
 		
-		// if a speech is active
-		if (speech.active) {
+		// if prose continue warning is set
+		if (prose.warn) {
 			// update the timeout value
-			speech.time -= SOAR.interval;
+			prose.time -= SOAR.interval;
 			// if timeout is under a second
-			if (speech.time < 1000) {
+			if (prose.time < 1000) {
 				// blink the continue indicator at half-second intervals
-				if (speech.time > 500) {
-					speech.cont.css("visibility", "visible");
+				if (prose.time > 500) {
+					prose.cont.css("visibility", "visible");
 				} else {
-					speech.cont.css("visibility", "hidden");
-					if (speech.time < 0) {
-						speech.time = 1000;
+					prose.cont.css("visibility", "hidden");
+					if (prose.time < 0) {
+						prose.time = 1000;
 					}
 				}
 			}
@@ -233,88 +231,28 @@ GAS.hud = {
 	},
 	
 	/**
-		display a line in the speech box with optional continue
+		display a line in the prose box with optional continue
+		will hide the prose box if the text is unspecified
 		
-		assumes the speech box is already displayed. 
-		
-		if text begins with a name followed by a colon, the
-		name will be displayed in the name box above the text.
-		ex: "BOB:line goes here"
-		
-		@method showSpeech
+		@method showProse
 		@param text string, the line to display
 		@param cont boolean, true if continue prompt is to be shown
 	**/
 	
-	showSpeech: function(text, cont) {
-		var speech = this.dom.speech;
-		var index = text.indexOf(":");
-		if (index !== -1) {
-			speech.name.show();
-			speech.name.html(text.slice(0, index));
-			text = text.slice(index + 1);
-			speech.text.css("border-top", "solid 1px white");
+	showProse: function(text, cont) {
+		var prose = this.dom.prose;
+		if (text) {
+			prose.box.fadeTo(this.PROSE_EFFECT_TIME, 0.75);
+			prose.text.html(text);
+			prose.cont.css("visibility", cont ? "visible" : "hidden");
+			prose.warn = cont;
+			prose.time = this.CONTINUE_TIMEOUT;
 		} else {
-			speech.name.hide();
-			speech.text.css("border-top", "none");
-		}
-		speech.text.html(text);
-		speech.cont.css("visibility", cont ? "visible" : "hidden");
-	},
-	
-	/**
-		begins a dialogue (or monologue) by displaying the
-		speech box and setting up for an extended speech.
-		
-		@method beginDialogue
-		@param list array, collection of speeches
-	**/
-	
-	beginDialogue: function(list) {
-		var speech = this.dom.speech;
-//		speech.box.fadeTo(this.SPEECH_FADE_TIME, 0.75);
-		speech.box.slideDown(this.SPEECH_FADE_TIME);
-		speech.active = list;
-		speech.index = 0;
-		this.continueDialogue();
-	},
-	
-	/**
-		continues a dialogue by displaying the current line
-		must have been proceeded by call to beginDialogue
-		
-		@method continueDialogue
-	**/
-	
-	continueDialogue: function() {
-		var speech = this.dom.speech;
-		// if there are still speeches in the active dialogue
-		if (speech.index < speech.active.length) {
-			// show the next entry and advance the counter
-			this.showSpeech(speech.active[speech.index], true);
-			speech.index++;
-			speech.time = this.CONTINUE_TIMEOUT;
-		} else {
-			// no more entries? remove the properties
-			delete speech.index;
-			delete speech.active;
-			// hand the event to the game script
-			GAS.game.advance();
+			prose.box.fadeTo(this.PROSE_EFFECT_TIME, 0);
+			prose.warn = false;
 		}
 	},
 	
-	/**
-		ends a dialogue by hiding the speech box
-		
-		@method endDialogue
-	**/
-	
-	endDialogue: function() {
-		var speech = this.dom.speech;
-		//speech.box.fadeTo(this.SPEECH_FADE_TIME, 0);
-		speech.box.slideUp(this.SPEECH_FADE_TIME);
-	},
-
 	/**
 		displays minigame instructions in the speech box
 		
@@ -330,7 +268,7 @@ GAS.hud = {
 			str += "<br><br><div class=\"big center shiny\">" + help + "</div>";
 		}
 		// display without continue
-		this.showSpeech(str, false);
+		this.showProse(str, false);
 	},		
 	
 	/**
