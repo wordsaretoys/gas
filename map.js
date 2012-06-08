@@ -141,12 +141,9 @@ GAS.map = {
 			return true;
 		}
 		// for each side of the object
-		for (i = 0; i < 6; i++) {
+		for (i = 0; i < 8; i++) {
 			// construct the point
-			t.set(	p.x + (i === 0 ? -r : 0) + (i === 1 ? r : 0),
-					p.y + (i === 2 ? -r : 0) + (i === 3 ? r : 0),
-					p.z + (i === 4 ? -r : 0) + (i === 5 ? r : 0) );
-			
+			t.set(p.x + ((i & 1) ? r : -r), p.y + ((i & 2) ? r : -r), p.z + ((i & 4) ? r : -r));
 			// rotate, translate, and project it
 			t.transform(this.prMv);
 			// if the result is drawable coordinates
