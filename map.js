@@ -17,9 +17,7 @@ GAS.map = {
 	updateIndex: 0,
 	updateLength: 50,
 	
-	hitp: SOAR.vector.create(),
-	
-	prMv: new Float32Array(16),
+	test: SOAR.vector.create(),
 	
 	/**
 		sort function for active display list
@@ -132,28 +130,31 @@ GAS.map = {
 	**/
 	
 	hit: function(n) {
-		var t = this.hitp;
-		var p = n.position;
-		var r = n.DRAW_RADIUS;
-		var i;
-		// if player is inside the object, just draw it
-		if (GAS.player.position.distance(n.position) <= r) {
-			return true;
+		var camera = GAS.player.camera;
+		var t = this.test;
+		var d;
+		// rotate and translate the point under test
+		t.copy(n.position).transform(camera.matrix.modelview).neg();
+
+		// reject anything too far away to see
+		if (t.z - n.DRAW_RADIUS > this.EYE_RADIUS) {
+			return false;
 		}
-		// for each side of the object
-		for (i = 0; i < 8; i++) {
-			// construct the point
-			t.set(p.x + ((i & 1) ? r : -r), p.y + ((i & 2) ? r : -r), p.z + ((i & 4) ? r : -r));
-			// rotate, translate, and project it
-			t.transform(this.prMv);
-			// if the result is drawable coordinates
-			if (t.z <= 1 && Math.abs(t.x / t.z) <= 1 && Math.abs(t.y / t.z) <= 1) {
-				// it's a hit
-				return true;
-			}
+		// reject anything too far behind the camera
+		if (t.z + n.DRAW_RADIUS < 0) {
+			return false;
 		}
-		// not a hit
-		return false;
+		
+		// use draw radius to find nearest point on object's bounding sphere
+		t.z = Math.max(t.z, -n.DRAW_RADIUS);
+		t.z = Math.min(t.z, this.EYE_RADIUS + n.DRAW_RADIUS);
+		t.x = Math.max(0, Math.abs(t.x) - n.DRAW_RADIUS);
+		t.y = Math.max(0, Math.abs(t.y) - n.DRAW_RADIUS);
+		// project it
+		t.neg().transform(camera.matrix.projector);
+		// return whether the results are drawable
+		return (t.z <= 1 && Math.abs(t.x / t.z) <= 1 && Math.abs(t.y / t.z) <= 1);
+		//return true;
 	},
 	
 	/**
@@ -163,16 +164,11 @@ GAS.map = {
 	**/
 	
 	draw: function() {
-		var cm = GAS.player.camera.matrix;
+		var camera = GAS.player.camera;
 		var gl = GAS.display.gl;
 		var c = 0;
 		var i, il, n;
 
-		// generate projector*modelview product matrix
-		// used to test objects against viewing frustum
-		this.prMv.set(cm.modelview);
-		SOAR.matMat(this.prMv, cm.projector);
-		
 		// reset last draw (used for shader control)
 		this.lastDraw = "";
 		

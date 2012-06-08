@@ -132,7 +132,10 @@ GAS.game = {
 		init: function() {
 			var r = GAS.map.RADIUS;
 			var i, il, o;
-		
+
+//GAS.map.add(GAS.weeds.create(0, 0, 0));
+//return;
+			
 			for (i = 0, il = this.COUNT; i < il; i++) {
 				o = GAS.weeds.create(
 					GAS.random(-r, r), GAS.random(-r, r), GAS.random(-r, r)	);
