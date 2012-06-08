@@ -8,7 +8,7 @@
 GAS.card = {
 
 	DRAW_RADIUS: 1,
-	SORT_ORDER: 10,
+	SORT_ORDER: -1,
 	
 	shader: {},
 
@@ -78,6 +78,7 @@ GAS.card = {
 			gl.disable(gl.CULL_FACE);
 			gl.enable(gl.BLEND);
 			gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+			gl.clear(gl.DEPTH_BUFFER_BIT);
 			shader.activate();
 			gl.uniformMatrix4fv(shader.projector, false, camera.matrix.projector);
 			gl.uniformMatrix4fv(shader.modelview, false, camera.matrix.modelview);

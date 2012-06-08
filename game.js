@@ -207,7 +207,7 @@ GAS.game = {
 			this.marker = GAS.card.create("sound");
 			this.marker.scale = 10;
 			this.marker.hidden = true;
-			GAS.map.always.push(this.marker);
+			GAS.map.add(this.marker);
 		},
 		
 		/**

@@ -13,7 +13,6 @@ GAS.map = {
 	
 	master: [],
 	active: [],
-	always: [],
 	
 	updateIndex: 0,
 	updateLength: 50,
@@ -37,7 +36,7 @@ GAS.map = {
 		if (!b) {
 			return 1;
 		}
-		return a.SORT_ORDER - b.SORT_ORDER;
+		return b.SORT_ORDER - a.SORT_ORDER;
 	},
 
 	/**
@@ -119,12 +118,6 @@ GAS.map = {
 				n.update();
 			}
 		}
-		for (i = 0, il = this.always.length; i < il; i++) {
-			n = this.always[i];
-			if (n && n.update) {
-				n.update();
-			}
-		}
 		
 		// notify game objects that want frame-level updates
 		GAS.game.update();
@@ -179,28 +172,19 @@ GAS.map = {
 		this.prMv.set(cm.modelview);
 		SOAR.matMat(this.prMv, cm.projector);
 		
-		// reset last draw
+		// reset last draw (used for shader control)
 		this.lastDraw = "";
 		
 		// iterate through active nodes
 		for (i = 0, il = this.active.length; i < il; i++) {
 			n = this.active[i];
+			// if it's visible and within viewing frustum
 			if (n && !n.hidden && this.hit(n)) {
 				n.draw();
 				c++;
 			}
 		}
 
-		// draw the always-drawn objects on top of everything else
-		gl.clear(gl.DEPTH_BUFFER_BIT);
-		for (i = 0, il = this.always.length; i < il; i++) {
-			n = this.always[i];
-			if (!n.hidden) {
-				n.draw();
-				c++;
-			}
-		}
-		
 		GAS.hud.debug("Drawcount: " + c + "<br>FPS: " + SOAR.fps + "<br>Display: " + GAS.display.width + ", " + GAS.display.height);
 	}
 

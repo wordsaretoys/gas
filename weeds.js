@@ -8,7 +8,7 @@
 GAS.weeds = {
 
 	DRAW_RADIUS: 50,
-	SORT_ORDER: 0,
+	SORT_ORDER: 10,
 	
 	scratch: {
 		rotation: SOAR.quaternion.create()

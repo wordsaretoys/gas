@@ -14,7 +14,7 @@
 GAS.paddler = {
 
 	DRAW_RADIUS: 1,
-	SORT_ORDER: 2,
+	SORT_ORDER: 5,
 
 	VIEW_ANGLE: Math.cos(120 * Math.PI / 180),
 	
