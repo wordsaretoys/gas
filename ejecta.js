@@ -34,11 +34,9 @@ GAS.ejecta = {
 		this.mesh.add(this.shader.position, 3);
 		
 		for (i = 0; i < 100; i++) {
-			p.set(Math.random() - Math.random(), 
-				0, 
-				Math.random() - Math.random())
-			.norm().mul(GAS.random(2, this.RADIUS));
-			p.y = GAS.random(0, this.HEIGHT);
+			p.set(GAS.rng.get(-1, 1), 0, GAS.rng.get(-1, 1))
+				.norm().mul(GAS.rng.get(2, this.RADIUS));
+			p.y = GAS.rng.get(0, this.HEIGHT);
 			
 			this.mesh.set(p.x, p.y, p.z);
 			this.mesh.set(p.x, p.y + 1, p.z);

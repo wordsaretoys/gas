@@ -11,22 +11,7 @@
 
 var GAS = {
 
-	I: new Float32Array([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  0, 0, 0, 1]),
-	
-	/**
-		generate random number in defined range
-		
-		@method random
-		@param l number, lower bound
-		@param u number, upper bound
-		@return random number between l & u
-	**/
-	
-	random: function(l, u) {
-		return l + (u - l) * Math.random();
-	},
-	
-	rng: SOAR.random.create(),
+	rng: SOAR.random.create(12301969),
 
 	/**
 		create GL context, set up game objects, load resources
@@ -45,30 +30,6 @@ var GAS = {
 			jQuery("#glerror").show();
 			return;
 		}
-
-		// add any useful polyfills
-		Array.prototype.pick = function() {
-			return this[Math.floor(Math.random() * this.length)];
-		};
-		
-		// array random shuffle, taken from
-		// http://sroucheray.org/blog/2009/11/array-sort-should-not-be-used-to-shuffle-an-array/
-		Array.prototype.shuffle = function (){
-			var i = this.length, j, temp;
-			if ( i == 0 ) return;
-			while ( --i ) {
-				j = Math.floor( Math.random() * ( i + 1 ) );
-				temp = this[i];
-				this[i] = this[j];
-				this[j] = temp;
-			}
-		};
-		
-		Array.prototype.enumerate = function(f) {
-			for(var i = 0, il = this.length; i < il; i++) {
-				f(this[i]);
-			}
-		};
 		
 		// resize display & redraw if window size changes
 		window.addEventListener("resize", this.resize, false);

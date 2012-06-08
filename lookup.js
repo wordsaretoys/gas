@@ -94,6 +94,6 @@ GAS.lookup = {
 	],
 
 	player: "hishe",
-	npc: [ ]
+	npc: [ "joom" ]
 	
 };

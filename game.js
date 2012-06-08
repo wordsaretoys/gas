@@ -245,8 +245,8 @@ GAS.game = {
 				// if it's been too long since e changed direction
 				if (behave.period <= 0) {
 					// set new target and new period between 10-20 s
-					behave.period = GAS.random(10, 20);
-					behave.target.set( GAS.random(-1, 1), GAS.random(-0.5, 0.5), GAS.random(-1, 1) ).norm();
+					behave.period = GAS.rng.get(10, 20);
+					behave.target.set( GAS.rng.get(-1, 1), GAS.rng.get(-0.5, 0.5), GAS.rng.get(-1, 1) ).norm();
 				}
 			}
 			
@@ -290,8 +290,8 @@ GAS.game = {
 				// if it's been too long since e changed direction
 				if (behave.period <= 0) {
 					// set new target and new period between 2.5-5 s
-					behave.period = GAS.random(2.5, 5);
-					behave.target.set( GAS.random(-1, 1), GAS.random(-0.5, 0.5), GAS.random(-1, 1) ).norm();
+					behave.period = GAS.rng.get(2.5, 5);
+					behave.target.set( GAS.rng.get(-1, 1), GAS.rng.get(-0.5, 0.5), GAS.rng.get(-1, 1) ).norm();
 				}
 			}
 			

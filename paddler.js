@@ -71,7 +71,7 @@ GAS.paddler = {
 		
 		o.skin = this.makeSkin(skin.coat, skin.spot, skin.seed);
 
-		o.wing = Math.random();
+		o.wing = GAS.rng.get();
 		o.mouth = 0.25 * Math.PI;
 		
 		o.scratch = {

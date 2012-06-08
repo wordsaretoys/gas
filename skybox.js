@@ -94,7 +94,7 @@ GAS.skybox = {
 		ctx.fillStyle = "rgba(255, 255, 255, 0.025)";
 		for (i = 0; i < 20000; i++) {
 			ctx.beginPath();
-			ctx.arc(GAS.random(-8, w + 8), GAS.random(0, h), GAS.random(8, 16), 0, SOAR.PIMUL2, false);
+			ctx.arc(GAS.rng.get(-8, w + 8), GAS.rng.get(0, h), GAS.rng.get(8, 16), 0, SOAR.PIMUL2, false);
 			ctx.fill();
 		}
 		this.clouds.texture = SOAR.texture.create(GAS.display, ctx.getImageData(0, 0, w, h)); 
