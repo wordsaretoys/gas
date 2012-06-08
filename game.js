@@ -124,25 +124,32 @@ GAS.game = {
 		COUNT: 750,
 		
 		/**
-			initialize the weed collection
+			generate all the weeds in the map
 			
 			@method init
 		**/
 		
 		init: function() {
-			var r = GAS.map.RADIUS;
-			var i, il, o;
-
-//GAS.map.add(GAS.weeds.create(0, 0, 0));
-//return;
-			
-			for (i = 0, il = this.COUNT; i < il; i++) {
-				o = GAS.weeds.create(
-					GAS.random(-r, r), GAS.random(-r, r), GAS.random(-r, r)	);
-				GAS.map.add(o);
+			var rm = GAS.map.RADIUS;
+			var rw = GAS.weeds.DRAW_RADIUS;
+			var rng = SOAR.random.create(123069);
+			var x, y, z, r, o;
+			// for all places in the map that can hold a weed
+			for (x = -rm; x <= rm; x += rw) {
+				for (y = -rm; y <= rm; y += rw) {
+					for (z = -rm; z <= rm; z += rw) {
+						// calculate a normalized distance to the center of the map
+						r = Math.sqrt(x * x + y * y + z * z) / rm;
+						// if the distance conforms to a spherical volume
+						// (random selection ensures density drops off toward the center)
+						if (r < 1 && rng.get() < r) {
+							// add a new weed
+							GAS.map.add(GAS.weeds.create(x, y, z));
+						}
+					}
+				}
 			}
 		}
-	
 	},
 	
 	

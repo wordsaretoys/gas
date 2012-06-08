@@ -14,6 +14,8 @@ GAS.weeds = {
 		rotation: SOAR.quaternion.create()
 	},
 	
+	rng: SOAR.random.create(960321),
+	
 	/**
 		create and init required objects
 		
@@ -39,6 +41,7 @@ GAS.weeds = {
 		var f = SOAR.vector.create(0, 0, -1);
 		var r = SOAR.vector.create(-1, 0, 0);
 		var d = SOAR.vector.create();
+		var rng = this.rng;
 		
 		for (i = 0, j = 0; i < 10000; i++) {
 		
@@ -49,15 +52,15 @@ GAS.weeds = {
 			p.y += f.y;
 			p.z += f.z;
 			
-			f.x += GAS.random(-1, 1);
-			f.y += GAS.random(-1, 1);
-			f.z += GAS.random(-1, 1);
+			f.x += rng.get(-1, 1);
+			f.y += rng.get(-1, 1);
+			f.z += rng.get(-1, 1);
 			
 			f.norm();
 
-			r.x += GAS.random(-0.01, 0.01);
-			r.y += GAS.random(-0.01, 0.01);
-			r.z += GAS.random(-0.01, 0.01);
+			r.x += rng.get(-0.01, 0.01);
+			r.y += rng.get(-0.01, 0.01);
+			r.z += rng.get(-0.01, 0.01);
 			
 			r.cross(f).cross(f).neg().norm();
 			
@@ -78,7 +81,7 @@ GAS.weeds = {
 		
 		ctx.fillStyle = "rgba(128, 255, 64, 0.025)";
 		for (i = 0; i < 1000; i++) {
-			ctx.fillRect(GAS.random(16, w - 16) - 8, GAS.random(12, h - 12) - 8, 16, 16);
+			ctx.fillRect(rng.get(16, w - 16) - 8, rng.get(12, h - 12) - 8, 16, 16);
 		}
 		
 		this.skin = SOAR.texture.create(GAS.display, ctx.getImageData(0, 0, w, h));
@@ -93,17 +96,14 @@ GAS.weeds = {
 	**/
 	
 	create: function(x, y, z) {
+		var rng = this.rng;
 		var q = this.scratch.rotation;
 		var o = Object.create(GAS.weeds);
 		o.position = SOAR.vector.create(x, y, z);
 		o.matrix = new Float32Array(16);
-		q.set(
-			Math.random() - Math.random(),
-			Math.random() - Math.random(),
-			Math.random() - Math.random(),
-			Math.random() - Math.random() )
-		.norm()
-		.toMatrix(o.matrix);
+		q.set(rng.get(-1, 1), rng.get(-1, 1), rng.get(-1, 1), rng.get(-1, 1))
+			.norm()
+			.toMatrix(o.matrix);
 		
 		o.matrix[12] = x;
 		o.matrix[13] = y;

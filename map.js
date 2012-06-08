@@ -153,7 +153,7 @@ GAS.map = {
 		// project it
 		t.neg().transform(camera.matrix.projector);
 		// return whether the results are drawable
-		return (t.z <= 1 && Math.abs(t.x / t.z) <= 1 && Math.abs(t.y / t.z) <= 1);
+		return (Math.abs(t.x / t.z) <= 1 && Math.abs(t.y / t.z) <= 1);
 		//return true;
 	},
 	
