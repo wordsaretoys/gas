@@ -100,7 +100,7 @@ void main(void) {
 	
 	@param projector projector matrix
 	@param modelview modelview matrix
-	@param modelview rotations matrix
+	@param rotations rotations matrix
 	
 	(passed to fragment shader for each vertex)
 	@param uv		texture coordinates of fragment

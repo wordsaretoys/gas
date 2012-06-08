@@ -20,6 +20,8 @@ GAS.map = {
 	
 	dir: SOAR.vector.create(),
 	
+	prMv: new Float32Array(16),
+	
 	/**
 		sort function for active display list
 		
@@ -144,10 +146,15 @@ GAS.map = {
 	**/
 	
 	draw: function() {
+		var cm = GAS.player.camera.matrix;
 		var gl = GAS.display.gl;
 		var c = 0;
 		var i, il, n;
 
+		// generate projector*modelview product matrix
+		this.prMv.set(cm.modelview);
+		SOAR.matMat(this.prMv, cm.projector);
+		
 		// reset last draw
 		this.lastDraw = "";
 		
@@ -158,7 +165,9 @@ GAS.map = {
 				// if the object's visible
 				if (!n.hidden) {
 					// and close to the player or within the player's FOV, draw it
-					if (n.playerDistance < n.DRAW_RADIUS * 2 || n.playerDotProduct > 0.5) {
+//					if (n.playerDistance < n.DRAW_RADIUS * 2 || n.playerDotProduct > 0.5) {
+					this.dir.copy(n.position).transform(this.prMv);
+					if (this.dir.x >= -1 && this.dir.x <= 1 && this.dir.y >= -1 && this.dir.y <= 1) {
 						n.draw();
 						c++;
 					}
@@ -176,7 +185,7 @@ GAS.map = {
 			}
 		}
 		
-		//GAS.hud.debug("Drawcount: " + c + "<br>FPS: " + SOAR.fps + "<br>Display: " + GAS.display.width + ", " + GAS.display.height);
+		GAS.hud.debug("Drawcount: " + c + "<br>FPS: " + SOAR.fps + "<br>Display: " + GAS.display.width + ", " + GAS.display.height);
 	}
 
 };
