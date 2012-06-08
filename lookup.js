@@ -69,11 +69,11 @@ GAS.lookup = {
 				"HISCHE:A test, nothing more."
 			]
 		},
-
+*/
 		{
 			upset: "young-foosh"
 		},
-
+/*
 		{
 			speech: [ "Drop and give me twenty." ],
 			mini: {

@@ -18,7 +18,7 @@ GAS.map = {
 	updateIndex: 0,
 	updateLength: 50,
 	
-	dir: SOAR.vector.create(),
+	hitp: SOAR.vector.create(),
 	
 	prMv: new Float32Array(16),
 	
@@ -62,8 +62,6 @@ GAS.map = {
 	
 	update: function() {
 		var p = GAS.player.position;
-		var fr = GAS.player.camera.front;
-		var dir = this.dir;
 		var r = this.EYE_RADIUS;
 		var b = false;
 		var i, il, j, c, n;
@@ -117,15 +115,8 @@ GAS.map = {
 		// update active drawable objects
 		for (i = 0, il = this.active.length; i < il; i++) {
 			n = this.active[i];
-			if (n) {
-				// track useful player-object information
-				dir.copy(n.position).sub(p);
-				n.playerDistance = dir.length();
-				dir.norm();
-				n.playerDotProduct = dir.dot(fr);
-				if (n.update) {
-					n.update();
-				}
+			if (n && n.update) {
+				n.update();
 			}
 		}
 		for (i = 0, il = this.always.length; i < il; i++) {
@@ -137,6 +128,38 @@ GAS.map = {
 		
 		// notify game objects that want frame-level updates
 		GAS.game.update();
+	},
+	
+	/**
+		test that drawable object is within the viewing frustum
+		
+		assume a "bounding cube" for each drawable object. this
+		represents the furthest drawable extent.
+		
+		@method hit
+		@param n object, the drawable object
+		@return true if the object should be drawn
+	**/
+	
+	hit: function(n) {
+		var t = this.hitp;
+		var p = n.position;
+		var r = n.DRAW_RADIUS;
+		var i;
+		// for each corner point of the bounding cube
+		for (i = 0; i < 8; i++) {
+			// construct the point
+			t.set(p.x + ((i & 1) ? r : -r), p.y + ((i & 2) ? r : -r), p.z + ((i & 4) ? r : -r));
+			// rotate, translate, and project it
+			t.transform(this.prMv);
+			// if the result is drawable coordinates
+			if (t.z <= 1 && Math.abs(t.x / t.z) <= 1 && Math.abs(t.y / t.z) <= 1) {
+				// it's a hit
+				return true;
+			}
+		}
+		// not a hit
+		return false;
 	},
 	
 	/**
@@ -152,6 +175,7 @@ GAS.map = {
 		var i, il, n;
 
 		// generate projector*modelview product matrix
+		// used to test objects against viewing frustum
 		this.prMv.set(cm.modelview);
 		SOAR.matMat(this.prMv, cm.projector);
 		
@@ -161,17 +185,9 @@ GAS.map = {
 		// iterate through active nodes
 		for (i = 0, il = this.active.length; i < il; i++) {
 			n = this.active[i];
-			if (n) {
-				// if the object's visible
-				if (!n.hidden) {
-					// and close to the player or within the player's FOV, draw it
-//					if (n.playerDistance < n.DRAW_RADIUS * 2 || n.playerDotProduct > 0.5) {
-					this.dir.copy(n.position).transform(this.prMv);
-					if (this.dir.x >= -1 && this.dir.x <= 1 && this.dir.y >= -1 && this.dir.y <= 1) {
-						n.draw();
-						c++;
-					}
-				}
+			if (n && !n.hidden && this.hit(n)) {
+				n.draw();
+				c++;
 			}
 		}
 

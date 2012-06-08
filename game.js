@@ -194,6 +194,10 @@ GAS.game = {
 				};
 				o.interact = this.interact;
 				
+				o.playerDistance = function() {
+					return this.position.distance(GAS.player.position);
+				};
+				
 				// add model to map and character object
 				GAS.map.add(o);
 				n.model = o;
@@ -241,7 +245,7 @@ GAS.game = {
 			behave.period -= SOAR.sinterval;
 
 			// if the player is too close
-			if (this.playerDistance < npc.EVADE_RADIUS) {
+			if (this.playerDistance() < npc.EVADE_RADIUS) {
 				// store off a restore reference
 				behave.restore = npc.wander;
 				// flip to evasion behavior
@@ -286,7 +290,7 @@ GAS.game = {
 			behave.period -= SOAR.sinterval;
 
 			// if the player is nearby
-			if (this.playerDistance < npc.WATCH_RADIUS) {
+			if (this.playerDistance() < npc.WATCH_RADIUS) {
 				// flip to player-watching behavior
 				this.update = npc.watch;
 			}
@@ -308,6 +312,7 @@ GAS.game = {
 			var player = GAS.player;
 			var behave = this.behavior;
 			var npc = GAS.game.npc;
+			var dp;
 		
 			// don't move, just stare
 			this.haste = 0;
@@ -316,24 +321,27 @@ GAS.game = {
 			behave.target.copy(player.position).sub(this.position).norm();
 			this.pointTo(behave.target, 0.1);
 			
+			// find alignment between player eyeline and npc
+			dp = -behave.target.dot(GAS.player.camera.front);
+			
 			// if the player is looking at the NPC, prompt them
-			if (this.playerDotProduct >= 0.8 && !npc.prompting && !GAS.game.activeNpc) {
+			if (dp >= 0.8 && !npc.prompting && !GAS.game.activeNpc) {
 				GAS.hud.prompt(this, "Talk", this.name);
 				npc.prompting = true;
 			}
 			// if the player is looking away, remove the prompt
-			if (this.playerDotProduct < 0.8 && npc.prompting) {
+			if (dp < 0.8 && npc.prompting) {
 				GAS.hud.prompt();
 				npc.prompting = false;
 			}
 			
 			// player moves too far away, flip back to shouting
-			if (this.playerDistance > npc.WATCH_RADIUS) {
+			if (this.playerDistance() > npc.WATCH_RADIUS) {
 				behave.period = 0;
 				this.update = npc.shout;
 			}
 			// player moves too close
-			if (this.playerDistance < npc.EVADE_RADIUS) {
+			if (this.playerDistance() < npc.EVADE_RADIUS) {
 				// store off a restore reference
 				behave.restore = npc.watch;
 				// flip to evasion behavior
@@ -369,7 +377,7 @@ GAS.game = {
 			this.pointTo(behave.target, 0.25);
 			
 			// if the player moves out of evasion range
-			if (this.playerDistance > npc.EVADE_RADIUS) {
+			if (this.playerDistance() > npc.EVADE_RADIUS) {
 				// restore the previous behavior
 				this.update = behave.restore;
 			}
@@ -414,7 +422,7 @@ GAS.game = {
 			this.pointTo(behave.target, 0.05);
 
 			// if the player is too close
-			if (this.playerDistance < npc.EVADE_RADIUS) {
+			if (this.playerDistance() < npc.EVADE_RADIUS) {
 				// store off a restore reference
 				behave.restore = npc.leave;
 				// flip to evasion behavior
