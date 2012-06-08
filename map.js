@@ -126,9 +126,6 @@ GAS.map = {
 	/**
 		test that drawable object is within the viewing frustum
 		
-		assume a "bounding cube" for each drawable object. this
-		represents the furthest drawable extent.
-		
 		@method hit
 		@param n object, the drawable object
 		@return true if the object should be drawn
@@ -139,10 +136,17 @@ GAS.map = {
 		var p = n.position;
 		var r = n.DRAW_RADIUS;
 		var i;
-		// for each corner point of the bounding cube
-		for (i = 0; i < 8; i++) {
+		// if player is inside the object, just draw it
+		if (GAS.player.position.distance(n.position) <= r) {
+			return true;
+		}
+		// for each side of the object
+		for (i = 0; i < 6; i++) {
 			// construct the point
-			t.set(p.x + ((i & 1) ? r : -r), p.y + ((i & 2) ? r : -r), p.z + ((i & 4) ? r : -r));
+			t.set(	p.x + (i === 0 ? -r : 0) + (i === 1 ? r : 0),
+					p.y + (i === 2 ? -r : 0) + (i === 3 ? r : 0),
+					p.z + (i === 4 ? -r : 0) + (i === 5 ? r : 0) );
+			
 			// rotate, translate, and project it
 			t.transform(this.prMv);
 			// if the result is drawable coordinates
