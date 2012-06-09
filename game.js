@@ -102,7 +102,7 @@ GAS.game = {
 		}
 		
 		// set any control lockouts
-		GAS.player.setControlLock(scene.lockkeys || false, scene.lockmouse || false);
+		GAS.player.setMotionLock(scene.lock);
 		
 		// if a minigame needs setting up
 		if (scene.mini) {

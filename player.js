@@ -17,7 +17,8 @@ GAS.player = {
 	motion: {
 		moveleft: false, moveright: false,
 		movefore: false, moveback: false,
-		movefast: true
+		movefast: true,
+		locked: false
 	},
 	
 	mouse: {
@@ -29,8 +30,7 @@ GAS.player = {
 		next: {
 			x: 0,
 			y: 0
-		},
-		invalid: true
+		}
 	},
 	
 	profile: {
@@ -95,16 +95,22 @@ GAS.player = {
 	**/
 
 	update: function() {
+		var motion = this.motion;
 		var camera = this.camera;
 		var mouse = this.mouse;
 		var avatar = this.avatar;
-		var s = this.scratch;
 		var dx, dy, dd;
 
 		dx = 0.25 * SOAR.sinterval * (mouse.next.x - mouse.last.x);
 		dy = 0.25 * SOAR.sinterval * (mouse.next.y - mouse.last.y);
 		if (dx || dy) {
-			this.camera.turn(dy, dx, 0);
+		
+			if (motion.locked) {
+				this.avatar.rotator.turn(-dy, -dx, 0);
+			} else {
+				this.camera.turn(dy, dx, 0);
+			}
+			
 			mouse.last.x = mouse.next.x;
 			mouse.last.y = mouse.next.y;
 		}
@@ -113,10 +119,8 @@ GAS.player = {
 			this.profileRotation(dx, dy);
 		}
 		
-		if (this.motion.movefore) {
+		if (motion.movefore && !motion.locked) {
 			avatar.haste = this.motion.movefast ? 2 : 1;
-			avatar.rotator.track(camera, 0.1);
-		} else if (this.lockKeys) {
 			avatar.rotator.track(camera, 0.1);
 		} else {
 			avatar.haste = 0;
@@ -152,10 +156,6 @@ GAS.player = {
 
 		var that = GAS.player;
 		
-		if (that.lockKeys) {
-			return true;
-		}
-		
 		switch(event.keyCode) {
 			case SOAR.KEY.A:
 				that.motion.moveleft = true;
@@ -188,10 +188,6 @@ GAS.player = {
 
 		var that = GAS.player;
 
-		if (that.lockKeys) {
-			return true;
-		}
-		
 		switch(event.keyCode) {
 
 			case SOAR.KEY.A:
@@ -255,33 +251,29 @@ GAS.player = {
 	onMouseMove: function(event) {
 		var that = GAS.player;
 
-		if (that.lockMouse) {
-			return true;
-		}
-		
-		if (that.mouse.down && SOAR.running && !that.mouse.invalid) {
+		if (that.mouse.down && SOAR.running) {
 			that.mouse.next.x = event.pageX;
 			that.mouse.next.y = event.pageY;
 		}
-		that.mouse.invalid = false;
 		return false;
 	},
 	
 	/**
-		set lock state for the player
+		set motion lock
 		
-		@method setControlLock
-		@param kb boolean, true if movement keys are locked out
-		@param ms boolean, true if mouse movement is locked out
+		@method setMotionLock
+		@param lock boolean, true/false === lock/unlock
 	**/
 	
-	setControlLock: function(kb, ms) {
-		this.lockKeys = kb || false;
-		this.lockMouse = ms || false;
-		if (this.lockKeys) {
-			this.motion.movefore = false;
+	setMotionLock: function(lock) {
+		if (lock) {
+			this.avatar.rotator.bound.set(Math.sqrt(2) / 2, -1, 0);
+			this.avatar.rotator.free = false;
+		} else {
+			this.avatar.rotator.bound.set();
+			this.avatar.rotator.free = true;
 		}
-		this.mouse.invalid = true;
+		this.motion.locked = lock;
 	},
 	
 	/**

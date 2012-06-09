@@ -126,7 +126,6 @@ GAS.hud = {
 			} else {
 				that.setCurtain(0);
 				SOAR.running = true;
-				GAS.player.mouse.invalid = true;
 			}
 			break;
 		case SOAR.KEY.TAB:

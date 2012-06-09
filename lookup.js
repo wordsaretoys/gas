@@ -62,7 +62,7 @@ GAS.lookup = {
 	},
 	
 	plot: [
-/*
+
 		{
 			prose: "<div class=\"small\"><span class=\"key\">W</span> Paddle&nbsp;&nbsp;&nbsp;<span class=\"key\">M1</span> Steer (drag mouse)&nbsp;&nbsp;&nbsp;<span class=\"key\">E</span> Interact</div><br><div class=\"center\"><div class=\"big shiny\">gas food lodging</div><br><div>by Chris Gauthier</div></div><br>"
 	
@@ -75,25 +75,25 @@ GAS.lookup = {
 		{
 			prose: "Drop and give me twenty.",
 			mini: {
-				period: 10,
+				period: 25,
 				lbound: [0, 0, 0, 0, 0, 0],
 				ubound: [100, 100, 100, 100, 100, 100],
 				rating: [ "shit", "sad", "adequate", "okay", "awesome" ]
 			},
-			lockkeys: true
+			lock: true
 		},
 		
 		{
 			prose: "can't imagine what that was all about",
 			calmed: true,
 		},
-*/		
+		
 		{
 		}
 		
 	],
 
 	player: "hishe",
-	npc: [ ]
+	npc: [ "joom" ]
 	
 };
