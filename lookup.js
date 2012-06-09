@@ -69,7 +69,7 @@ GAS.lookup = {
 		},
 
 		{
-			upset: "young-foosh"
+			upset: "joom"
 		},
 
 		{
@@ -94,6 +94,6 @@ GAS.lookup = {
 	],
 
 	player: "hishe",
-	npc: [ "joom" ]
+	npc: [ ]
 	
 };

@@ -8,8 +8,7 @@
 GAS.map = {
 
 	RADIUS: 300,
-	
-	EYE_RADIUS: 200,
+	EYE_RADIUS: 150,
 	
 	master: [],
 	active: [],
@@ -132,7 +131,7 @@ GAS.map = {
 	hit: function(n) {
 		var camera = GAS.player.camera;
 		var t = this.test;
-		var d;
+		
 		// rotate and translate the point under test
 		t.copy(n.position).transform(camera.matrix.modelview).neg();
 
@@ -146,15 +145,17 @@ GAS.map = {
 		}
 		
 		// use draw radius to find nearest point on object's bounding sphere
-		t.z = Math.max(t.z, -n.DRAW_RADIUS);
-		t.z = Math.min(t.z, this.EYE_RADIUS + n.DRAW_RADIUS);
-		t.x = Math.max(0, Math.abs(t.x) - n.DRAW_RADIUS);
-		t.y = Math.max(0, Math.abs(t.y) - n.DRAW_RADIUS);
+		if (t.z < 0 && t.z > -n.DRAW_RADIUS) {
+			t.z = -t.z;
+		}
+		t.x = Math.max(0, Math.abs(t.x) - 1.5 * n.DRAW_RADIUS);
+		t.y = Math.max(0, Math.abs(t.y) - 1.5 * n.DRAW_RADIUS);
+		
 		// project it
 		t.neg().transform(camera.matrix.projector);
+
 		// return whether the results are drawable
 		return (Math.abs(t.x / t.z) <= 1 && Math.abs(t.y / t.z) <= 1);
-		//return true;
 	},
 	
 	/**

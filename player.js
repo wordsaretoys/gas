@@ -83,6 +83,7 @@ GAS.player = {
 		this.avatar = GAS.paddler.create(chr.skin);
 		this.avatar.position.copy(chr.start);
 		GAS.map.add(this.avatar);
+		//this.avatar.hidden = true;
 	},
 	
 	/**
@@ -121,8 +122,6 @@ GAS.player = {
 			avatar.haste = 0;
 		}
 		
-		//avatar.update();
-
 		this.position.copy(avatar.position);
 		camera.position.copy(avatar.position);
 		
@@ -282,6 +281,7 @@ GAS.player = {
 		if (this.lockKeys) {
 			this.motion.movefore = false;
 		}
+		this.mouse.invalid = true;
 	},
 	
 	/**

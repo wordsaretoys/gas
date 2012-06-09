@@ -7,7 +7,7 @@
 
 GAS.weeds = {
 
-	DRAW_RADIUS: 50,
+	DRAW_RADIUS: 55,
 	SORT_ORDER: 10,
 	
 	scratch: {

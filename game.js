@@ -131,7 +131,7 @@ GAS.game = {
 		
 		init: function() {
 			var rm = GAS.map.RADIUS;
-			var rw = GAS.weeds.DRAW_RADIUS;
+			var rw = 1.25 * GAS.weeds.DRAW_RADIUS;
 			var rng = SOAR.random.create(123069);
 			var x, y, z, r, o;
 			// for all places in the map that can hold a weed
@@ -141,8 +141,7 @@ GAS.game = {
 						// calculate a normalized distance to the center of the map
 						r = Math.sqrt(x * x + y * y + z * z) / rm;
 						// if the distance conforms to a spherical volume
-						// (random selection ensures density drops off toward the center)
-						if (r < 1 && rng.get() < r) {
+						if (r < 1) {
 							// add a new weed
 							GAS.map.add(GAS.weeds.create(x, y, z));
 						}
@@ -393,18 +392,6 @@ GAS.game = {
 			}
 			
 			// update the paddler model itself
-			this.updateMotion();
-		},
-		
-		/**
-			implements dancing behavior
-			
-			called in the context of the npc.
-			
-			@method dance
-		**/
-		
-		dance: function() {
 			this.updateMotion();
 		},
 		
