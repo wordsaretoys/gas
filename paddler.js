@@ -79,6 +79,8 @@ GAS.paddler = {
 			r: SOAR.vector.create()
 		};
 		
+		o.talking = false;
+		
 		return o;
 	},
 	
@@ -278,10 +280,11 @@ GAS.paddler = {
 			break;
 		}
 
-		this.wing = this.wing % SOAR.PIMUL2;
-		
 		this.velocity.copy(this.rotator.front).add(this.normal).mul(this.speed * dt);
 		this.position.add(this.velocity);
+		
+		this.wing = this.wing % SOAR.PIMUL2;
+		this.mouth += this.talking ? GAS.rng.get(-0.1, 0.5) : 0.05;
 	},
 	
 	/**

@@ -72,6 +72,10 @@ GAS.game = {
 		if (scene.prose) {
 			// display it
 			GAS.hud.showProse(scene.prose, true);
+			// if there's an active NPC, get them talking
+			if (this.activeNpc) {
+				this.activeNpc.talking = true;
+			}
 		} else {
 			// nope, clean up after the last one
 			GAS.hud.showProse();
@@ -97,6 +101,8 @@ GAS.game = {
 		if (scene.calmed) {
 			// reset their behavior
 			this.activeNpc.update = this.npc.wander;
+			// shut them up
+			this.activeNpc.talking = false;
 			// remove the object reference
 			delete this.activeNpc;
 		}
