@@ -132,6 +132,11 @@ GAS.map = {
 		var camera = GAS.player.camera;
 		var t = this.test;
 		
+		// quick test to discard anything far behind the camera
+		t.copy(n.position).sub(camera.position);
+		if (t.dot(camera.front) < 0 && camera.position.distance(n.position) > 2 * n.DRAW_RADIUS)
+			return false;
+		
 		// rotate and translate the point under test
 		t.copy(n.position).transform(camera.matrix.modelview).neg();
 
