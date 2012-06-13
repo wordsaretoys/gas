@@ -502,7 +502,6 @@ GAS.game = {
 		
 		setup: function(game, text) {
 			this.game = game;
-			this.time = this.game.period;
 			this.score = 0;
 			this.count = 0;
 			this.howto = text;
@@ -517,8 +516,9 @@ GAS.game = {
 		
 		start: function() {
 			this.active = true;
+			this.startTime = SOAR.elapsedTime;
 			GAS.hud.showInstructions(this.howto, "go!");
-			GAS.player.startProfiler();
+			GAS.player.startProfiler(this.game.ratetime);
 		},
 		
 		/**
@@ -528,15 +528,14 @@ GAS.game = {
 		**/
 		
 		update: function(stats) {
+			var time;
 			// if a game is active
 			if (this.active) {
-			
+				time = (SOAR.elapsedTime - this.startTime) * 0.001;
 				// advance the progress bar
-				this.time -= SOAR.sinterval;
-				GAS.hud.showProgress(this.time / this.game.period);
-				
+				GAS.hud.showProgress((this.game.gametime - time) / this.game.gametime);
 				// if we've exceeded the game time
-				if (this.time <= 0) {
+				if (time > this.game.gametime) {
 					// hide progress
 					GAS.hud.showProgress(-1);
 					
@@ -579,7 +578,7 @@ GAS.game = {
 				this.count++;
 				// display some helpful feedback
 				blah = game.rating[ Math.round(score * 4) ];
-				GAS.hud.showInstructions(this.howto, blah);
+				GAS.hud.showInstructions(this.howto, this.count);
 			}
 		}
 	}

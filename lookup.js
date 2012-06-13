@@ -19,18 +19,18 @@ GAS.lookup = {
 			},
 		},
 	
-		"old-foosh": {
-			name: "Old Foosh",
+		"schabb": {
+			name: "Schabb",
 			start: {x: 0, y: 0, z: 0},
 			skin: {
 				coat: "rgb(255, 127, 0)",
 				spot: "rgb(127, 0, 255)",
-				seed: 101992382
+				seed: 2347829
 			}
 		},
 	
-		"young-foosh": {
-			name: "Young Foosh",
+		"foosh": {
+			name: "Foosh",
 			start: {x: 0, y: 0, z: 0},
 			skin: {
 				coat: "rgb(192, 255, 64)",
@@ -75,7 +75,8 @@ GAS.lookup = {
 		{
 			prose: "Drop and give me twenty.",
 			mini: {
-				period: 25,
+				gametime: 21,
+				ratetime: 5,
 				lbound: [0, 0, 0, 0, 0, 0],
 				ubound: [100, 100, 100, 100, 100, 100],
 				rating: [ "shit", "sad", "adequate", "okay", "awesome" ]

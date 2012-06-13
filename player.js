@@ -34,8 +34,10 @@ GAS.player = {
 	},
 	
 	profile: {
+		time: 0,
 		count: 0,
 		stats: [0, 0, 0, 0, 0, 0],
+		period: 0,
 		active: false
 	},
 	
@@ -280,12 +282,28 @@ GAS.player = {
 		start profiling player rotations
 		
 		@method startProfiler
+		@param t number, time in seconds to collect stats for
 	**/
 	
-	startProfiler: function() {
+	startProfiler: function(t) {
 		this.profile.active = true;
-		this.profile.count = this.PROFILE_COUNT;
+		this.profile.period = t;
+		this.initProfile();
 	},
+	
+	/**
+		initialize profile data
+		
+		@method initProfile
+	**/
+	
+	initProfile: function() {
+		this.profile.start = SOAR.elapsedTime;
+		this.profile.count = 0;
+		for (var i = 0; i < this.profile.stats.length; i++) {
+			this.profile.stats[i] = 0;
+		}
+	},		
 	
 	/**
 		stop profiling player rotations
@@ -308,9 +326,10 @@ GAS.player = {
 	
 	profileRotation: function(x, y) {
 		 var p = this.profile;
+		 var time = (SOAR.elapsedTime - p.start) * 0.001;
 		 var r, i, il;
 			
-		if (p.count) {
+		if (time < p.period) {
 			r = Math.sqrt(x * x + y * y);
 			if (r < 0.001) {
 				p.stats[0]++;
@@ -330,16 +349,14 @@ GAS.player = {
 			if (r >= 0.1) {
 				p.stats[5]++;
 			}
-			p.count--;
+			p.count++;
+			GAS.hud.debug(time + "/" + p.period);
 		} else {
-			p.count = this.PROFILE_COUNT;
 			for (i = 0, il = p.stats.length; i < il; i++) {
 				p.stats[i] = Math.round(100 * p.stats[i] / p.count);
 			}
 			GAS.game.mini.process(p.stats);
-			for (i = 0; i < il; i++) {
-				p.stats[i] = 0;
-			}
+			this.initProfile();
 		}
 	}
 };
