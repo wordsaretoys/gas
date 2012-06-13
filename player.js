@@ -103,8 +103,16 @@ GAS.player = {
 		var avatar = this.avatar;
 		var dx, dy, dd;
 
-		dx = 0.25 * SOAR.sinterval * (mouse.next.x - mouse.last.x);
-		dy = 0.25 * SOAR.sinterval * (mouse.next.y - mouse.last.y);
+		dx = (mouse.next.x - mouse.last.x) / GAS.display.width;
+		dy = (mouse.next.y - mouse.last.y) / GAS.display.height;
+
+		if (this.profile.active) {
+			this.profileRotation(dx, dy);
+		}
+		
+		dx = 250 * dx * SOAR.sinterval;
+		dy = 250 * dy * SOAR.sinterval;
+		
 		if (dx || dy) {
 		
 			if (motion.locked) {
@@ -115,10 +123,6 @@ GAS.player = {
 			
 			mouse.last.x = mouse.next.x;
 			mouse.last.y = mouse.next.y;
-		}
-		
-		if (this.profile.active) {
-			this.profileRotation(dx, dy);
 		}
 		
 		if (motion.movefore && !motion.locked) {
@@ -350,11 +354,13 @@ GAS.player = {
 				p.stats[5]++;
 			}
 			p.count++;
-			GAS.hud.debug(time + "/" + p.period);
 		} else {
+			var s = "";
 			for (i = 0, il = p.stats.length; i < il; i++) {
 				p.stats[i] = Math.round(100 * p.stats[i] / p.count);
+				s += p.stats[i] + " - ";
 			}
+			GAS.hud.debug(s);
 			GAS.game.mini.process(p.stats);
 			this.initProfile();
 		}

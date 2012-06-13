@@ -75,8 +75,8 @@ GAS.lookup = {
 		{
 			prose: "Drop and give me twenty.",
 			mini: {
-				gametime: 21,
-				ratetime: 5,
+				gametime: 20.1,
+				ratetime: 1,
 				lbound: [0, 0, 0, 0, 0, 0],
 				ubound: [100, 100, 100, 100, 100, 100],
 				rating: [ "shit", "sad", "adequate", "okay", "awesome" ]
