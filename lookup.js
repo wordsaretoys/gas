@@ -64,8 +64,11 @@ GAS.lookup = {
 	plot: [
 
 		{
-			prose: "<div class=\"small\"><span class=\"key\">W</span> Paddle&nbsp;&nbsp;&nbsp;<span class=\"key\">M1</span> Steer (drag mouse)&nbsp;&nbsp;&nbsp;<span class=\"key\">E</span> Interact</div><br><div class=\"center\"><div class=\"big shiny\">gas food lodging</div><br><div>by Chris Gauthier</div></div><br>"
+			fade: { time: 1, alpha: 0 }
+		},
 	
+		{
+			prose: "<div class=\"small\"><span class=\"key\">W</span> Paddle&nbsp;&nbsp;&nbsp;<span class=\"key\">M1</span> Steer (drag mouse)&nbsp;&nbsp;&nbsp;<span class=\"key\">E</span> Interact</div><br><div class=\"center\"><div class=\"big shiny\">gas food lodging</div><br><div>by Chris Gauthier</div></div><br>"
 		},
 
 		{

@@ -115,6 +115,11 @@ GAS.game = {
 			this.mini.setup(scene.mini, scene.prose);
 		}
 		
+		// if the scene is to be faded in/out
+		if (scene.fade) {
+			GAS.hud.setFade(scene.fade.time * 1000, scene.fade.alpha);
+		}
+		
 		// next scene
 		this.scene++;
 	},

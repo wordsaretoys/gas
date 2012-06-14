@@ -24,6 +24,8 @@ GAS.hud = {
 			window: jQuery(window),
 			body: jQuery(document.body),
 			
+			fader: jQuery("#fader"),
+			
 			tracker: jQuery("#tracker"),
 			
 			prompts: {
@@ -94,6 +96,9 @@ GAS.hud = {
 
 	resize: function() {
 		var that = GAS.hud;
+
+		that.dom.fader.width(GAS.display.width);
+		that.dom.fader.height(GAS.display.height);
 
 		that.dom.tracker.width(GAS.display.width);
 		that.dom.tracker.height(GAS.display.height);
@@ -195,7 +200,10 @@ GAS.hud = {
 	},
 	
 	/**
-		change HUD curtain opacity
+		change mouse tracker opacity
+		
+		mouse tracker div sits on top of all other HUD elements.
+		use for "disable" effects
 		
 		@method setCurtain
 		@param opacity number, transparency value (0..1)
@@ -203,6 +211,23 @@ GAS.hud = {
 	
 	setCurtain: function(opacity) {
 		this.dom.tracker.css("background-color", "rgba(0, 0, 0, " + opacity + ")");
+	},
+	
+	/**
+		control fader, then advance game plot
+		
+		fader sits on top of GL canvas
+		use for situations where the rendered scene is to be faded in/out
+		
+		@method setFade
+		@param time number, fade time in ms
+		@param opacity number, transparency value (0..1)
+	**/
+
+	setFade: function(time, opacity) {
+		this.dom.fader.fadeTo(time, opacity, function() {
+			GAS.game.advance()
+		});
 	},
 	
 	/**
