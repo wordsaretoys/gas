@@ -134,7 +134,7 @@ GAS.hud = {
 			break;
 		case SOAR.KEY.E:
 			// interact with something if prompted to do so
-			if (that.dom.prompts.object) {
+			if (that.dom.prompts.object && SOAR.running) {
 				// activate the interface
 				that.dom.prompts.object.interact();
 				// turn off the prompt
@@ -143,7 +143,7 @@ GAS.hud = {
 			break;
 		case SOAR.KEY.SPACE:
 			// if prose box is active
-			if (that.dom.prose.warn) {
+			if (that.dom.prose.warn && SOAR.running) {
 				// continue the plot
 				GAS.game.advance();
 			}
