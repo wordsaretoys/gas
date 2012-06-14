@@ -76,8 +76,6 @@ var GAS = {
 				init.shift().init();
 				// update the progress bar
 				GAS.hud.showProgress(np / total);
-				// update the textual progress
-				GAS.hud.showProse("please wait (" + np + " of " + total + " objects initialized)");
 			} else {
 				// unschedule the init function
 				SOAR.unschedule(id);

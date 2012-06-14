@@ -10,6 +10,8 @@ GAS.hud = {
 	PROSE_EFFECT_TIME: 250,
 	CONTINUE_TIMEOUT: 5000,
 	RATING_TIMEOUT: 5000,
+	
+	CONTINUE_HTML: "<div id=\"prose-cont\"><span class=\"key\">SPACE</span>&nbsp;Continue</div>",
 
 	/**
 		establish jQuery shells around UI DOM objects &
@@ -172,6 +174,23 @@ GAS.hud = {
 		var prose = this.dom.prose;
 		var rating = this.dom.rating;
 		
+		// if the height of the prose box doesn't match the height of its content
+		var inht = prose.text.height();
+		var outh = prose.box.height();
+		if (Math.abs(inht - outh) > 0.5) {
+			// ease it into the correct size
+			prose.box.height(outh + (inht - outh) * 0.1 );
+		}
+		
+		// if the prose box is too small to display, hide it
+		var disp = prose.box.css("visibility");
+		if (outh === 0 && disp === "visible") {
+			prose.box.css("visibility", "hidden");
+		}
+		if (outh !== 0 && disp === "hidden") {
+			prose.box.css("visibility", "visible");
+		}
+		
 		// if prose continue warning is set
 		if (prose.warn) {
 			// update the timeout value
@@ -266,13 +285,16 @@ GAS.hud = {
 	showProse: function(text, cont) {
 		var prose = this.dom.prose;
 		if (text) {
-			prose.box.fadeTo(this.PROSE_EFFECT_TIME, 0.75);
-			prose.text.html(text);
-			prose.cont.css("visibility", cont ? "visible" : "hidden");
+			if (cont) {
+				prose.text.html(text + this.CONTINUE_HTML);
+				prose.cont = jQuery("#prose-cont");
+			} else {
+				prose.text.html(text);
+			}
 			prose.warn = cont;
 			prose.time = this.CONTINUE_TIMEOUT;
 		} else {
-			prose.box.fadeTo(this.PROSE_EFFECT_TIME, 0);
+			prose.text.html("");
 			prose.warn = false;
 		}
 	},
