@@ -184,10 +184,10 @@ GAS.hud = {
 		
 		// if the prose box is too small to display, hide it
 		var disp = prose.box.css("visibility");
-		if (outh === 0 && disp === "visible") {
+		if (outh < 10 && disp === "visible") {
 			prose.box.css("visibility", "hidden");
 		}
-		if (outh !== 0 && disp === "hidden") {
+		if (outh >= 10 && disp === "hidden") {
 			prose.box.css("visibility", "visible");
 		}
 		
