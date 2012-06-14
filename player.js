@@ -360,7 +360,7 @@ GAS.player = {
 				p.stats[i] = Math.round(100 * p.stats[i] / p.count);
 				s += p.stats[i] + " - ";
 			}
-			GAS.hud.debug(s);
+			//GAS.hud.debug(s);
 			GAS.game.mini.process(p.stats);
 			this.initProfile();
 		}

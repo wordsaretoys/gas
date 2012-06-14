@@ -12,6 +12,7 @@ GAS.hud = {
 	RATING_TIMEOUT: 5000,
 	
 	CONTINUE_HTML: "<div id=\"prose-cont\"><span class=\"key\">SPACE</span>&nbsp;Continue</div>",
+	PRSPACER_HTML: "<div id=\"prose-spacer\"></div>",
 
 	/**
 		establish jQuery shells around UI DOM objects &
@@ -174,23 +175,22 @@ GAS.hud = {
 		var prose = this.dom.prose;
 		var rating = this.dom.rating;
 		
-		// if the height of the prose box doesn't match the height of its content
-		var inht = prose.text.height();
 		var outh = prose.box.height();
-		if (Math.abs(inht - outh) > 0.5) {
+		var diff = prose.text.height() - outh;
+		// if the height of the prose box doesn't match the height of its content
+		if (diff) {
 			// ease it into the correct size
-			prose.box.height(outh + (inht - outh) * 0.1 );
+			diff = diff * 0.1;
+			diff = diff > 0 ? Math.ceil(diff) : Math.floor(diff);
+			prose.box.height(outh + diff);
 		}
-		
-		// if the prose box is too small to display, hide it
-		var disp = prose.box.css("visibility");
-		if (outh < 10 && disp === "visible") {
-			prose.box.css("visibility", "hidden");
+/*		else {
+			// height is stable, should box be shown?
+			if (prose.text.html().length === 0 && prose.box.css("visibility") === "visible") {
+				prose.box.css("visibility", "hidden");
+			}
 		}
-		if (outh >= 10 && disp === "hidden") {
-			prose.box.css("visibility", "visible");
-		}
-		
+*/		
 		// if prose continue warning is set
 		if (prose.warn) {
 			// update the timeout value
@@ -286,13 +286,14 @@ GAS.hud = {
 		var prose = this.dom.prose;
 		if (text) {
 			if (cont) {
-				prose.text.html(text + this.CONTINUE_HTML);
+				prose.text.html(text + this.CONTINUE_HTML + this.PRSPACER_HTML);
 				prose.cont = jQuery("#prose-cont");
 			} else {
-				prose.text.html(text);
+				prose.text.html(text + this.PRSPACER_HTML);
 			}
 			prose.warn = cont;
 			prose.time = this.CONTINUE_TIMEOUT;
+			prose.box.css("visibility", "visible");
 		} else {
 			prose.text.html("");
 			prose.warn = false;

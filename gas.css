@@ -142,7 +142,6 @@ div {
 	height: 0px;
 	overflow: hidden;
 	
-	padding: 5px;
 	border-radius: 5px;
 
 	background: rgba(0, 0, 0, 0.75);
@@ -154,17 +153,19 @@ div {
 }
 
 #prose-text {
-	width: 100%;
 	text-align: left;
 	line-height: 150%;
-	margin-bottom: 20px;
+	margin: 5px;
 }
 
 #prose-cont {
-	width: 100%;
 	text-align: right;
 	font-size: 12pt;
 	visibility: visible;
+}
+
+#prose-spacer {
+	height: 10px;
 }
 
 /* HUD progress bar */
