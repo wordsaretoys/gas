@@ -132,8 +132,6 @@ GAS.game = {
 	
 	weed: {
 	
-		COUNT: 750,
-		
 		/**
 			generate all the weeds in the map
 			
@@ -209,7 +207,7 @@ GAS.game = {
 				// set up remaining NPC-specific stuff
 				o.name = n.name;
 				o.behavior = {
-					period: 0,
+					period: GAS.makeSwatch(1),
 					target: SOAR.vector.create(),
 				};
 				o.interact = this.interact;
@@ -253,16 +251,15 @@ GAS.game = {
 				behave.target.copy(this.position).neg().norm();
 			} else {
 				// if it's been too long since e changed direction
-				if (behave.period <= 0) {
+				if (behave.period.read() > 1) {
 					// set new target and new period between 10-20 s
-					behave.period = GAS.rng.get(10, 20);
+					behave.period = GAS.makeSwatch(GAS.rng.get(10, 20));
 					behave.target.set( GAS.rng.get(-1, 1), GAS.rng.get(-0.5, 0.5), GAS.rng.get(-1, 1) ).norm();
 				}
 			}
 			
-			// keep em pointed at the target and counting down the seconds to the next target
+			// keep em pointed at the target
 			this.pointTo(behave.target, 0.05);
-			behave.period -= SOAR.sinterval;
 
 			// if the player is too close
 			if (this.playerDistance() < npc.EVADE_RADIUS) {
@@ -298,16 +295,15 @@ GAS.game = {
 				behave.target.copy(this.position).neg().norm();
 			} else {
 				// if it's been too long since e changed direction
-				if (behave.period <= 0) {
+				if (behave.period.read() > 1) {
 					// set new target and new period between 2.5-5 s
-					behave.period = GAS.rng.get(2.5, 5);
+					behave.period = GAS.makeSwatch(GAS.rng.get(2.5, 5));
 					behave.target.set( GAS.rng.get(-1, 1), GAS.rng.get(-0.5, 0.5), GAS.rng.get(-1, 1) ).norm();
 				}
 			}
 			
-			// keep em pointed at the target and counting down the seconds to the next target
+			// keep em pointed at the target
 			this.pointTo(behave.target, 0.05);
-			behave.period -= SOAR.sinterval;
 
 			// if the player is nearby
 			if (this.playerDistance() < npc.WATCH_RADIUS) {
@@ -357,7 +353,6 @@ GAS.game = {
 			
 			// player moves too far away, flip back to shouting
 			if (this.playerDistance() > npc.WATCH_RADIUS) {
-				behave.period = 0;
 				this.update = npc.shout;
 			}
 			// player moves too close
@@ -509,6 +504,7 @@ GAS.game = {
 			this.game = game;
 			this.score = 0;
 			this.count = 0;
+			this.watch = GAS.makeSwatch(game.gametime);
 			this.howto = text;
 			this.active = false;
 		},
@@ -521,7 +517,7 @@ GAS.game = {
 		
 		start: function() {
 			this.active = true;
-			this.startTime = SOAR.elapsedTime;
+			this.watch.reset();
 			GAS.hud.showInstructions(this.howto, "go!");
 			GAS.player.startProfiler(this.game.ratetime);
 		},
@@ -533,14 +529,13 @@ GAS.game = {
 		**/
 		
 		update: function(stats) {
-			var time;
+			var time = this.watch.read();
 			// if a game is active
 			if (this.active) {
-				time = (SOAR.elapsedTime - this.startTime) * 0.001;
 				// advance the progress bar
-				GAS.hud.showProgress((this.game.gametime - time) / this.game.gametime);
+				GAS.hud.showProgress(1 - time);
 				// if we've exceeded the game time
-				if (time > this.game.gametime) {
+				if (time > 1) {
 					// hide progress
 					GAS.hud.showProgress(-1);
 					

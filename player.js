@@ -290,8 +290,8 @@ GAS.player = {
 	**/
 	
 	startProfiler: function(t) {
+		this.profile.watch = GAS.makeSwatch(t);
 		this.profile.active = true;
-		this.profile.period = t;
 		this.initProfile();
 	},
 	
@@ -302,7 +302,7 @@ GAS.player = {
 	**/
 	
 	initProfile: function() {
-		this.profile.start = SOAR.elapsedTime;
+		this.profile.watch.reset();
 		this.profile.count = 0;
 		for (var i = 0; i < this.profile.stats.length; i++) {
 			this.profile.stats[i] = 0;
@@ -330,10 +330,10 @@ GAS.player = {
 	
 	profileRotation: function(x, y) {
 		 var p = this.profile;
-		 var time = (SOAR.elapsedTime - p.start) * 0.001;
+		 var time = p.watch.read();
 		 var r, i, il;
 			
-		if (time < p.period) {
+		if (time < 1) {
 			r = Math.sqrt(x * x + y * y);
 			if (r < 0.001) {
 				p.stats[0]++;
@@ -360,7 +360,7 @@ GAS.player = {
 				p.stats[i] = Math.round(100 * p.stats[i] / p.count);
 				s += p.stats[i] + " - ";
 			}
-			//GAS.hud.debug(s);
+			GAS.hud.debug(s);
 			GAS.game.mini.process(p.stats);
 			this.initProfile();
 		}

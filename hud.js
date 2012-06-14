@@ -7,8 +7,6 @@
 
 GAS.hud = {
 
-	PROSE_EFFECT_TIME: 250,
-	CONTINUE_TIMEOUT: 5000,
 	RATING_TIMEOUT: 5000,
 	
 	CONTINUE_HTML: "<div id=\"prose-cont\"><span class=\"key\">SPACE</span>&nbsp;Continue</div>",
@@ -39,7 +37,9 @@ GAS.hud = {
 				box: jQuery("#prose"),
 				text: jQuery("#prose-text"),
 				cont: jQuery("#prose-cont"),
-				warn: false
+				warn: false,
+				delay: GAS.makeSwatch(10),
+				blink: GAS.makeSwatch(0.5),
 			},
 			
 			progress: {
@@ -184,30 +184,18 @@ GAS.hud = {
 			diff = diff > 0 ? Math.ceil(diff) : Math.floor(diff);
 			prose.box.height(outh + diff);
 		}
-/*		else {
-			// height is stable, should box be shown?
-			if (prose.text.html().length === 0 && prose.box.css("visibility") === "visible") {
-				prose.box.css("visibility", "hidden");
+
+		// if the prose warning is set and we're past the delay
+		if (prose.warn && prose.delay.read() > 1) {
+			// if we're past the blink delay
+			if (prose.blink.read() > 1) {
+				// reset the blinker and toggle prompt visibility
+				prose.blink.reset();
+				prose.cont.css("visibility", 
+					prose.cont.css("visibility") === "visible" ? "hidden" : "visible");
 			}
 		}
-*/		
-		// if prose continue warning is set
-		if (prose.warn) {
-			// update the timeout value
-			prose.time -= SOAR.interval;
-			// if timeout is under a second
-			if (prose.time < 1000) {
-				// blink the continue indicator at half-second intervals
-				if (prose.time > 500) {
-					prose.cont.css("visibility", "visible");
-				} else {
-					prose.cont.css("visibility", "hidden");
-					if (prose.time < 0) {
-						prose.time = 1000;
-					}
-				}
-			}
-		}
+
 		
 		// if a rating is displayed
 		if (rating.time > 0) {
@@ -288,6 +276,7 @@ GAS.hud = {
 			if (cont) {
 				prose.text.html(text + this.CONTINUE_HTML + this.PRSPACER_HTML);
 				prose.cont = jQuery("#prose-cont");
+				prose.delay.reset();
 			} else {
 				prose.text.html(text + this.PRSPACER_HTML);
 			}

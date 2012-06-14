@@ -1,6 +1,6 @@
 /**
 
-	Sargasso: a WebGL game
+	Gas Food Lodging: a WebGL game
 	
 	game initialization and frame pump
 	
@@ -12,6 +12,25 @@
 var GAS = {
 
 	rng: SOAR.random.create(12301969),
+	
+	/**
+		create normalized timing object
+		
+		@method makeSwatch
+		@param period number, time in seconds
+	**/
+	
+	makeSwatch: function(period) {
+		return {
+			start: SOAR.elapsedTime,
+			read: function() {
+				return 0.001 * (SOAR.elapsedTime - this.start) / period;
+			},
+			reset: function() {
+				this.start = SOAR.elapsedTime;
+			}
+		};
+	},
 
 	/**
 		create GL context, set up game objects, load resources
