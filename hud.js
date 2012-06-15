@@ -226,15 +226,22 @@ GAS.hud = {
 		fader sits on top of GL canvas
 		use for situations where the rendered scene is to be faded in/out
 		
+		if time is non-zero, completion of the fade will advance the plot
+		otherwise, it's considered an immediate command
+		
 		@method setFade
 		@param time number, fade time in ms
 		@param opacity number, transparency value (0..1)
 	**/
 
 	setFade: function(time, opacity) {
-		this.dom.fader.fadeTo(time, opacity, function() {
-			GAS.game.advance()
-		});
+		if (time > 0) {
+			this.dom.fader.fadeTo(time, opacity, function() {
+				GAS.game.advance()
+			});
+		} else {
+			this.dom.fader.fadeTo(time, opacity);
+		}
 	},
 	
 	/**

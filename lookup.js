@@ -82,7 +82,7 @@ GAS.lookup = {
 		{
 			prose: "<p>Drop and give me twenty.</p>",
 			mini: {
-				gametime: 5.1,
+				gametime: 2.1,
 				ratetime: 1,
 				lbound: [0, 0, 0, 0, 0, 0],
 				ubound: [100, 100, 100, 100, 100, 100],
@@ -93,9 +93,19 @@ GAS.lookup = {
 		{
 			prose: "<p>can't imagine what that was all about.</p>"
 		},
+
+		{
+			fade: { time: 0, alpha: 1 },
+			calmed: true,
+			prose: "<br><div class=\"center big shiny\">bump!</div>"
+		},
 		
 		{
-			calmed: true,
+			warp: "joom",
+			fade: { time: 1, alpha: 0 }
+		},
+		
+		{
 		}
 		
 	],
