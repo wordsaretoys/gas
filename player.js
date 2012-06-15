@@ -45,9 +45,6 @@ GAS.player = {
 		d: SOAR.vector.create()
 	},
 	
-	lockKeys: false,
-	lockMouse: false,
-	
 	/**
 		establish jQuery shells around player DOM objects &
 		set up event handlers for player controls
@@ -85,7 +82,6 @@ GAS.player = {
 		this.avatar = GAS.paddler.create(chr.skin);
 		this.avatar.position.copy(chr.start);
 		GAS.map.add(this.avatar);
-		//this.avatar.hidden = true;
 	},
 	
 	/**
@@ -116,9 +112,9 @@ GAS.player = {
 		if (dx || dy) {
 		
 			if (motion.locked) {
-				this.avatar.rotator.turn(-dy, -dx, 0);
+				avatar.rotator.turn(dy, -dx, 0);
 			} else {
-				this.camera.turn(dy, dx, 0);
+				camera.turn(dy, dx, 0);
 			}
 			
 			mouse.last.x = mouse.next.x;
@@ -126,7 +122,7 @@ GAS.player = {
 		}
 		
 		if (motion.movefore && !motion.locked) {
-			avatar.haste = this.motion.movefast ? 2 : 1;
+			avatar.haste = motion.movefast ? 2 : 1;
 			avatar.rotator.track(camera, 0.1);
 		} else {
 			avatar.haste = 0;
@@ -134,6 +130,24 @@ GAS.player = {
 		
 		this.position.copy(avatar.position);
 		camera.position.copy(avatar.position);
+
+		// if the player is locked to an NPC
+		if (motion.locked) {
+			var npc = GAS.game.activeNpc;
+			// maintain the player and the NPC at eye-level
+			dd = avatar.position.y - npc.position.y;
+			if (Math.abs(dd) > 0.01) {
+				// slide avatar along NPC's bounding sphere
+				this.scratch.d.copy(npc.rotator.up).mul(dd * 0.1);
+				avatar.position.sub(this.scratch.d);
+				// turn avatar to face NPC
+				avatar.rotator.turn(0, 0.1 * (avatar.rotator.front.dot(npc.rotator.front) + 1), 0);
+			}
+			// and turn the camera to the NPC's viewpoint
+			camera.track(npc.rotator, 0.1);
+		}
+		
+
 		
 		// generate camera matrixes
 		// (will be cached in the camera object)
