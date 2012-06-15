@@ -56,7 +56,7 @@ GAS.game = {
 	advance: function() {
 		var scene = GAS.lookup.plot[this.scene];
 		var cast = GAS.lookup.cast;
-		var actor, p, r;
+		var actor, p, r, a, b;
 		
 		// if a minigame has been set up
 		if (this.mini.game) {
@@ -116,6 +116,25 @@ GAS.game = {
 			this.activeNpc.talking = false;
 			// remove the object reference
 			delete this.activeNpc;
+		}
+		
+		// if two characters are to be swapped
+		if (scene.swap) {
+			a = cast[scene.swap[0]].model;
+			b = cast[scene.swap[1]].model;
+			if (a === this.activeNpc) {
+				this.activeNpc = b;
+			} else if (b === this.activeNpc) {
+				this.activeNpc = a;
+			}
+			
+			p = a.position;
+			a.position = b.position;
+			b.position = p;
+			
+			p = a.update;
+			a.update = b.update;
+			b.update = p;
 		}
 		
 		// if a minigame needs setting up

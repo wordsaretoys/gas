@@ -96,13 +96,20 @@ GAS.lookup = {
 
 		{
 			fade: { time: 0, alpha: 1 },
-			calmed: true,
 			prose: "<br><div class=\"center big shiny\">bump!</div>"
 		},
 		
 		{
-			warp: "joom",
+			swap: [ "joom", "schabb" ],
 			fade: { time: 1, alpha: 0 }
+		},
+		
+		{
+			prose: "<p>ha, you fucked up</p>"
+		},
+		
+		{
+			calmed: true
 		},
 		
 		{
@@ -111,6 +118,6 @@ GAS.lookup = {
 	],
 
 	player: "hishe",
-	npc: [ "joom" ]
+	npc: [ "joom", "schabb" ]
 	
 };
