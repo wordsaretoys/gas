@@ -301,7 +301,7 @@ GAS.hud = {
 		var speech = this.dom.speech;
 		var str = text;
 		if (help) {
-			str += "<br><br><div class=\"big center shiny\">" + help + "</div>";
+			str += "<br><div class=\"big center shiny\">" + help + "</div><br>";
 		}
 		// display without continue
 		this.showProse(str, false);

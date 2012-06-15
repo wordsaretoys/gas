@@ -68,10 +68,23 @@ GAS.map = {
 		il = this.master.length;
 		for (c = this.updateLength; c; ) {
 			n = this.master[i];
+/*			
 			if (!n.active && (n.position.distance(p) <= r + n.DRAW_RADIUS)) {
 				n.active = true;
 				this.active.push(n);
 			}
+*/			
+			if (!n.active) {
+				if (n.update) {
+					n.update();
+				}
+				if (n.position.distance(p) <= r + n.DRAW_RADIUS) {
+					n.active = true;
+					this.active.push(n);
+				}
+			}
+					
+			
 			c--;
 			if (++i >= il) {
 				i = 0;

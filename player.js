@@ -97,71 +97,87 @@ GAS.player = {
 		var camera = this.camera;
 		var mouse = this.mouse;
 		var avatar = this.avatar;
-		var dx, dy, dd;
+		var dx, dy, dd, npc;
 
+		// calculate mouse deltas and reset if nonzero
 		dx = (mouse.next.x - mouse.last.x) / GAS.display.width;
-		dy = (mouse.next.y - mouse.last.y) / GAS.display.height;
-
-		if (this.profile.active) {
-			this.profileRotation(dx, dy);
-		}
-		
-		dx = 250 * dx * SOAR.sinterval;
-		dy = 250 * dy * SOAR.sinterval;
-		
-		if (dx || dy) {
-		
-			if (motion.locked) {
-				avatar.rotator.turn(dy, -dx, 0);
-			} else {
-				camera.turn(dy, dx, 0);
-			}
-			
+		if (dx) {
 			mouse.last.x = mouse.next.x;
+		}
+		dy = (mouse.next.y - mouse.last.y) / GAS.display.height;
+		if (dy) {
 			mouse.last.y = mouse.next.y;
 		}
 		
-		if (motion.movefore && !motion.locked) {
-			avatar.haste = motion.movefast ? 2 : 1;
-			avatar.rotator.track(camera, 0.1);
-		} else {
-			avatar.haste = 0;
+		// profiling, if active, requires normalized deltas
+		if (this.profile.active) {
+			this.profileRotation(dx, dy);
 		}
+
+		// rotation, however, must also be based on time delta
+		dx = 250 * dx * SOAR.sinterval;
+		dy = 250 * dy * SOAR.sinterval;
 		
+		// if we're in free motion
+		if (!motion.locked) {
+		
+			// turn the camera by specified rotations
+			if (dx || dy) {
+				camera.turn(dy, dx, 0);
+			}
+			
+			// if we're moving forward
+			if (motion.movefore) {
+				// always move fast
+				avatar.haste = 2;
+				// and force avatar to track camera movement
+				avatar.rotator.track(camera, 0.1);
+			} else {
+				avatar.haste = 0;
+			}
+			
+			// constrain player to map interior
+			dd = avatar.position.length() - GAS.map.RADIUS;
+			if (dd >= 0) {
+				avatar.normal.copy(avatar.position).neg().norm().mul(dd);
+			} else {
+				avatar.normal.set();
+			}
+			
+		} else {
+		
+			// motion locked, we don't move forward at all
+			avatar.haste = 0;
+		
+			// if we're in a minigame
+			if (GAS.game.mini.game) {
+			
+				// rotate avatar to follow mouse movements
+				avatar.rotator.turn(dy, -dx, 0);
+		
+				// maintain the player and the NPC at eye-level
+				npc = GAS.game.activeNpc;
+				dd = avatar.position.y - npc.position.y;
+				if (Math.abs(dd) > 0.01) {
+					// slide avatar along NPC's bounding sphere
+					this.scratch.d.copy(npc.rotator.up).mul(dd * 0.1);
+					avatar.position.sub(this.scratch.d);
+					// turn avatar to face NPC
+					avatar.rotator.turn(0, 0.1 * (avatar.rotator.front.dot(npc.rotator.front) + 1), 0);
+				}
+				// turn the camera to the NPC's viewpoint
+				camera.track(npc.rotator, 0.1);
+			}
+		}
+
+		// avatar drives camera position
 		this.position.copy(avatar.position);
 		camera.position.copy(avatar.position);
 
-		// if the player is locked to an NPC
-		if (motion.locked) {
-			var npc = GAS.game.activeNpc;
-			// maintain the player and the NPC at eye-level
-			dd = avatar.position.y - npc.position.y;
-			if (Math.abs(dd) > 0.01) {
-				// slide avatar along NPC's bounding sphere
-				this.scratch.d.copy(npc.rotator.up).mul(dd * 0.1);
-				avatar.position.sub(this.scratch.d);
-				// turn avatar to face NPC
-				avatar.rotator.turn(0, 0.1 * (avatar.rotator.front.dot(npc.rotator.front) + 1), 0);
-			}
-			// and turn the camera to the NPC's viewpoint
-			camera.track(npc.rotator, 0.1);
-		}
-		
-
-		
 		// generate camera matrixes
 		// (will be cached in the camera object)
 		camera.modelview();
 		camera.projector();
-		
-		// constrain player to map interior
-		dd = avatar.position.length() - GAS.map.RADIUS;
-		if (dd >= 0) {
-			avatar.normal.copy(avatar.position).neg().norm().mul(dd);
-		} else {
-			avatar.normal.set();
-		}
-		
 	},
 	
 	/**

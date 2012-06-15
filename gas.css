@@ -168,6 +168,11 @@ div {
 	height: 10px;
 }
 
+#prose-text p {
+	margin-top: 0px;
+	margin-bottom: 5px;
+}
+
 /* HUD progress bar */
 
 #progress {

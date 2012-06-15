@@ -14,7 +14,7 @@ GAS.lookup = {
 			start: {x: 0, y: 0, z: 0},
 			skin: {
 				coat: "rgb(192, 64, 127)",
-				spot: "rgb(64, 192, 255)",
+				spot: "rgb(0, 64, 127)",
 				seed: 12301969
 			},
 		},
@@ -72,11 +72,17 @@ GAS.lookup = {
 		},
 
 		{
+			warp: "joom",
 			upset: "joom"
+		},
+		
+		{
+			prose: "<p>It would be so kind to see your face at my door.</p><p>I wouldn't have to laugh anymore.</p>",
+			lock: true
 		},
 
 		{
-			prose: "Drop and give me twenty.",
+			prose: "<p>Drop and give me twenty.</p>",
 			mini: {
 				gametime: 20.1,
 				ratetime: 1,
@@ -88,7 +94,7 @@ GAS.lookup = {
 		},
 		
 		{
-			prose: "can't imagine what that was all about",
+			prose: "<p>can't imagine what that was all about.</p>",
 			calmed: true,
 		},
 		

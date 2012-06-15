@@ -56,7 +56,7 @@ GAS.game = {
 	advance: function() {
 		var scene = GAS.lookup.plot[this.scene];
 		var cast = GAS.lookup.cast;
-		var actor;
+		var actor, p, r;
 		
 		// if a minigame has been set up
 		if (this.mini.game) {
@@ -79,6 +79,17 @@ GAS.game = {
 		} else {
 			// nope, clean up after the last one
 			GAS.hud.showProse();
+		}
+		
+		// if a character is to be distanced from the player
+		if (scene.warp) {
+			actor = cast[scene.warp].model;
+			// set new position far from player
+			p = GAS.player.position;
+			r = GAS.map.RADIUS;
+			actor.position.set(r - p.x, r - p.y, r - p.z).norm().mul(r);
+			// set wandering behavior
+			actor.update = GAS.game.npc.wander;
 		}
 		
 		// if a character is supposed to be upset
@@ -578,7 +589,7 @@ GAS.game = {
 				this.count++;
 				// display some helpful feedback
 				blah = game.rating[ Math.round(score * 4) ];
-				GAS.hud.showInstructions(this.howto, this.count);
+				GAS.hud.showInstructions(this.howto, blah);
 			}
 		}
 	}
