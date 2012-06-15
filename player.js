@@ -17,8 +17,7 @@ GAS.player = {
 	motion: {
 		moveleft: false, moveright: false,
 		movefore: false, moveback: false,
-		movefast: true,
-		locked: false
+		movefast: false
 	},
 	
 	mouse: {
@@ -108,7 +107,7 @@ GAS.player = {
 		if (dy) {
 			mouse.last.y = mouse.next.y;
 		}
-		
+
 		// profiling, if active, requires normalized deltas
 		if (this.profile.active) {
 			this.profileRotation(dx, dy);
@@ -118,13 +117,12 @@ GAS.player = {
 		dx = 250 * dx * SOAR.sinterval;
 		dy = 250 * dy * SOAR.sinterval;
 		
-		// if we're in free motion
-		if (!motion.locked) {
+		// if we're not locked to an NPC
+		npc = GAS.game.activeNpc;
+		if (!npc) {
 		
 			// turn the camera by specified rotations
-			if (dx || dy) {
-				camera.turn(dy, dx, 0);
-			}
+			camera.turn(dy, dx, 0);
 			
 			// if we're moving forward
 			if (motion.movefore) {
@@ -146,27 +144,28 @@ GAS.player = {
 			
 		} else {
 		
-			// motion locked, we don't move forward at all
+			// we don't move forward at all
 			avatar.haste = 0;
 		
 			// if we're in a minigame
-			if (GAS.game.mini.game) {
-			
+			if (GAS.game.mini.active) {
 				// rotate avatar to follow mouse movements
 				avatar.rotator.turn(dy, -dx, 0);
-		
+				// turn the camera to the NPC's viewpoint
+				camera.track(npc.rotator, 0.1);
+			} else {
+				// turn avatar to face NPC
+				this.scratch.d.copy(npc.position).sub(avatar.position).norm();
+				avatar.pointTo(this.scratch.d, 0.1);
+				// turn camera to the avatar's viewpoint
+				camera.track(avatar.rotator, 0.1);
 				// maintain the player and the NPC at eye-level
-				npc = GAS.game.activeNpc;
 				dd = avatar.position.y - npc.position.y;
 				if (Math.abs(dd) > 0.01) {
 					// slide avatar along NPC's bounding sphere
 					this.scratch.d.copy(npc.rotator.up).mul(dd * 0.1);
 					avatar.position.sub(this.scratch.d);
-					// turn avatar to face NPC
-					avatar.rotator.turn(0, 0.1 * (avatar.rotator.front.dot(npc.rotator.front) + 1), 0);
 				}
-				// turn the camera to the NPC's viewpoint
-				camera.track(npc.rotator, 0.1);
 			}
 		}
 
@@ -292,24 +291,6 @@ GAS.player = {
 			that.mouse.next.y = event.pageY;
 		}
 		return false;
-	},
-	
-	/**
-		set motion lock
-		
-		@method setMotionLock
-		@param lock boolean, true/false === lock/unlock
-	**/
-	
-	setMotionLock: function(lock) {
-		if (lock) {
-			this.avatar.rotator.bound.set(Math.sqrt(2) / 2, -1, 0);
-			this.avatar.rotator.free = false;
-		} else {
-			this.avatar.rotator.bound.set();
-			this.avatar.rotator.free = true;
-		}
-		this.motion.locked = lock;
 	},
 	
 	/**

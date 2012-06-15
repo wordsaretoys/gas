@@ -118,9 +118,6 @@ GAS.game = {
 			delete this.activeNpc;
 		}
 		
-		// set any control lockouts
-		GAS.player.setMotionLock(scene.lock);
-		
 		// if a minigame needs setting up
 		if (scene.mini) {
 			this.mini.setup(scene.mini, scene.prose);

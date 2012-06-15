@@ -72,33 +72,30 @@ GAS.lookup = {
 		},
 
 		{
-			warp: "joom",
 			upset: "joom"
 		},
 		
 		{
-			prose: "<p>It would be so kind to see your face at my door.</p><p>I wouldn't have to laugh anymore.</p>",
-			lock: true
+			prose: "<p>It would be so kind to see your face at my door.</p><p>I wouldn't have to laugh anymore.</p>"
 		},
 
 		{
 			prose: "<p>Drop and give me twenty.</p>",
 			mini: {
-				gametime: 20.1,
+				gametime: 5.1,
 				ratetime: 1,
 				lbound: [0, 0, 0, 0, 0, 0],
 				ubound: [100, 100, 100, 100, 100, 100],
 				rating: [ "shit", "sad", "adequate", "okay", "awesome" ]
-			},
-			lock: true
+			}
 		},
 		
 		{
-			prose: "<p>can't imagine what that was all about.</p>",
+			prose: "<p>can't imagine what that was all about.</p>"
+		},
+		
+		{
 			calmed: true,
-		},
-		
-		{
 		}
 		
 	],
