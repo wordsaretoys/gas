@@ -306,7 +306,7 @@ GAS.hud = {
 				prose.text.html(text + this.CONTINUE_HTML + this.PRSPACER_HTML);
 				prose.cont = jQuery("#prose-cont");
 				prose.state = 1;
-				prose.delay.reset(2);
+				prose.delay.reset(1);
 			} else {
 				prose.text.html(text + this.PRSPACER_HTML);
 			}

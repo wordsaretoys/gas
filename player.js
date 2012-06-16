@@ -172,6 +172,9 @@ GAS.player = {
 			}
 		}
 
+		// force no-roll on camera because I'm paranoid
+		camera.component.z.set(0, 0, 0, 1);
+		
 		// avatar drives camera position
 		this.position.copy(avatar.position);
 		camera.position.copy(avatar.position);
