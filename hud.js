@@ -7,8 +7,6 @@
 
 GAS.hud = {
 
-	RATING_TIMEOUT: 5000,
-	
 	CONTINUE_HTML: "<div id=\"prose-cont\"><span class=\"key\">SPACE</span>&nbsp;Continue</div>",
 	PRSPACER_HTML: "<div id=\"prose-spacer\"></div>",
 
@@ -48,7 +46,8 @@ GAS.hud = {
 			
 			rating: {
 				box: jQuery("#rating"),
-				time: 0
+				state: 0,
+				delay: GAS.makeSwatch()
 			},
 
 			debug: jQuery("#debug")
@@ -217,12 +216,11 @@ GAS.hud = {
 			break
 		}
 
-		// if a rating is displayed
-		if (rating.time > 0) {
-			rating.time -= SOAR.interval;
-			if (rating.time <= 0) {
-				rating.box.fadeTo(250, 0);
-			}
+		// if a rating is displayed and timed out
+		if (rating.state === 1 && rating.delay.read() >= 1) {
+			// fade it out
+			rating.box.fadeTo(250, 0);
+			rating.state = 0;
 		}
 	},
 	
@@ -379,14 +377,14 @@ GAS.hud = {
 		var rating = this.dom.rating;
 		var i, s = "";
 
-		// generate the star string
+		// generate the n-star string
 		for (i = 0; i < score; i++) {
 			s = s + "&#9733;&nbsp;"
 		}
+		// display and set up fade timing
 		rating.box.html(s);
-		// set timeout
-		rating.time = this.RATING_TIMEOUT;
-		// and display rating
+		rating.state = 1;
+		rating.delay.reset(5);
 		rating.box.fadeTo(250, 1);
 	}
 	
