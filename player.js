@@ -129,7 +129,7 @@ GAS.player = {
 				// always move fast
 				avatar.haste = 2;
 				// and force avatar to track camera movement
-				avatar.rotator.track(camera, 0.1);
+				avatar.rotator.track(camera, 10 * SOAR.sinterval);
 			} else {
 				avatar.haste = 0;
 			}
@@ -148,22 +148,25 @@ GAS.player = {
 			avatar.haste = 0;
 		
 			// if we're in a minigame
-			if (GAS.game.mini.active) {
-				// rotate avatar to follow mouse movements
-				avatar.rotator.turn(dy, -dx, 0);
+			if (GAS.game.mini.game) {
 				// turn the camera to the NPC's viewpoint
-				camera.track(npc.rotator, 0.1);
+				camera.track(npc.rotator, 10 * SOAR.sinterval);
+				// if the minigame is active
+				if (GAS.game.mini.active) {
+					// rotate avatar to follow mouse movements
+					avatar.rotator.turn(dy, -dx, 0);
+				}
 			} else {
 				// turn avatar to face NPC
 				this.scratch.d.copy(npc.position).sub(avatar.position).norm();
-				avatar.pointTo(this.scratch.d, 0.1);
+				avatar.pointTo(this.scratch.d, 10 * SOAR.sinterval);
 				// turn camera to the avatar's viewpoint
-				camera.track(avatar.rotator, 0.1);
+				camera.track(avatar.rotator, 10 * SOAR.sinterval);
 				// maintain the player and the NPC at eye-level
 				dd = avatar.position.y - npc.position.y;
 				if (Math.abs(dd) > 0.01) {
 					// slide avatar along NPC's bounding sphere
-					this.scratch.d.copy(npc.rotator.up).mul(dd * 0.1);
+					this.scratch.d.copy(npc.rotator.up).mul(dd * 10 * SOAR.sinterval);
 					avatar.position.sub(this.scratch.d);
 				}
 			}

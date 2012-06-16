@@ -37,9 +37,8 @@ GAS.hud = {
 				box: jQuery("#prose"),
 				text: jQuery("#prose-text"),
 				cont: jQuery("#prose-cont"),
-				warn: false,
-				delay: GAS.makeSwatch(10),
-				blink: GAS.makeSwatch(0.5),
+				delay: GAS.makeSwatch(),
+				state: 0
 			},
 			
 			progress: {
@@ -150,8 +149,8 @@ GAS.hud = {
 			}
 			break;
 		case SOAR.KEY.SPACE:
-			// if prose box is active
-			if (that.dom.prose.warn && SOAR.running) {
+			// if prose box continue allowed
+			if (that.dom.prose.state > 1 && SOAR.running) {
 				// continue the plot
 				GAS.game.advance();
 			}
@@ -184,19 +183,40 @@ GAS.hud = {
 			diff = diff > 0 ? Math.ceil(diff) : Math.floor(diff);
 			prose.box.height(outh + diff);
 		}
-
-		// if the prose warning is set and we're past the delay
-		if (prose.warn && prose.delay.read() > 1) {
-			// if we're past the blink delay
-			if (prose.blink.read() > 1) {
-				// reset the blinker and toggle prompt visibility
-				prose.blink.reset();
+		
+		// handle continue based on state and delay
+		switch (prose.state) {
+		
+		case 0:	// no continue allowed
+			break;
+			
+		case 1:	// continue allowed, not displayed yet
+			if (prose.delay.read() >= 1) {
+				// display continue
+				prose.cont.css("visibility", "visible");
+				// next state
+				prose.state = 2;
+				prose.delay.reset(10);
+			}
+			break;
+			
+		case 2:	// continue displayed
+			if (prose.delay.read() >= 1) {
+				// switch to blinking state
+				prose.state = 3;
+			}
+			break;
+			
+		case 3: // blinking continue
+			if (prose.delay.read() >= 1) {
+				// blink at half second intervals
+				prose.delay.reset(0.5);
 				prose.cont.css("visibility", 
 					prose.cont.css("visibility") === "visible" ? "hidden" : "visible");
 			}
+			break
 		}
 
-		
 		// if a rating is displayed
 		if (rating.time > 0) {
 			rating.time -= SOAR.interval;
@@ -279,20 +299,21 @@ GAS.hud = {
 	
 	showProse: function(text, cont) {
 		var prose = this.dom.prose;
+		
+		// no continue by default
+		prose.state = 0;
+		
 		if (text) {
 			if (cont) {
 				prose.text.html(text + this.CONTINUE_HTML + this.PRSPACER_HTML);
 				prose.cont = jQuery("#prose-cont");
-				prose.delay.reset();
+				prose.state = 1;
+				prose.delay.reset(2);
 			} else {
 				prose.text.html(text + this.PRSPACER_HTML);
 			}
-			prose.warn = cont;
-			prose.time = this.CONTINUE_TIMEOUT;
-			prose.box.css("visibility", "visible");
 		} else {
 			prose.text.html("");
-			prose.warn = false;
 		}
 	},
 	

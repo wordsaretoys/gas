@@ -26,8 +26,11 @@ var GAS = {
 			read: function() {
 				return 0.001 * (SOAR.elapsedTime - this.start) / period;
 			},
-			reset: function() {
+			reset: function(p) {
 				this.start = SOAR.elapsedTime;
+				if (p) {
+					period = p;
+				}
 			}
 		};
 	},

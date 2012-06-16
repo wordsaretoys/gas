@@ -161,7 +161,7 @@ div {
 #prose-cont {
 	text-align: right;
 	font-size: 12pt;
-	visibility: visible;
+	visibility: hidden;
 }
 
 #prose-spacer {
