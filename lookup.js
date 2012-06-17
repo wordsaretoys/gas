@@ -62,7 +62,7 @@ GAS.lookup = {
 	},
 	
 	plot: [
-
+/*
 		{
 			fade: { time: 1, alpha: 0 }
 		},
@@ -70,26 +70,32 @@ GAS.lookup = {
 		{
 			prose: "<div class=\"small\"><span class=\"key\">W</span> Paddle&nbsp;&nbsp;&nbsp;<span class=\"key\">M1</span> Steer (drag mouse)&nbsp;&nbsp;&nbsp;<span class=\"key\">E</span> Interact</div><br><div class=\"center\"><div class=\"big shiny\">gas food lodging</div><br><div>by Chris Gauthier</div></div><br>"
 		},
+*/
+		{
+			fade: { time: 1, alpha: 0 }
+		},
 
 		{
 			upset: "joom"
 		},
 		
 		{
-			prose: "<p>It would be so kind to see your face at my door.</p><p>I wouldn't have to laugh anymore.</p>"
-		},
-
-		{
-			prose: "<p>Drop and give me twenty.</p>",
-			mini: {
-				gametime: 2.1,
-				ratetime: 1,
-				lbound: [0, 0, 0, 0, 0, 0],
-				ubound: [100, 100, 100, 100, 100, 100],
-				rating: [ "shit", "sad", "adequate", "okay", "awesome" ]
-			}
+			prose: "<p>hey, here's a thing</p>"
 		},
 		
+		{
+			mini: {
+				help: "<p>Cooking!</p>",
+				total: 5,
+				graph: {
+					xn: 0.1,
+					xp: 0.1,
+					yn: 0.4,
+					yp: 0.4
+				}
+			}
+		},
+/*		
 		{
 			prose: "<p>can't imagine what that was all about.</p>"
 		},
@@ -111,13 +117,13 @@ GAS.lookup = {
 		{
 			calmed: true
 		},
-		
+*/		
 		{
 		}
 		
 	],
 
 	player: "hishe",
-	npc: [ "joom", "schabb" ]
+	npc: [ "joom" ]
 	
 };

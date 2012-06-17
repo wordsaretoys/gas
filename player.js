@@ -33,10 +33,10 @@ GAS.player = {
 	},
 	
 	profile: {
-		time: 0,
-		count: 0,
-		stats: [0, 0, 0, 0, 0, 0],
-		period: 0,
+		xn: 0,
+		xp: 0,
+		yn: 0,
+		yp: 0,
 		active: false
 	},
 	
@@ -110,7 +110,7 @@ GAS.player = {
 
 		// profiling, if active, requires normalized deltas
 		if (this.profile.active) {
-			this.profileRotation(dx, dy);
+			this.updateProfile(dx, dy);
 		}
 
 		// rotation, however, must also be based on time delta
@@ -151,11 +151,8 @@ GAS.player = {
 			if (GAS.game.mini.game) {
 				// turn the camera to the NPC's viewpoint
 				camera.track(npc.rotator, 10 * SOAR.sinterval);
-				// if the minigame is active
-				if (GAS.game.mini.active) {
-					// rotate avatar to follow mouse movements
-					avatar.rotator.turn(dy, -dx, 0);
-				}
+				// rotate avatar to follow mouse movements
+				avatar.rotator.turn(dy, -dx, 0);
 			} else {
 				// turn avatar to face NPC
 				this.scratch.d.copy(npc.position).sub(avatar.position).norm();
@@ -300,34 +297,22 @@ GAS.player = {
 	},
 	
 	/**
-		start profiling player rotations
+		start collecting player movement profile
 		
 		@method startProfiler
-		@param t number, time in seconds to collect stats for
 	**/
 	
-	startProfiler: function(t) {
-		this.profile.watch = GAS.makeSwatch(t);
-		this.profile.active = true;
-		this.initProfile();
+	startProfiler: function() {
+		var p = this.profile;
+		p.xn = 0;
+		p.xp = 0;
+		p.yn = 0;
+		p.yp = 0;
+		p.active = true;
 	},
 	
 	/**
-		initialize profile data
-		
-		@method initProfile
-	**/
-	
-	initProfile: function() {
-		this.profile.watch.reset();
-		this.profile.count = 0;
-		for (var i = 0; i < this.profile.stats.length; i++) {
-			this.profile.stats[i] = 0;
-		}
-	},		
-	
-	/**
-		stop profiling player rotations
+		stop collecting profile
 		
 		@method stopProfiler
 	**/
@@ -337,49 +322,31 @@ GAS.player = {
 	},
 	
 	/**
-		accumulate the histogram of the player's rotations,
-		and pass it to the minigame handler when it's ready
+		accumulate a histogram of the player's mouse movements
 		
-		@method profileRotation
-		@param x number, rotation in x
-		@param y number, rotation in y
+		@method updateProfile
+		@param x number, movement in x
+		@param y number, movement in y
 	**/
 	
-	profileRotation: function(x, y) {
-		 var p = this.profile;
-		 var time = p.watch.read();
-		 var r, i, il;
-			
-		if (time < 1) {
-			r = Math.sqrt(x * x + y * y);
-			if (r < 0.001) {
-				p.stats[0]++;
-			}
-			if (r >= 0.001 && r < 0.005) {
-				p.stats[1]++;
-			}
-			if (r >= 0.005 && r < 0.01) {
-				p.stats[2]++;
-			}
-			if (r >= 0.01 && r < 0.05) {
-				p.stats[3]++;
-			}
-			if (r >= 0.05 && r < 0.1) {
-				p.stats[4]++;
-			}
-			if (r >= 0.1) {
-				p.stats[5]++;
-			}
-			p.count++;
-		} else {
-			var s = "";
-			for (i = 0, il = p.stats.length; i < il; i++) {
-				p.stats[i] = Math.round(100 * p.stats[i] / p.count);
-				s += p.stats[i] + " - ";
-			}
-			GAS.hud.debug(s);
-			GAS.game.mini.process(p.stats);
-			this.initProfile();
+	updateProfile: function(x, y) {
+		var p = this.profile;
+		
+		// collect x going positive
+		if (x > 0) {
+			p.xp += x;
+		}
+		// collect x going negative
+		if (x < 0) {
+			p.xn += -x;
+		}
+		// collect y going positive
+		if (y > 0) {
+			p.yp += y;
+		}
+		// collect y going negative
+		if (y < 0) {
+			p.yn += -y;
 		}
 	}
 };

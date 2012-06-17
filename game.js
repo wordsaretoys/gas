@@ -58,14 +58,6 @@ GAS.game = {
 		var cast = GAS.lookup.cast;
 		var actor, p, r, a, b;
 		
-		// if a minigame has been set up
-		if (this.mini.game) {
-			// start it
-			this.mini.start();
-			// and bug out
-			return;
-		}
-		
 		//console.log(JSON.stringify(scene));
 		
 		// if there's prose in the scene
@@ -137,9 +129,9 @@ GAS.game = {
 			b.update = p;
 		}
 		
-		// if a minigame needs setting up
+		// if a minigame needs starting
 		if (scene.mini) {
-			this.mini.setup(scene.mini, scene.prose);
+			this.mini.start(scene.mini);
 		}
 		
 		// if the scene is to be faded in/out
@@ -520,33 +512,16 @@ GAS.game = {
 	mini: {
 	
 		/**
-			setup a minigame
-			
-			@method setup
-			@param game object, game parameters
-			@param text string, game instructions
-		**/
-		
-		setup: function(game, text) {
-			this.game = game;
-			this.score = 0;
-			this.count = 0;
-			this.watch = GAS.makeSwatch(game.gametime);
-			this.howto = text;
-			this.active = false;
-		},
-		
-		/**
-			start the minigame
+			start a minigame
 			
 			@method start
+			@param game object, game parameters
 		**/
 		
-		start: function() {
-			this.active = true;
-			this.watch.reset();
-			GAS.hud.showInstructions(this.howto, "go!");
-			GAS.player.startProfiler(this.game.ratetime);
+		start: function(game) {
+			this.game = game;
+			GAS.hud.showProse(game.help, false);
+			GAS.player.startProfiler();
 		},
 		
 		/**
@@ -556,56 +531,39 @@ GAS.game = {
 		**/
 		
 		update: function(stats) {
-			var time = this.watch.read();
-			// if a game is active
-			if (this.active) {
-				// advance the progress bar
-				GAS.hud.showProgress(1 - time);
-				// if we've exceeded the game time
-				if (time > 1) {
-					// hide progress
-					GAS.hud.showProgress(-1);
-					
-					// show final score
-					GAS.hud.showRating(Math.ceil(5 * this.score / this.count));
+			var p = GAS.player.profile;
+			var g = this.game.graph;
+			var total = p.xn + p.xp + p.yn + p.yp;
+			var progr = total / this.game.total;
+			var error, score;
+			
+			// update the progress bar
+			GAS.hud.showProgress(progr);
 
-					// disable minigame and advance the plot
-					delete this.game;
-					this.active = false;
-					GAS.player.stopProfiler();
-					GAS.game.advance();
-				}
-			}
-		},
-		
-		/**
-			analyze player movements, calc scores
+			// has the player moved enough?
+			if (progr >= 1) {
 			
-			called by player object whenever it's
-			gathered statistics on player motions
+				GAS.player.stopProfiler();
+				GAS.hud.showProgress(-1);
+				
+				// normalize stats
+				p.xn /= total;
+				p.xp /= total;
+				p.yn /= total;
+				p.yp /= total;
+				GAS.hud.debug("xn: " + p.xn + "<br>xp: " + p.xp + "<br>yn: " + p.yn + "<br>yp: " + p.yp);
+				
+				// compare to targets and sum errors to find score
+				error = 0.25 * (Math.abs(p.xn - g.xn) + Math.abs(p.xp - g.xp) + 
+					Math.abs(p.yn - g.yn) + Math.abs(p.yp - g.yp));
+				score = Math.max(1, Math.round(5 * Math.pow(1 - error, 2)));
 			
-			@method process
-			@param stats array, the rotation distribution
-		**/
-		
-		process: function(stats) {
-			var game = this.game;
-			var i, il, score = 0, blah;
-			// if a game is active
-			if (game) {
-				// for each rotation speed, check against bounds and add up score
-				for (i = 0, il = stats.length; i < il; i++) {
-					if (stats[i] >= game.lbound[i] && stats[i] <= game.ubound[i]) {
-						score++;
-					}
-				}
-				// add to total score
-				score = score / stats.length;
-				this.score += score;
-				this.count++;
-				// display some helpful feedback
-				blah = game.rating[ Math.round(score * 4) ];
-				GAS.hud.showInstructions(this.howto, blah);
+				// show final score
+				GAS.hud.showRating(score);
+
+				// disable minigame and advance the plot
+				delete this.game;
+				GAS.game.advance();
 			}
 		}
 	}

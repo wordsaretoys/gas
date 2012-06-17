@@ -316,24 +316,6 @@ GAS.hud = {
 	},
 	
 	/**
-		displays minigame instructions in the speech box
-		
-		@method showInstructions
-		@param text string, the instructions
-		@param help string, any feedback or help info
-	**/
-	
-	showInstructions: function(text, help) {
-		var speech = this.dom.speech;
-		var str = text;
-		if (help) {
-			str += "<br><div class=\"big center shiny\">" + help + "</div><br>";
-		}
-		// display without continue
-		this.showProse(str, false);
-	},		
-	
-	/**
 		show/hide/update progress bar
 		
 		if value is non-negative and the bar isn't visible,
