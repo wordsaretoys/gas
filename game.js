@@ -551,7 +551,10 @@ GAS.game = {
 				p.xp /= total;
 				p.yn /= total;
 				p.yp /= total;
-				GAS.hud.debug("xn: " + p.xn + "<br>xp: " + p.xp + "<br>yn: " + p.yn + "<br>yp: " + p.yp);
+				
+				function ftrim(n) { return Math.round(n * 100) / 100; }
+				
+				GAS.hud.debug("xn: " + ftrim(p.xn) + "<br>xp: " + ftrim(p.xp) + "<br>yn: " + ftrim(p.yn) + "<br>yp: " + ftrim(p.yp));
 				
 				// compare to targets and sum errors to find score
 				error = 0.25 * (Math.abs(p.xn - g.xn) + Math.abs(p.xp - g.xp) + 

@@ -86,12 +86,12 @@ GAS.lookup = {
 		{
 			mini: {
 				help: "<p>Cooking!</p>",
-				total: 5,
+				total: 8,
 				graph: {
-					xn: 0.1,
-					xp: 0.1,
-					yn: 0.4,
-					yp: 0.4
+					xn: 0,
+					xp: 0.33,
+					yn: 0.33,
+					yp: 0.33
 				}
 			}
 		},
