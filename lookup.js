@@ -76,7 +76,7 @@ GAS.lookup = {
 		},
 
 		{
-			upset: "foosh"
+			shout: "foosh"
 		},
 		
 		{
@@ -101,8 +101,9 @@ GAS.lookup = {
 		},
 		
 		{
-			calmed: true,
-			upset: "joom"
+			release: true,
+			wander: "foosh",
+			shout: "joom"
 		},
 		
 		{
@@ -127,8 +128,9 @@ GAS.lookup = {
 		},
 		
 		{
-			calmed: true,
-			upset: "prapp"
+			release: true,
+			wander: "joom",
+			shout: "prapp"
 		},
 		
 		{
@@ -153,8 +155,9 @@ GAS.lookup = {
 		},
 // 15		
 		{
-			calmed: true,
-			upset: "joom"
+			release: true,
+			wander: "prapp",
+			shout: "joom"
 		},
 		
 		{
@@ -179,8 +182,9 @@ GAS.lookup = {
 		},
 		
 		{
-			calmed: true,
-			upset: "schabb"
+			release: true,
+			wander: "joom",
+			shout: "schabb"
 		},
 // 20
 		{
@@ -205,8 +209,9 @@ GAS.lookup = {
 		},
 
 		{
-			calmed: true,
-			upset: "foosh"
+			release: true,
+			wander: "schabb",
+			shout: "foosh"
 		},
 		
 		{
@@ -231,8 +236,9 @@ GAS.lookup = {
 		},
 		
 		{
-			calmed: true,
-			upset: "prapp"
+			release: true,
+			wander: "foosh",
+			shout: "prapp"
 		},
 		
 		{
@@ -257,8 +263,10 @@ GAS.lookup = {
 		},
 		
 		{
-			calmed: true,
-			upset: "joom"
+			release: true,
+			wander: "prapp",
+			descend: "foosh",
+			shout: "joom"
 		},
 		
 		{
@@ -276,7 +284,7 @@ GAS.lookup = {
 // 35
 		{
 			swap: [ "joom", "schabb" ],
-			fade: { time: 1, alpha: 0 }
+			fade: { time: 2.5, alpha: 0 }
 		},
 		
 		{
@@ -284,8 +292,9 @@ GAS.lookup = {
 		},
 		
 		{
-			calmed: true,
-			upset: "joom"
+			release: true,
+			wander: "schabb",
+			shout: "joom"
 		},
 		
 		{
@@ -306,20 +315,26 @@ GAS.lookup = {
 		},
 // 40
 		{
-			prose: "<p>I'm not sure what puzzles Joom more: the chant, or the dawning idea that e might be of use to someone. \"You really think I could help?\" e says.</p><p>\"Find Prapp. Let em make the call.\"</p><p>\"Right.\" E takes a decisive turn. \"Thanks, coach.\" Ha, ha. As <i>if</i>.</p><p>All I can do now is wait. Well, I suppose I could go see if Schabb needs anything&mdash;no. All I can do now is wait. Yeah, that's all I can do. Just wait.</p>"
+			prose: "<p>I'm not sure what puzzles Joom more: the chant, or the dawning idea that e might be of use to someone. \"You really think I could help?\" e says.</p><p>\"Find Prapp. Let em make the call.\"</p><p>\"Right.\" E takes a decisive turn. \"Thanks, coach.\" Ha, ha. As <i>if</i>.</p>"
 		},
 		
 		{
-			fade: { time: 0.5, alpha: 1 }
+			release: true,
+			descend: "joom",
+			prose: "<p>All I can do now is wait. Well, I suppose I could go see if Schabb needs anything&mdash;no. All I can do now is wait. Yeah, that's all I can do. Just wait.</p>"
 		},
 		
 		{
-			fade: { time: 0.5, alpha: 0 }
+			fade: { time: 1, alpha: 1 }
 		},
 		
 		{
-			upset: "foosh",
-			prose: "<p>Someone's calling, it seems.</p>",
+			warp: "foosh",
+			fade: { time: 1, alpha: 0 }
+		},
+		
+		{
+			shout: "foosh"
 		},
 		
 		{
@@ -327,8 +342,9 @@ GAS.lookup = {
 		},
 // 45
 		{
-			calmed: true,
-			upset: "schabb"
+			release: true,
+			exit: "foosh",
+			shout: "schabb"
 		},
 		
 		{
@@ -336,8 +352,9 @@ GAS.lookup = {
 		},
 		
 		{
-			calmed: true,
-			upset: "prapp"
+			release: true,
+			descend: "schabb",
+			shout: "prapp"
 		},
 		
 		{
@@ -345,7 +362,8 @@ GAS.lookup = {
 		},
 		
 		{
-			calmed: true,
+			release: true,
+			descend: "prapp",
 			prose: "<br><div class=\"center big shiny\">the end</div><br>"
 		},
 // 50

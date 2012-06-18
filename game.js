@@ -7,7 +7,7 @@
 
 GAS.game = {
 
-	scene: 0,
+	scene: 43,
 
 	/**
 		initialize game objects
@@ -71,6 +71,45 @@ GAS.game = {
 		} else {
 			// nope, clean up after the last one
 			GAS.hud.showProse();
+			// shut up, active NPC
+			if (this.activeNpc) {
+				this.activeNpc.talking = false;
+			}
+		}
+		
+		// if we must release the active NPC
+		if (scene.release && this.activeNpc) {
+			delete this.activeNpc;
+		}
+		
+		// if an NPC is to start shouting
+		if (scene.shout) {
+			// track shouting NPC
+			this.trackNpc = cast[scene.shout].model;
+			// set shouting behavior
+			this.trackNpc.update = GAS.game.npc.shout;
+		}
+		
+		// if an NPC is to start wandering
+		if (scene.wander) {
+			// set wandering behavior
+			cast[scene.wander].model.update = GAS.game.npc.wander;
+		}
+		
+		// if an NPC is to descend
+		if (scene.descend) {
+			actor = cast[scene.descend].model;
+			// set target and leaving behavior
+			actor.behavior.target.set(0, -1, 0);
+			actor.update = GAS.game.npc.leave;
+		}
+		
+		// if an NPC is to exit through the side door
+		if (scene.exit) {
+			actor = cast[scene.exit].model;
+			// set target and leaving behavior
+			actor.behavior.target.set(1, 0, 0);
+			actor.update = GAS.game.npc.leave;
 		}
 		
 		// if a character is to be distanced from the player
@@ -80,34 +119,6 @@ GAS.game = {
 			p = GAS.player.position;
 			r = GAS.map.RADIUS;
 			actor.position.set(r - p.x, r - p.y, r - p.z).norm().mul(r);
-			// set wandering behavior
-			actor.update = GAS.game.npc.wander;
-		}
-		
-		// if a character is supposed to be upset
-		if (scene.upset) {
-			// store off the character object for tracking
-			this.trackNpc = cast[scene.upset].model;
-			// and set their behavior to shouting
-			this.trackNpc.update = GAS.game.npc.shout;
-		}
-		
-		// if a character is supposed to leave
-		if (scene.leave) {
-			actor = cast[scene.leave.npc].model;
-			// set leaving target and behavior
-			actor.behavior.target.copy(scene.leave.target);
-			actor.update = GAS.game.npc.leave;
-		}
-		
-		// if a character has calmed down
-		if (scene.calmed) {
-			// reset their behavior
-			this.activeNpc.update = this.npc.wander;
-			// shut them up
-			this.activeNpc.talking = false;
-			// remove the object reference
-			delete this.activeNpc;
 		}
 		
 		// if two characters are to be swapped
