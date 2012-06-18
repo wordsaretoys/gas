@@ -151,8 +151,8 @@ GAS.player = {
 			if (GAS.game.mini.game) {
 				// turn the camera to the NPC's viewpoint
 				camera.track(npc.rotator, 10 * SOAR.sinterval);
-				// rotate avatar to follow mouse movements
-				avatar.rotator.turn(dy, -dx, 0);
+				// rotate avatar to follow mouse movements (and lock out roll)
+				avatar.rotator.turn(dy, -dx, avatar.rotator.right.y);
 			} else {
 				// turn avatar to face NPC
 				this.scratch.d.copy(npc.position).sub(avatar.position).norm();

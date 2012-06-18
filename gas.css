@@ -201,8 +201,8 @@ div {
 	width: 240px;
 	height: 25px;
 	background: #0f0;
-	background: -webkit-gradient(linear, left top, right bottom, from(#f00), to(#0f0));
-	background: -moz-linear-gradient(0, #f00, #0f0);
+/*	background: -webkit-gradient(linear, left top, right bottom, from(#f00), to(#0f0));
+	background: -moz-linear-gradient(0, #f00, #0f0); */
 }
 
 /* HUD rating bar */
