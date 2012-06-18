@@ -147,14 +147,13 @@ div {
 	background: rgba(0, 0, 0, 0.75);
 	color: white;
 
-	font-size: 16pt;
+	font-size: 14pt;
 	
 	z-index: 5;
 }
 
 #prose-text {
 	text-align: left;
-	line-height: 150%;
 	margin: 5px;
 }
 
@@ -170,7 +169,7 @@ div {
 
 #prose-text p {
 	margin-top: 0px;
-	margin-bottom: 5px;
+	margin-bottom: 1em;
 }
 
 /* HUD progress bar */
