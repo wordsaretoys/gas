@@ -21,7 +21,7 @@ GAS.lookup = {
 	
 		"schabb": {
 			name: "Schabb",
-			start: {x: 0, y: 0, z: 0},
+			start: {x: 250, y: 0, z: 0},
 			skin: {
 				coat: "rgb(255, 127, 0)",
 				spot: "rgb(127, 0, 255)",
@@ -31,7 +31,7 @@ GAS.lookup = {
 	
 		"foosh": {
 			name: "Foosh",
-			start: {x: 0, y: 0, z: 0},
+			start: {x: 0, y: 0, z: -250},
 			skin: {
 				coat: "rgb(192, 255, 64)",
 				spot: "rgb(255, 64, 192)",
@@ -41,7 +41,7 @@ GAS.lookup = {
 
 		"prapp": {
 			name: "Prapp",
-			start: {x: 0, y: 0, z: 0},
+			start: {x: 0, y: -250, z: 0},
 			skin: {
 				coat: "rgb(255, 64, 192)",
 				spot: "rgb(127, 255, 64)",
@@ -51,7 +51,7 @@ GAS.lookup = {
 
 		"joom": {
 			name: "Joom",
-			start: {x: 0, y: 0, z: 0},
+			start: {x: 0, y: 0, z: 250},
 			skin: {
 				coat: "rgb(64, 255, 127)",
 				spot: "rgb(255, 127, 64)",

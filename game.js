@@ -7,7 +7,7 @@
 
 GAS.game = {
 
-	scene: 43,
+	scene: 0,
 
 	/**
 		initialize game objects
@@ -227,7 +227,7 @@ GAS.game = {
 				
 				// TEMP: place in test position
 //				o.position.set(GAS.rng.get(-1, 1), GAS.rng.get(-1, 1), GAS.rng.get(-1, 1)).norm().mul(10);
-				o.position.set(0, 0, -2);
+//				o.position.set(0, 0, -2);
 				
 				// store off the paddler's update method
 				o.updateMotion = GAS.paddler.update;
@@ -485,7 +485,7 @@ GAS.game = {
 				marker.hidden = false;
 				// update the display
 				marker.phase += SOAR.sinterval;
-				if (marker.phase > 2) {
+				if (marker.phase > 1.5) {
 					marker.phase = -1;
 				}
 				// move it to a position between player and NPC
