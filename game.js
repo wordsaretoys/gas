@@ -56,7 +56,7 @@ GAS.game = {
 	advance: function() {
 		var scene = GAS.lookup.plot[this.scene];
 		var cast = GAS.lookup.cast;
-		var actor, p, r, a, b;
+		var actor, a, b;
 		
 		// if there's prose in the scene
 		if (scene.prose) {
@@ -110,13 +110,15 @@ GAS.game = {
 			actor.update = GAS.game.npc.leave;
 		}
 		
-		// if a character is to be distanced from the player
-		if (scene.warp) {
-			actor = cast[scene.warp].model;
-			// set new position far from player
-			p = GAS.player.position;
-			r = GAS.map.RADIUS;
-			actor.position.set(r - p.x, r - p.y, r - p.z).norm().mul(r);
+		// if the NPC is to bump the player
+		if (scene.bump) {
+			cast[scene.bump].model.update = GAS.game.npc.bump;
+		}
+
+		// if a character is to be put back to their starting point
+		if (scene.home) {
+			actor = cast[scene.home];
+			actor.model.position.copy(actor.start);
 		}
 		
 		// if two characters are to be swapped
@@ -205,6 +207,7 @@ GAS.game = {
 
 		WATCH_RADIUS: 10,
 		EVADE_RADIUS: 3,
+		BUMP_RADIUS: 2,
 		
 		prompting: false,
 		
@@ -470,6 +473,37 @@ GAS.game = {
 			this.updateMotion();
 		},
 		
+		/**
+			implements bumping behavior - the npc hits the
+			player head on
+			
+			called in the context of the npc.
+			
+			@method bump
+		**/
+		
+		bump: function() {
+			var player = GAS.player;
+			var behave = this.behavior;
+			var npc = GAS.game.npc;
+		
+			// maintain fast speed
+			this.haste = 2;
+			
+			// point npc toward the player
+			behave.target.copy(player.position).sub(this.position).norm();
+			this.pointTo(behave.target, 0.25);
+			
+			// if the npc moves into bumping range
+			if (this.playerDistance() < npc.BUMP_RADIUS) {
+				// go to next plot bit
+				GAS.game.advance();
+			}
+			
+			// update the paddler model itself
+			this.updateMotion();
+		},
+
 		/**
 			handles the NPC tracking marker
 			

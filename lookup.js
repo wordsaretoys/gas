@@ -21,7 +21,7 @@ GAS.lookup = {
 	
 		"schabb": {
 			name: "Schabb",
-			start: {x: 250, y: 0, z: 0},
+			start: {x: 200, y: 0, z: 0},
 			skin: {
 				coat: "rgb(255, 127, 0)",
 				spot: "rgb(127, 0, 255)",
@@ -31,7 +31,7 @@ GAS.lookup = {
 	
 		"foosh": {
 			name: "Foosh",
-			start: {x: 0, y: 0, z: -250},
+			start: {x: 0, y: 0, z: -200},
 			skin: {
 				coat: "rgb(192, 255, 64)",
 				spot: "rgb(255, 64, 192)",
@@ -41,7 +41,7 @@ GAS.lookup = {
 
 		"prapp": {
 			name: "Prapp",
-			start: {x: -250, y: 0, z: 0},
+			start: {x: -200, y: 0, z: 0},
 			skin: {
 				coat: "rgb(255, 64, 192)",
 				spot: "rgb(127, 255, 64)",
@@ -51,7 +51,7 @@ GAS.lookup = {
 
 		"joom": {
 			name: "Joom",
-			start: {x: 0, y: 0, z: 250},
+			start: {x: 0, y: 0, z: 200},
 			skin: {
 				coat: "rgb(64, 255, 127)",
 				spot: "rgb(255, 127, 64)",
@@ -262,6 +262,8 @@ GAS.lookup = {
 			prose: "<p>It's the same lecture as before. A few changes. \"I've filed off the rough bits, I think,\" e says. \"In the case of young Foosh, don't hesitate to quote me if you need an authority.\"</p><p>I'm not looking for an argument, but it's good to hear I have an ally if I need one.</p>"
 		},
 		
+		{ fade: { time: 0.1, alpha: 0 } },
+		
 		{
 			release: true,
 			wander: "prapp",
@@ -278,10 +280,15 @@ GAS.lookup = {
 		},
 		
 		{
+			bump: "joom"
+		},
+		
+		{
+			shout: "joom",
 			fade: { time: 0, alpha: 1 },
 			prose: "<br><div class=\"center big shiny\">bump em</div><br>"
 		},
-// 35
+
 		{
 			swap: [ "joom", "schabb" ],
 			fade: { time: 2.5, alpha: 0 }
@@ -329,7 +336,7 @@ GAS.lookup = {
 		},
 		
 		{
-			warp: "foosh",
+			home: "foosh",
 			fade: { time: 1, alpha: 0 }
 		},
 		
