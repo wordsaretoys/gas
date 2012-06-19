@@ -41,7 +41,7 @@ GAS.lookup = {
 
 		"prapp": {
 			name: "Prapp",
-			start: {x: 0, y: -250, z: 0},
+			start: {x: -250, y: 0, z: 0},
 			skin: {
 				coat: "rgb(255, 64, 192)",
 				spot: "rgb(127, 255, 64)",
