@@ -58,8 +58,6 @@ GAS.game = {
 		var cast = GAS.lookup.cast;
 		var actor, p, r, a, b;
 		
-		//console.log(JSON.stringify(scene));
-		
 		// if there's prose in the scene
 		if (scene.prose) {
 			// display it
@@ -148,6 +146,11 @@ GAS.game = {
 		// if the scene is to be faded in/out
 		if (scene.fade) {
 			GAS.hud.setFade(scene.fade.time * 1000, scene.fade.alpha);
+		}
+		
+		// if we're ending
+		if (scene.stop) {
+			GAS.hud.showProse(scene.stop, false);
 		}
 		
 		// next scene

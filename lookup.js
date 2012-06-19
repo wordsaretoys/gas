@@ -362,9 +362,8 @@ GAS.lookup = {
 		},
 		
 		{
-			release: true,
-			descend: "prapp",
-			prose: "<br><div class=\"center big shiny\">the end</div><br>"
+			exit: "prapp",
+			stop: "<br><div class=\"center big shiny\">the end</div><br>"
 		},
 // 50
 		{
