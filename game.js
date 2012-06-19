@@ -151,6 +151,7 @@ GAS.game = {
 		// if we're ending
 		if (scene.stop) {
 			GAS.hud.showProse(scene.stop, false);
+			this.mini.tally();
 		}
 		
 		// next scene
@@ -525,6 +526,11 @@ GAS.game = {
 	
 	mini: {
 	
+		total: {
+			score: 0,
+			count: 0
+		},
+	
 		/**
 			start a minigame
 			
@@ -577,11 +583,26 @@ GAS.game = {
 			
 				// show final score
 				GAS.hud.showRating(score);
+				
+				// add to final tally
+				this.total.score += score;
+				this.total.count++;
 
 				// disable minigame and advance the plot
 				delete this.game;
 				GAS.game.advance();
 			}
+		},
+		
+		/**
+			show final score
+			
+			@method tally
+		**/
+		
+		tally: function() {
+			var score = Math.max(1, Math.round(this.total.score / this.total.count));
+			GAS.hud.showRating(score);
 		}
 	}
 
