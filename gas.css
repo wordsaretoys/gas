@@ -144,7 +144,7 @@ div {
 	
 	border-radius: 5px;
 
-	background: rgba(0, 0, 0, 0.75);
+	background: rgba(0, 0, 0, 0.85);
 	color: white;
 
 	font-size: 14pt;
@@ -181,7 +181,7 @@ div {
 	border-radius: 5px;
 
 	border: solid 1px white;
-	background: rgba(0, 0, 0, 0.75);
+	background: rgba(0, 0, 0, 0.85);
 	
 	display: none;
 	
@@ -200,8 +200,6 @@ div {
 	width: 240px;
 	height: 25px;
 	background: #0f0;
-/*	background: -webkit-gradient(linear, left top, right bottom, from(#f00), to(#0f0));
-	background: -moz-linear-gradient(0, #f00, #0f0); */
 }
 
 /* HUD rating bar */
