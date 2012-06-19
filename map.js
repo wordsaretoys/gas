@@ -201,8 +201,7 @@ GAS.map = {
 			}
 		}
 
-//		GAS.hud.debug("Drawcount: " + c + "<br>FPS: " + SOAR.fps + "<br>Display: " + GAS.display.width + ", " + GAS.display.height);
-		GAS.hud.debug("FPS: " + SOAR.fps);
+//		GAS.hud.debug("FPS: " + SOAR.fps);
 	}
 
 };

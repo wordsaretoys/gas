@@ -262,8 +262,6 @@ GAS.lookup = {
 			prose: "<p>It's the same lecture as before. A few changes. \"I've filed off the rough bits, I think,\" e says. \"In the case of young Foosh, don't hesitate to quote me if you need an authority.\"</p><p>I'm not looking for an argument, but it's good to hear I have an ally if I need one.</p>"
 		},
 		
-		{ fade: { time: 0.1, alpha: 0 } },
-		
 		{
 			release: true,
 			wander: "prapp",
@@ -282,7 +280,7 @@ GAS.lookup = {
 		{
 			bump: "joom"
 		},
-		
+// 35
 		{
 			shout: "joom",
 			fade: { time: 0, alpha: 1 },
@@ -307,7 +305,7 @@ GAS.lookup = {
 		{
 			prose: "<p>\"Sorry.\" It's the first word out of Joom's mouth, and it's a good start, but it's not going anyplace helpful. \"I'm being traded for bumping a spectator. I want out, but what else can I do? Maybe if I keep messing up, they'll fire me for good.\"</p><p>Fantastic. I have a guest lost in the undercloud and a potential rescuer lost in self-pity. \"Foosh could really use your help right now.\"</p><p>\"Prapp's looking for the kid,\" says Joom. \"I chased that old gasbag all over the weeds after I bumped you and couldn't get close to em once. How's e <i>do</i> that?\" There's admiration in e's voice.</p><p>\"Air currents.\" No time. I have to get Joom motivated and there's only one way I know to do it.</p>"
 		},
-		
+// 40
 		{
 			mini: {
 				help: "<p>Do the bumper chant! Spin right, lifting your head, then dropping it, then raising it.</p><p>Don't move left or let your head get too high or too low.</p>",
@@ -320,7 +318,7 @@ GAS.lookup = {
 				}
 			}
 		},
-// 40
+
 		{
 			prose: "<p>I'm not sure what puzzles Joom more: the chant, or the dawning idea that e might be of use to someone. \"You really think I could help?\" e says.</p><p>\"Find Prapp. Let em make the call.\"</p><p>\"Right.\" E takes a decisive turn. \"Thanks, coach.\" Ha, ha. As <i>if</i>.</p>"
 		},
@@ -343,11 +341,11 @@ GAS.lookup = {
 		{
 			shout: "foosh"
 		},
-		
+// 45
 		{
 			prose: "<p>Seems to be a day for apologies. \"Prapp and Joom found me in the undercloud,\" says Foosh. \"I'm sorry I caused you all so much trouble.\" And the whole story tumbles out.</p><p>E's been having doubts for some time now, but the promises kept coming, and the debts kept growing. \"Once you go so deep, how do you admit you've make a mistake?\"</p><p>In fact, the reason e mentioned it to me in the first place was to get my reaction&mdash;but when I all but confirmed what e feared, e couldn't handle it. \"Prapp talked sense. I'm not liable for debts accrued to a con. All I've lost is time and respectability. The second, at least, I can get back.\"</p><p>Then e thanks me, and departs for home.</p>"
 		},
-// 45
+
 		{
 			release: true,
 			exit: "foosh",
@@ -367,12 +365,12 @@ GAS.lookup = {
 		{
 			prose: "<p>\"Just wanted to say thank you,\" says Prapp, \"for a lovely stay. And for finding me a partner, of course. Joom's practicing my deflation exercises for deep descent. E sends regards.\"</p><p>I'm not completely surprised, though a little sad, for reasons I don't quite understand. \"I guess Joom found the guidance e was looking for.\"</p><p>\"Perhaps.\" Prapp smiles. \"I'll take good care of my wayward child.\" E catches my look. \"Figure of speech, dear Hische. Figure of speech.\"</p>"
 		},
-		
+// 50		
 		{
 			exit: "prapp",
 			stop: "<br><div class=\"center big shiny\">the end</div><br>"
 		},
-// 50
+
 		{
 		}
 		
