@@ -46,7 +46,6 @@ GAS.paddler = {
 		);
 
 		this.mesh = this.makeMesh();
-		this.skin = this.makeSkin();
 	},
 	
 	/**
