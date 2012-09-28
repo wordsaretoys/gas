@@ -18,7 +18,7 @@ GAS.hud = {
 	**/
 	
 	init: function() {
-
+		var that = this;
 		this.dom = {
 			window: jQuery(window),
 			body: jQuery(document.body),
@@ -61,9 +61,45 @@ GAS.hud = {
 			});
 		};
 
-		this.dom.window.bind("keydown", this.onKeyDown);
 		this.dom.window.bind("resize", this.resize);			
 		this.resize();
+
+		// set up events to capture
+		SOAR.capture.addAction("pause", SOAR.KEY.PAUSE, function(down) {
+			if (down) {
+				// toggle pause (dark screen/no updates)
+				if (SOAR.running) {
+					that.setCurtain(0.75);
+					SOAR.running = false;
+				} else {
+					that.setCurtain(0);
+					SOAR.running = true;
+				}
+			}
+		});
+		SOAR.capture.addAction("tab", SOAR.KEY.TAB, function(down) {
+			return false;
+		});
+		SOAR.capture.addAction("interact", SOAR.KEY.E, function(down) {
+			if (down) {
+				// interact with something if prompted to do so
+				if (that.dom.prompts.object && SOAR.running) {
+					// activate the interface
+					that.dom.prompts.object.interact();
+					// turn off the prompt
+					that.prompt();
+				}
+			}
+		});
+		SOAR.capture.addAction("continue", SOAR.KEY.SPACE, function(down) {
+			if (down) {
+				// if prose box continue allowed
+				if (that.dom.prose.state > 1 && SOAR.running) {
+					// continue the plot
+					GAS.game.advance();
+				}
+			}
+		});
 	},
 	
 	/**
@@ -105,60 +141,6 @@ GAS.hud = {
 		that.dom.tracker.height(GAS.display.height);
 		
 		that.dom.prompts.resize();
-	},
-	
-	/**
-		handle a keypress
-		
-		note that the hud object only handles keys related to 
-		HUD activity. see player.js for motion control keys
-		
-		@method onKeyDown
-		@param event browser object containing event information
-		@return true to enable default key behavior
-	**/
-
-	onKeyDown: function(event) {
-		var that = GAS.hud;
-	
-		switch(event.keyCode) {
-		case SOAR.KEY.ESCAPE:
-			break;
-		case SOAR.KEY.PAUSE:
-			// toggle pause (dark screen/no updates)
-			if (SOAR.running) {
-				that.setCurtain(0.75);
-				SOAR.running = false;
-			} else {
-				that.setCurtain(0);
-				SOAR.running = true;
-			}
-			break;
-		case SOAR.KEY.TAB:
-			// prevent accidental TAB keypress from changing focus
-			return false;
-			break;
-		case SOAR.KEY.E:
-			// interact with something if prompted to do so
-			if (that.dom.prompts.object && SOAR.running) {
-				// activate the interface
-				that.dom.prompts.object.interact();
-				// turn off the prompt
-				that.prompt();
-			}
-			break;
-		case SOAR.KEY.SPACE:
-			// if prose box continue allowed
-			if (that.dom.prose.state > 1 && SOAR.running) {
-				// continue the plot
-				GAS.game.advance();
-			}
-			break;
-		default:
-			//console.log(event.keyCode);
-			break;
-		}
-		return true;
 	},
 	
 	/**

@@ -17,6 +17,7 @@
 		<script type="text/javascript" src="/debug/soar/shader.js"></script>
 		<script type="text/javascript" src="/debug/soar/texture.js"></script>
 		<script type="text/javascript" src="/debug/soar/display.js"></script>
+		<script type="text/javascript" src="/debug/soar/capture.js"></script>
 
 		<script type="text/javascript" src="/debug/gas/gas.js"></script>
 		<script type="text/javascript" src="/debug/gas/hud.js"></script>

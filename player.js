@@ -61,14 +61,8 @@ GAS.player = {
 			tracker: jQuery("#tracker"),
 			window: jQuery(window)
 		};
+		var that = this;
 		
-		dom.window.bind("keydown", this.onKeyDown);
-		dom.window.bind("keyup", this.onKeyUp);
-
-		dom.tracker.bind("mousedown", this.onMouseDown);
-		dom.tracker.bind("mouseup", this.onMouseUp);
-		dom.tracker.bind("mousemove", this.onMouseMove);
-
 		// create a constrained camera for player view
 		this.camera = SOAR.camera.create(GAS.display);
 		this.camera.nearLimit = 0.1;
@@ -81,6 +75,16 @@ GAS.player = {
 		this.avatar = GAS.paddler.create(chr.skin);
 		this.avatar.position.copy(chr.start);
 		GAS.map.add(this.avatar);
+		
+		// set up events to capture
+		SOAR.capture.addAction("forward", SOAR.KEY.W, function(down) {
+			that.motion.movefore = down;
+		});
+		SOAR.capture.addAction("fullscreen", SOAR.KEY.F, function(down) {
+			if (down) {
+				SOAR.capture.setFullscreen();
+			}
+		});
 	},
 	
 	/**
@@ -98,15 +102,9 @@ GAS.player = {
 		var avatar = this.avatar;
 		var dx, dy, dd, npc;
 
-		// calculate mouse deltas and reset if nonzero
-		dx = (mouse.next.x - mouse.last.x) / GAS.display.width;
-		if (dx) {
-			mouse.last.x = mouse.next.x;
-		}
-		dy = (mouse.next.y - mouse.last.y) / GAS.display.height;
-		if (dy) {
-			mouse.last.y = mouse.next.y;
-		}
+		// get mouse deltas and normalize by screen dimensions
+		dx = SOAR.capture.trackX / GAS.display.width;
+		dy = SOAR.capture.trackY / GAS.display.height;
 
 		// profiling, if active, requires normalized deltas
 		if (this.profile.active) {
@@ -180,120 +178,6 @@ GAS.player = {
 		// (will be cached in the camera object)
 		camera.modelview();
 		camera.projector();
-	},
-	
-	/**
-		handle a keypress
-		
-		@method onKeyDown
-		@param event browser object containing event information
-		@return true to enable default key behavior
-	**/
-
-	onKeyDown: function(event) {
-
-		var that = GAS.player;
-		
-		switch(event.keyCode) {
-			case SOAR.KEY.A:
-				that.motion.moveleft = true;
-				break;
-			case SOAR.KEY.D:
-				that.motion.moveright = true;
-				break;
-			case SOAR.KEY.W:
-				that.motion.movefore = true;
-				break;
-			case SOAR.KEY.S:
-				that.motion.moveback = true;
-				break;
-			case SOAR.KEY.SHIFT:
-//				that.motion.movefast = true;
-				break;
-		}
-		return true;
-	},
-
-	/**
-		handle a key release
-		
-		@method onKeyUp
-		@param event browser object containing event information
-		@return true to enable default key behavior
-	**/
-
-	onKeyUp: function(event) {
-
-		var that = GAS.player;
-
-		switch(event.keyCode) {
-
-			case SOAR.KEY.A:
-				that.motion.moveleft = false;
-				break;
-			case SOAR.KEY.D:
-				that.motion.moveright = false;
-				break;
-			case SOAR.KEY.W:
-				that.motion.movefore = false;
-				break;
-			case SOAR.KEY.S:
-				that.motion.moveback = false;
-				break;
-			case SOAR.KEY.SHIFT:
-//				that.motion.movefast = false;
-				break;
-		}
-		return true;
-	},
-
-	/**
-		handle a mouse down event
-		
-		@method onMouseDown
-		@param event browser object containing event information
-		@return true to enable default mouse behavior
-	**/
-
-	onMouseDown: function(event) {
-		var mouse = GAS.player.mouse;
-		mouse.down = true;
-		mouse.last.x = event.pageX;
-		mouse.last.y = event.pageY;
-		mouse.next.x = event.pageX;
-		mouse.next.y = event.pageY;
-		return false;
-	},
-	
-	/**
-		handle a mouse up event
-		
-		@method onMouseUp
-		@param event browser object containing event information
-		@return true to enable default mouse behavior
-	**/
-
-	onMouseUp: function(event) {
-		GAS.player.mouse.down = false;
-		return false;
-	},
-
-	/**
-		handle a mouse move event
-		
-		@method onMouseMove
-		@param event browser object containing event information
-		@return true to enable default mouse behavior
-	**/
-
-	onMouseMove: function(event) {
-		var that = GAS.player;
-
-		if (that.mouse.down && SOAR.running) {
-			that.mouse.next.x = event.pageX;
-			that.mouse.next.y = event.pageY;
-		}
-		return false;
 	},
 	
 	/**

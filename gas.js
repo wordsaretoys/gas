@@ -118,6 +118,9 @@ var GAS = {
 		
 		}, 0, true);
 
+		// start capturing control events
+		SOAR.capture.start();
+
 		// start the message pump
 		SOAR.run();
 	},
@@ -144,6 +147,7 @@ var GAS = {
 	**/
 	
 	update: function() {
+		SOAR.capture.update();
 		GAS.game.update();
 		GAS.map.update();
 		GAS.hud.update();
