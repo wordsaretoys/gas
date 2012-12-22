@@ -4,32 +4,20 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title>gas food lodging</title>
 		<link rel="stylesheet" type="text/css" media="screen" href="gas.css">
-		<link rel="stylesheet" type="text/css" media="screen" href="/shared/toybox.css">
-		<script type="text/javascript" src="/shared/jquery-1.7.1.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 
-		<script type="text/javascript" src="/debug/soar/soar.js"></script>
-		<script type="text/javascript" src="/debug/soar/vector.js"></script>
-		<script type="text/javascript" src="/debug/soar/quaternion.js"></script>
-		<script type="text/javascript" src="/debug/soar/rotator.js"></script>
-		<script type="text/javascript" src="/debug/soar/noise.js"></script>
-		<script type="text/javascript" src="/debug/soar/camera.js"></script>
-		<script type="text/javascript" src="/debug/soar/mesh.js"></script>
-		<script type="text/javascript" src="/debug/soar/shader.js"></script>
-		<script type="text/javascript" src="/debug/soar/texture.js"></script>
-		<script type="text/javascript" src="/debug/soar/display.js"></script>
-		<script type="text/javascript" src="/debug/soar/capture.js"></script>
-
-		<script type="text/javascript" src="/debug/gas/gas.js"></script>
-		<script type="text/javascript" src="/debug/gas/hud.js"></script>
-		<script type="text/javascript" src="/debug/gas/map.js"></script>
-		<script type="text/javascript" src="/debug/gas/game.js"></script>
-		<script type="text/javascript" src="/debug/gas/player.js"></script>
-		<script type="text/javascript" src="/debug/gas/skybox.js"></script>
-		<script type="text/javascript" src="/debug/gas/card.js"></script>
-		<script type="text/javascript" src="/debug/gas/weeds.js"></script>
-		<script type="text/javascript" src="/debug/gas/ejecta.js"></script>
-		<script type="text/javascript" src="/debug/gas/paddler.js"></script>
-		<script type="text/javascript" src="/debug/gas/lookup.js"></script>
+		<script type="text/javascript" src="soar.js"></script>
+		<script type="text/javascript" src="gas.js"></script>
+		<script type="text/javascript" src="hud.js"></script>
+		<script type="text/javascript" src="map.js"></script>
+		<script type="text/javascript" src="game.js"></script>
+		<script type="text/javascript" src="player.js"></script>
+		<script type="text/javascript" src="skybox.js"></script>
+		<script type="text/javascript" src="card.js"></script>
+		<script type="text/javascript" src="weeds.js"></script>
+		<script type="text/javascript" src="ejecta.js"></script>
+		<script type="text/javascript" src="paddler.js"></script>
+		<script type="text/javascript" src="lookup.js"></script>
 		
 <?php
 include("gas.glsl");
@@ -41,7 +29,6 @@ include("gas.glsl");
 		</script>
     </head>
 	<body>
-		<?php include($_SERVER["DOCUMENT_ROOT"] . "/shared/toybox.php"); ?>
 		<canvas id="gl"></canvas>
 		<?php include("hud.html"); ?>
 	</body>
